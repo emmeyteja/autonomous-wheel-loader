@@ -6,7 +6,7 @@ A simulation-only research project targeting repeated autonomous wheel-loader at
 
 M0 implementation has started: validated configuration, batched bounded actions, deterministic pile geometry, runtime setup, and unit tests are implemented. Isaac Lab 3.0 runs on the GPU with Newton. The wheel-loader task, loader asset, material interaction, PPO training, and evaluation are **not implemented yet**.
 
-See [M0 progress and test results](docs/M0_REPORT.md). The upstream runtime probe revealed a reset-observation mismatch; M0 remains incomplete.
+Track implementation and verified outcomes in the [M0 milestone](https://github.com/emmeyteja/autonomous-wheel-loader/milestone/1). The upstream reset issue is tracked in [issue #3](https://github.com/emmeyteja/autonomous-wheel-loader/issues/3); M0 remains incomplete.
 
 ## End goal
 
@@ -40,6 +40,10 @@ See [the architecture requirements](docs/ARCHITECTURE.md) for module boundaries,
 World-model research is optional for baseline cycle integration; travel/dumping can proceed after the loading foundation through separate modules.
 
 See [the design specification](docs/DESIGN.md) for requirements and acceptance criteria. This document is the proposed research plan, not evidence of implemented functionality.
+
+## Development tracking and public information
+
+Use GitHub milestones and issues for tasks, acceptance checklists, defects, and progress. Keep repository documentation focused on architecture, reproducible setup, and research methods. Issues are public: post only sanitized technical summaries. Keep personal information, workstation inventories, raw logs, and local paths out of commits and issue attachments.
 
 ## Repository layout
 

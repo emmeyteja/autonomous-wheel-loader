@@ -1,6 +1,6 @@
 # Repository goal and scope
 
-Status: development specification; implementation progress is tracked in GitHub.
+Status: development specification. Implementation progress is tracked in GitHub; this document defines scope, not evidence of implemented capabilities.
 
 ## End goal
 

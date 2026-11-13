@@ -42,3 +42,6 @@ wandb/
 *.usdz
 *.bag
 *.mcap
+
+# Private local notes and diagnostics
+.local/

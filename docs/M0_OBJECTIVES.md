@@ -1,6 +1,6 @@
 # M0 — Simulation foundation objectives
 
-Status: M0 acceptance criteria; implementation progress is tracked in GitHub.
+Status: M0 acceptance criteria. Track verified progress and remaining gates in the [M0 milestone](https://github.com/emmeyteja/autonomous-wheel-loader/milestone/1).
 
 ## Objective
 

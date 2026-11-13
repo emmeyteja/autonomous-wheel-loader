@@ -1,7 +1,7 @@
 # Development guidance
 
-Apply `.cursor/rules/architecture.mdc` to all development in this repository. Read `docs/ARCHITECTURE.md` before changing module boundaries or introducing dependencies.
+Apply `.cursor/rules/architecture.mdc` and `.cursor/rules/public-repository.mdc` to all development in this repository.
 
-`docs/DESIGN.md` defines the research milestones. Architecture requirements supplement that plan; they do not mark any milestone as implemented. Keep documentation honest about implemented behavior and verified results.
+Read `docs/ARCHITECTURE.md` before changing module boundaries or introducing dependencies. Follow `docs/PROJECT_GOALS.md`, `docs/DESIGN.md`, and `docs/M0_OBJECTIVES.md` for scope and acceptance criteria. Report incomplete gates accurately; M0 is complete only when its required simulator and material checks pass.
 
-Follow docs/PROJECT_GOALS.md and docs/M0_OBJECTIVES.md for scope and acceptance criteria. Track progress in GitHub issues.
+Track work and defects in GitHub issues assigned to the appropriate milestone. Keep durable design and reproduction instructions in documentation. Publish only project-relevant, sanitized technical information.
