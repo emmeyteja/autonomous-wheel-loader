@@ -1,10 +1,16 @@
 # Autonomous Wheel Loader
 
-A simulation-only research project for learning wheel-loader bucket filling with reinforcement learning.
+A simulation-only research project targeting repeated autonomous wheel-loader attack, loading, travel, zone-based dumping, and replanning. Bucket-filling reinforcement learning is the first skill.
 
 ## Status
 
 Initial project scaffold and design specification. The Isaac Lab environment, loader asset, pile interaction, PPO training, and evaluation are **not implemented yet**. No training or simulation results are available.
+
+## Proposed end goal
+
+Choose an attack pose, load the bucket, extract and travel, choose a feasible dump zone and pose, dump, update pile/bed state, and repeat. Dump zones should adapt to bed geometry, usable volume, existing fill, and configurable sequencing.
+
+See [the proposed overall goal](docs/PROJECT_GOALS.md) and [M0 objectives](docs/M0_OBJECTIVES.md). These objectives define staged implementation. The initial dump destination is proposed to be a stationary bed with known geometry.
 
 ## First objective
 
@@ -20,12 +26,16 @@ See [the architecture requirements](docs/ARCHITECTURE.md) for module boundaries,
 
 ## Development roadmap
 
-- [ ] M0: Isaac Lab integration, task registration, loader asset, procedural pile, and smoke tests.
+- [ ] M0: Reproducible runtime, task registration, loader articulation, material-transfer feasibility, and headless smoke tests.
 - [ ] M1: Observations, actions, reward components, PPO training, checkpointing, and evaluation.
 - [ ] M2: Improved pile interaction, actuator limits, force/slip penalties, and scripted baseline.
 - [ ] M3: Domain randomization and evaluation on unseen conditions.
 - [ ] M4: Learned world model.
 - [ ] M5: Attack-pose planning.
+- [ ] M6: Travel, flexible dump-bed zones, dump-pose selection, and dumping baseline.
+- [ ] M7: Repeated full-cycle orchestration, state updates, recovery, and replanning.
+
+World-model research is optional for baseline cycle integration; travel/dumping can proceed after the loading foundation through separate modules.
 
 See [the design specification](docs/DESIGN.md) for requirements and acceptance criteria. This document is the proposed research plan, not evidence of implemented functionality.
 
