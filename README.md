@@ -12,6 +12,12 @@ Build a reproducible NVIDIA Isaac Lab environment for one bucket-loading attempt
 
 The intended training stack is Isaac Lab with RSL-RL PPO. Compatible versions and machine requirements will be recorded when integration is implemented.
 
+## Architecture requirements
+
+Modularity and scalability are project requirements. Reuse public Autoware and standard ROS 2 interfaces when their semantics fit, through optional adapters. Keep the simulation and batched training independent of ROS; use explicit loader-specific contracts for attachment control and pile interaction.
+
+See [the architecture requirements](docs/ARCHITECTURE.md) for module boundaries, interface reuse, and scaling expectations. These requirements guide future implementation; no ROS adapter is implemented yet.
+
 ## Development roadmap
 
 - [ ] M0: Isaac Lab integration, task registration, loader asset, procedural pile, and smoke tests.
