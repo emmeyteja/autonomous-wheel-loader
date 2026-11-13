@@ -36,7 +36,7 @@ All mandatory gates must pass before calling M0 complete. Hardware-limited batch
 
 PPO training, reward tuning, scripted productivity comparisons, world models, perception, navigation, autonomous zone selection, dumping policies, and full-cycle orchestration belong to later milestones. Autoware message reuse is designed at the boundary; a ROS dependency is not required to run M0.
 
-## First implementation steps after confirmation
+## Implementation sequence
 
 1. Audit the runtime and available loader/material assets.
 2. Run the smallest loader articulation and material-transfer probes.

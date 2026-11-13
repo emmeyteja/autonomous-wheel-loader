@@ -1,4 +1,4 @@
-# Proposed repository goal and scope
+# Repository goal and scope
 
 Status: development specification; implementation progress is tracked in GitHub.
 
@@ -12,7 +12,7 @@ A preliminary dump destination may be reserved before travel; refine and validat
 
 A mission ends when the configured transfer target is met, the dump destination is full, the source is depleted, or no feasible cycle remains. Report the reason and actual delivered material.
 
-The initial destination is proposed to be a stationary dump bed with known geometry and pose. Moving trucks, perception-driven bed detection, and multiple destinations are later extensions, not assumed requirements for the first full-cycle demonstration.
+The initial destination is a stationary dump bed with known geometry and pose. Moving trucks, perception-driven bed detection, and multiple destinations are later extensions, not assumed requirements for the first full-cycle demonstration.
 
 ## Zone-based dumping
 
@@ -66,4 +66,4 @@ Freeze numeric thresholds and scenario configurations before evaluating. Thresho
 
 ## Relationship to the original design
 
-[DESIGN.md](DESIGN.md) remains the detailed bucket-loading research specification. Its instruction to defer the full work cycle applies to the early loading milestones, not the repository's eventual goal. This proposal extends the original roadmap with travel, flexible zone dumping, and repeated mission execution. Once confirmed, this document governs the overall scope, and the architecture requirements apply to every milestone.
+[DESIGN.md](DESIGN.md) remains the detailed bucket-loading research specification. Its instruction to defer the full work cycle applies to the early loading milestones, not the repository's eventual goal. This proposal extends the original roadmap with travel, flexible zone dumping, and repeated mission execution. This document governs the overall scope, and the architecture requirements apply to every milestone.

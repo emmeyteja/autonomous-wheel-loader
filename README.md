@@ -4,13 +4,15 @@ A simulation-only research project targeting repeated autonomous wheel-loader at
 
 ## Status
 
-Initial project scaffold and design specification. The Isaac Lab environment, loader asset, pile interaction, PPO training, and evaluation are **not implemented yet**. No training or simulation results are available.
+M0 implementation has started: validated configuration, batched bounded actions, deterministic pile geometry, runtime setup, and unit tests are implemented. Isaac Lab 3.0 runs on the GPU with Newton. The wheel-loader task, loader asset, material interaction, PPO training, and evaluation are **not implemented yet**.
 
-## Proposed end goal
+See [M0 progress and test results](docs/M0_REPORT.md). The upstream runtime probe revealed a reset-observation mismatch; M0 remains incomplete.
+
+## End goal
 
 Choose an attack pose, load the bucket, extract and travel, choose a feasible dump zone and pose, dump, update pile/bed state, and repeat. Dump zones should adapt to bed geometry, usable volume, existing fill, and configurable sequencing.
 
-See [the proposed overall goal](docs/PROJECT_GOALS.md) and [M0 objectives](docs/M0_OBJECTIVES.md). These objectives define staged implementation. The initial dump destination is proposed to be a stationary bed with known geometry.
+See [the confirmed overall goal](docs/PROJECT_GOALS.md) and [M0 objectives](docs/M0_OBJECTIVES.md). The initial dump destination is a stationary bed with known geometry.
 
 ## First objective
 
@@ -48,13 +50,16 @@ See [the design specification](docs/DESIGN.md) for requirements and acceptance c
 - `docs/`: design specification and experiment results.
 - `outputs/`: local experiment artifacts, excluded from version control.
 
-## Local package setup
+## Development setup
+
+Follow [SETUP.md](docs/SETUP.md) for the verified Python 3.12 / Isaac Lab 3.0 / CUDA environment, dependency snapshot, and test commands.
 
 ```bash
-python -m pip install -e .
+./scripts/test_core.sh
+.venv/bin/python scripts/audit_runtime.py
 ```
 
-This installs the namespace scaffold only. It does not install Isaac Lab or provide a runnable simulation or training command.
+No wheel-loader simulation or training command exists yet. `runtime_smoke.sh` probes the upstream cartpole runtime and currently reports a failed reset check; it does not prove a loading environment works.
 
 ## Research scope
 

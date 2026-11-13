@@ -7,7 +7,16 @@ name = "wheel-loader-rl"
 version = "0.0.1"
 description = "Simulation-only autonomous wheel loader reinforcement learning research scaffold"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12,<3.13"
+dependencies = ["numpy>=1.26,<3"]
+
+[project.optional-dependencies]
+sim = ["isaaclab==3.0.0"]
+dev = ["pytest>=8,<10", "torch==2.11.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit"]
+pythonpath = ["src"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

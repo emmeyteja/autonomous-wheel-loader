@@ -8,9 +8,9 @@ Reuse Autoware interfaces where their semantics fit. Keep the software modular s
 
 This supplements [DESIGN.md](DESIGN.md). The first milestone remains simulation infrastructure; it does not require running a full Autoware stack or implementing a ROS bridge.
 
-## Proposed full-cycle extension
+## Full-cycle extension
 
-[PROJECT_GOALS.md](PROJECT_GOALS.md) proposes the end-to-end mission and flexible dumping scope, pending confirmation. Keep mission supervision, attack selection, travel, loading, dump-zone/pose planning, dumping, and material accounting as separate responsibilities. Represent dump-bed geometry, per-zone occupancy/capacity, and source/bucket/destination material state explicitly. A loading episode reset must not accidentally reset mission-wide bed occupancy. Keep the three-action loading skill distinct from steering-capable travel commands.
+[PROJECT_GOALS.md](PROJECT_GOALS.md) defines the confirmed end-to-end mission and flexible dumping scope. Keep mission supervision, attack selection, travel, loading, dump-zone/pose planning, dumping, and material accounting as separate responsibilities. Represent dump-bed geometry, per-zone occupancy/capacity, and source/bucket/destination material state explicitly. A loading episode reset must not accidentally reset mission-wide bed occupancy. Keep the three-action loading skill distinct from steering-capable travel commands.
 
 ## Dependency boundaries
 

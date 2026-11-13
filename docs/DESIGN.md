@@ -1,7 +1,7 @@
 # Autonomous Wheel Loader — Isaac Lab RL Research Prototype
 ## Agent-Execution Design Document
 
-> Scope update (2026-11-13): this document specifies the initial bucket-loading skill. The proposed repository-wide goal now includes repeated attack/loading, travel, zone-based dumping, and replanning; see [PROJECT_GOALS.md](PROJECT_GOALS.md). See [M0_OBJECTIVES.md](M0_OBJECTIVES.md) for the proposed M0 gates. Implementation progress is tracked in GitHub. Instructions below to defer the full work cycle apply to early loading milestones, not the eventual repository goal.
+> Scope update (2026-11-13): this document specifies the initial bucket-loading skill. The confirmed repository-wide goal now includes repeated attack/loading, travel, zone-based dumping, and replanning; see [PROJECT_GOALS.md](PROJECT_GOALS.md). See [M0_OBJECTIVES.md](M0_OBJECTIVES.md) for the M0 gates. Implementation progress is tracked in GitHub. Instructions below to defer the full work cycle apply to early loading milestones, not the eventual repository goal.
 
 **Purpose:** Give an autonomous coding agent a concrete specification to build, train, test, and report a first wheel-loader bucket-filling RL prototype in NVIDIA Isaac Lab.
 

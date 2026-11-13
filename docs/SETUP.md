@@ -1,0 +1,44 @@
+# M0 development setup
+
+Target runtime: Linux x86_64, Python 3.12, and a compatible CUDA-capable NVIDIA GPU/driver.
+
+## Runtime choice
+
+Use Isaac Lab 3.0.0 with its default Newton-based stack for initial headless probes. The GPU runtime was verified on this host. Isaac Sim/Kit is not installed; this is an Isaac Lab setup, not a verified Isaac Sim setup. This choice follows the [versioned installation guide](https://isaac-sim.github.io/IsaacLab/v3.0.0/source/isaaclab/installation.html), which supports a Newton installation without Isaac Sim. Loader/material suitability still needs experimental verification.
+
+No separate system CUDA toolkit is required for these wheel-based probes. No ROS stack is required. Do not change the host's ROS or Python installation to satisfy project dependencies.
+
+## Recreate the observed environment
+
+From the repository root, using Python 3.12 and a compatible NVIDIA driver:
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install uv==0.13.8
+.venv/bin/uv pip sync --python .venv/bin/python --index-strategy unsafe-best-match requirements/m0-linux-py312-cu130.txt
+.venv/bin/uv pip install --python .venv/bin/python --no-deps -e .
+```
+
+The requirements file is an exact package-version snapshot of the observed Linux environment, not a portable multi-platform lockfile. Fresh recreation from this snapshot has not yet been tested. The project excludes the environment and large outputs from Git.
+
+For a smaller simulator-free development install, install PyTorch using the appropriate official CPU/CUDA index, then install `.[dev]`. Core configuration and pile modules can be imported without PyTorch; action execution requires it. The minimum simulator-independent Python requirement for this project is currently 3.12.
+
+## Checks
+
+```bash
+./scripts/test_core.sh
+.venv/bin/python scripts/audit_runtime.py
+./scripts/runtime_smoke.sh --seed 42 --steps 100 --num-envs 1
+```
+
+The unit-test wrapper disables automatic third-party pytest plugin discovery so the host's unrelated ROS plugins cannot break simulator-independent tests. It does not install or modify ROS dependencies.
+
+The runtime smoke command exercises the upstream cartpole task, not a wheel-loader task. It writes `outputs/m0/runtime_probe.json`, checks finite observations/rewards, and compares seeded reset observations. **Currently the reset comparison fails on the verified runtime; the command intentionally returns nonzero.** See [M0_REPORT.md](M0_REPORT.md). Do not bypass this failed result when evaluating M0 readiness.
+
+Runtime inventory and diagnostic outputs stay local under `outputs/m0/`. These commands do not train a policy or command hardware.
+
+## Configuration and material assumption
+
+`configs/env.toml` defines timing, seed, environment count, physical action bounds, and a procedural coarse-sphere pile layout. Parameters are initial uncalibrated simulation assumptions. `generate_pile` produces geometry only; it does not simulate contacts, acquisition, release, or calibrated soil behavior.
+
+The three loading action columns are longitudinal velocity [m/s], lift rate [rad/s], and curl rate [rad/s]. State and command frames use +X forward, +Y left, +Z up. Steering remains a separate future motion contract.
