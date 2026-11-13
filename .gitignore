@@ -1,0 +1,44 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+
+# Python and tooling
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.idea/
+.vscode/
+.DS_Store
+
+# Experiment outputs and large local assets
+outputs/*
+!outputs/.gitkeep
+logs/
+checkpoints/
+datasets/
+wandb/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.mp4
+*.avi
+*.usd
+*.usda
+*.usdc
+*.usdz
+*.bag
+*.mcap
