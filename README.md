@@ -19,3 +19,5 @@ Run the pile demo:
 
 - Loader probe: `./scripts/demo_pile.sh --config configs/loader_probe.toml --loader-probe --duration-s 30 --output outputs/loader_probe`.
 - [Material checks and limitations](docs/MATERIAL_MODEL.md).
+
+- [Loader kinematics](docs/models/LOADER_KINEMATICS.md) · [Komodo model evaluation](docs/models/KOMODO_EVALUATION.md).

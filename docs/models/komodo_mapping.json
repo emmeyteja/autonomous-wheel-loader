@@ -1,0 +1,1259 @@
+{
+  "upstream": "https://github.com/osheraz/komodo",
+  "revision": "d53759100ced7439dd501620f955f347087e4f63",
+  "links": [
+    {
+      "name": "base_footprint",
+      "inertial": null,
+      "visual": [],
+      "collision": []
+    },
+    {
+      "name": "base_link",
+      "inertial": {
+        "mass_kg": 40.0058,
+        "com_m": [
+          0.0,
+          0.0,
+          0.0749
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.385,
+          "iyy": 1.072,
+          "izz": 1.1919,
+          "ixy": 0.0,
+          "ixz": 0.0,
+          "iyz": 0.0
+        },
+        "principal_moments_kg_m2": [
+          0.385,
+          1.072,
+          1.1919
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": true
+      },
+      "visual": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://komodo2_description/mesh/base.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "collision": [
+        {
+          "kind": "box",
+          "parameters": {
+            "size": "0.531 0.275 0.2"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0749
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "rear_left_wheel_link",
+      "inertial": {
+        "mass_kg": 1.8524,
+        "com_m": [
+          9.8684e-07,
+          -9.3003e-05,
+          -1.8753e-05
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.0069046,
+          "iyy": 0.17,
+          "izz": 0.0069054,
+          "ixy": -3.8717e-08,
+          "ixz": 2.0707e-07,
+          "iyz": -1.0124e-07
+        },
+        "principal_moments_kg_m2": [
+          0.006904549580211435,
+          0.006905450419716532,
+          0.17000000000007207
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": false
+      },
+      "visual": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://komodo2_description/mesh/wheel.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "collision": [
+        {
+          "kind": "cylinder",
+          "parameters": {
+            "length": "0.05",
+            "radius": "0.127"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            1.5707963267948966,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "front_left_wheel_link",
+      "inertial": {
+        "mass_kg": 1.8524,
+        "com_m": [
+          9.8687e-07,
+          -9.3003e-05,
+          -1.8753e-05
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.0069046,
+          "iyy": 0.17,
+          "izz": 0.0069054,
+          "ixy": -3.8717e-08,
+          "ixz": 2.0707e-07,
+          "iyz": -1.0124e-07
+        },
+        "principal_moments_kg_m2": [
+          0.006904549580211435,
+          0.006905450419716532,
+          0.17000000000007207
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": false
+      },
+      "visual": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://komodo2_description/mesh/wheel.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "collision": [
+        {
+          "kind": "cylinder",
+          "parameters": {
+            "length": "0.05",
+            "radius": "0.127"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            1.5707963267948966,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "rear_right_wheel_link",
+      "inertial": {
+        "mass_kg": 1.8524,
+        "com_m": [
+          -9.8675e-07,
+          9.3004e-05,
+          -1.8753e-05
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.0069046,
+          "iyy": 0.17,
+          "izz": 0.0069054,
+          "ixy": -3.8717e-08,
+          "ixz": -2.0707e-07,
+          "iyz": 1.0124e-07
+        },
+        "principal_moments_kg_m2": [
+          0.006904549580211435,
+          0.006905450419716532,
+          0.17000000000007207
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": false
+      },
+      "visual": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://komodo2_description/mesh/wheel.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "collision": [
+        {
+          "kind": "cylinder",
+          "parameters": {
+            "length": "0.05",
+            "radius": "0.127"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            1.5707963267948966,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "front_right_wheel_link",
+      "inertial": {
+        "mass_kg": 1.8524,
+        "com_m": [
+          -9.867e-07,
+          9.3004e-05,
+          -1.8753e-05
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.0069046,
+          "iyy": 0.17,
+          "izz": 0.0069054,
+          "ixy": -3.8717e-08,
+          "ixz": -2.0707e-07,
+          "iyz": 1.0124e-07
+        },
+        "principal_moments_kg_m2": [
+          0.006904549580211435,
+          0.006905450419716532,
+          0.17000000000007207
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": false
+      },
+      "visual": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://komodo2_description/mesh/wheel.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "collision": [
+        {
+          "kind": "cylinder",
+          "parameters": {
+            "length": "0.05",
+            "radius": "0.127"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            1.5707963267948966,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "laser_link",
+      "inertial": null,
+      "visual": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://lms1xx/meshes/sick-lms1xx.stl"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "collision": []
+    },
+    {
+      "name": "rgb_cam_link",
+      "inertial": null,
+      "visual": [],
+      "collision": []
+    },
+    {
+      "name": "rear_urf_link",
+      "inertial": null,
+      "visual": [],
+      "collision": []
+    },
+    {
+      "name": "right_urf_link",
+      "inertial": null,
+      "visual": [],
+      "collision": []
+    },
+    {
+      "name": "left_urf_link",
+      "inertial": null,
+      "visual": [],
+      "collision": []
+    },
+    {
+      "name": "camera_link",
+      "inertial": null,
+      "visual": [],
+      "collision": []
+    },
+    {
+      "name": "camera_rgb_frame",
+      "inertial": {
+        "mass_kg": 0.001,
+        "com_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.0001,
+          "iyy": 0.0001,
+          "izz": 0.0001,
+          "ixy": 0.0,
+          "ixz": 0.0,
+          "iyz": 0.0
+        },
+        "principal_moments_kg_m2": [
+          0.0001,
+          0.0001,
+          0.0001
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": true
+      },
+      "visual": [],
+      "collision": []
+    },
+    {
+      "name": "camera_rgb_optical_frame",
+      "inertial": {
+        "mass_kg": 0.001,
+        "com_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.0001,
+          "iyy": 0.0001,
+          "izz": 0.0001,
+          "ixy": 0.0,
+          "ixz": 0.0,
+          "iyz": 0.0
+        },
+        "principal_moments_kg_m2": [
+          0.0001,
+          0.0001,
+          0.0001
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": true
+      },
+      "visual": [],
+      "collision": []
+    },
+    {
+      "name": "camera_depth_frame",
+      "inertial": {
+        "mass_kg": 0.01,
+        "com_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.001,
+          "iyy": 0.001,
+          "izz": 0.001,
+          "ixy": 0.0,
+          "ixz": 0.0,
+          "iyz": 0.0
+        },
+        "principal_moments_kg_m2": [
+          0.001,
+          0.001,
+          0.001
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": true
+      },
+      "visual": [],
+      "collision": []
+    },
+    {
+      "name": "camera_depth_optical_frame",
+      "inertial": {
+        "mass_kg": 0.001,
+        "com_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.0001,
+          "iyy": 0.0001,
+          "izz": 0.0001,
+          "ixy": 0.0,
+          "ixz": 0.0,
+          "iyz": 0.0
+        },
+        "principal_moments_kg_m2": [
+          0.0001,
+          0.0001,
+          0.0001
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": true
+      },
+      "visual": [],
+      "collision": []
+    },
+    {
+      "name": "base_arm",
+      "inertial": {
+        "mass_kg": 1.6502,
+        "com_m": [
+          -8.9512e-17,
+          0.080906,
+          0.065805
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.05,
+          "iyy": 0.05,
+          "izz": 0.05,
+          "ixy": 0.0,
+          "ixz": 0.0,
+          "iyz": 0.0
+        },
+        "principal_moments_kg_m2": [
+          0.05,
+          0.05,
+          0.05
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": true
+      },
+      "visual": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://arm2/meshes/base_arm.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "collision": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://arm2/meshes/base_arm.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "arm",
+      "inertial": {
+        "mass_kg": 1.6541,
+        "com_m": [
+          2.1756e-15,
+          0.38607,
+          -0.022642
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.020029,
+          "iyy": 0.0233,
+          "izz": 0.041275,
+          "ixy": -3.1779e-16,
+          "ixz": 1.6265e-16,
+          "iyz": 0.0034648
+        },
+        "principal_moments_kg_m2": [
+          0.020029,
+          0.022655262705892278,
+          0.041919737294107744
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": true
+      },
+      "visual": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://arm2/meshes/arm.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "collision": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://arm2/meshes/arm.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bucket",
+      "inertial": {
+        "mass_kg": 0.74403,
+        "com_m": [
+          -1.7467e-14,
+          0.081094,
+          -0.0092968
+        ],
+        "rpy_rad": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tensor_kg_m2": {
+          "ixx": 0.00060709,
+          "iyy": 0.0060723,
+          "izz": 0.0066375,
+          "ixy": 1.575e-16,
+          "ixz": 4.731e-16,
+          "iyz": -4.2694e-06
+        },
+        "principal_moments_kg_m2": [
+          0.00060709,
+          0.006072267751704872,
+          0.00663753224829513
+        ],
+        "positive_definite": true,
+        "physical_triangle_inequality": true
+      },
+      "visual": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://arm2/meshes/bucket.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "collision": [
+        {
+          "kind": "mesh",
+          "parameters": {
+            "filename": "package://arm2/meshes/bucket.STL"
+          },
+          "origin_xyz_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_rpy_rad": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ]
+    }
+  ],
+  "joints": [
+    {
+      "name": "base_footprint_joint",
+      "type": "fixed",
+      "parent": "base_footprint",
+      "child": "base_link",
+      "origin_xyz_m": [
+        0.0,
+        0.0,
+        0.1275
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        -3.14159265358
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "rear_left_wheel_joint",
+      "type": "continuous",
+      "parent": "base_link",
+      "child": "rear_left_wheel_link",
+      "origin_xyz_m": [
+        -0.165,
+        0.18955,
+        0.0
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "limits": {
+        "effort": 0.05,
+        "velocity": 32.0
+      },
+      "dynamics": {}
+    },
+    {
+      "name": "front_left_wheel_joint",
+      "type": "continuous",
+      "parent": "base_link",
+      "child": "front_left_wheel_link",
+      "origin_xyz_m": [
+        0.165,
+        0.18955,
+        0.0
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "limits": {
+        "effort": 0.05,
+        "velocity": 32.0
+      },
+      "dynamics": {}
+    },
+    {
+      "name": "rear_right_wheel_joint",
+      "type": "continuous",
+      "parent": "base_link",
+      "child": "rear_right_wheel_link",
+      "origin_xyz_m": [
+        -0.165,
+        -0.18955,
+        0.0
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "limits": {
+        "effort": 0.05,
+        "velocity": 32.0
+      },
+      "dynamics": {}
+    },
+    {
+      "name": "front_right_wheel_joint",
+      "type": "continuous",
+      "parent": "base_link",
+      "child": "front_right_wheel_link",
+      "origin_xyz_m": [
+        0.165,
+        -0.18955,
+        0.0
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "limits": {
+        "effort": 0.05,
+        "velocity": 32.0
+      },
+      "dynamics": {}
+    },
+    {
+      "name": "laser_joint",
+      "type": "fixed",
+      "parent": "base_link",
+      "child": "laser_link",
+      "origin_xyz_m": [
+        0.230497501055752,
+        0.0,
+        0.3
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "rgb_cam_joint",
+      "type": "fixed",
+      "parent": "base_link",
+      "child": "rgb_cam_link",
+      "origin_xyz_m": [
+        0.25425,
+        0.0875,
+        0.1
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "rear_urf_joint",
+      "type": "fixed",
+      "parent": "base_link",
+      "child": "rear_urf_link",
+      "origin_xyz_m": [
+        -0.2745,
+        0.0,
+        0.108
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        3.1416
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "right_urf_joint",
+      "type": "fixed",
+      "parent": "base_link",
+      "child": "right_urf_link",
+      "origin_xyz_m": [
+        -0.029313,
+        -0.13725,
+        0.13851
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        -2.0713e-16,
+        -1.5708
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "left_urf_joint",
+      "type": "fixed",
+      "parent": "base_link",
+      "child": "left_urf_link",
+      "origin_xyz_m": [
+        -0.029313,
+        0.13725,
+        0.13851
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        2.0713e-16,
+        1.5708
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "camera_joint",
+      "type": "fixed",
+      "parent": "base_link",
+      "child": "camera_link",
+      "origin_xyz_m": [
+        0.25525,
+        0.0006082,
+        0.063584
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "camera_rgb_joint",
+      "type": "fixed",
+      "parent": "camera_link",
+      "child": "camera_rgb_frame",
+      "origin_xyz_m": [
+        0.0,
+        0.022,
+        0.0
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "camera_rgb_optical_joint",
+      "type": "fixed",
+      "parent": "camera_rgb_frame",
+      "child": "camera_rgb_optical_frame",
+      "origin_xyz_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "origin_rpy_rad": [
+        -1.5707963267948966,
+        0.0,
+        -1.5707963267948966
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "camera_depth_joint",
+      "type": "fixed",
+      "parent": "camera_link",
+      "child": "camera_depth_frame",
+      "origin_xyz_m": [
+        0.0,
+        0.048,
+        0.0
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "camera_depth_optical_joint",
+      "type": "fixed",
+      "parent": "camera_depth_frame",
+      "child": "camera_depth_optical_frame",
+      "origin_xyz_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "origin_rpy_rad": [
+        -1.5707963267948966,
+        0.0,
+        -1.5707963267948966
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "fix",
+      "type": "fixed",
+      "parent": "base_link",
+      "child": "base_arm",
+      "origin_xyz_m": [
+        -0.3,
+        0.0,
+        0.17
+      ],
+      "origin_rpy_rad": [
+        0.0,
+        0.0,
+        -1.57079632679
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "limits": {},
+      "dynamics": {}
+    },
+    {
+      "name": "arm_joint",
+      "type": "revolute",
+      "parent": "base_arm",
+      "child": "arm",
+      "origin_xyz_m": [
+        0.0,
+        0.068765,
+        0.18244
+      ],
+      "origin_rpy_rad": [
+        -0.0065548,
+        8.1987e-19,
+        1.4009e-16
+      ],
+      "axis": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "limits": {
+        "effort": 100.0,
+        "lower": -0.1,
+        "upper": 0.32,
+        "velocity": 0.2
+      },
+      "dynamics": {
+        "damping": 40.0,
+        "friction": 0.1
+      }
+    },
+    {
+      "name": "bucket_joint",
+      "type": "revolute",
+      "parent": "arm",
+      "child": "bucket",
+      "origin_xyz_m": [
+        0.0,
+        0.63123,
+        -0.22318
+      ],
+      "origin_rpy_rad": [
+        0.0093956,
+        -2.6528e-16,
+        1.0777e-16
+      ],
+      "axis": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "limits": {
+        "effort": 30.0,
+        "lower": -0.5,
+        "upper": 0.9,
+        "velocity": 0.01
+      },
+      "dynamics": {
+        "damping": 2.0,
+        "friction": 0.9
+      }
+    }
+  ],
+  "meshes": {
+    "package://komodo2_description/mesh/base.STL": {
+      "available": true,
+      "source_package": "komodo2_description",
+      "sha256": "1c460a2d9e5b19918a31c0b8bb8adbfbf39794968e15ff1341015da0aa1b795d",
+      "bytes": 1250084,
+      "triangles": 25000,
+      "bounds_min_m": [
+        -0.273296982049942,
+        -0.16349999606609344,
+        -0.035999998450279236
+      ],
+      "bounds_max_m": [
+        0.2956707775592804,
+        0.16349999606609344,
+        0.18296973407268524
+      ],
+      "embedded_provenance": "VCG"
+    },
+    "package://komodo2_description/mesh/wheel.STL": {
+      "available": true,
+      "source_package": "komodo2_description",
+      "sha256": "7a62dc9a064e98ba81e41749d2f3a2f7ab059af713c39b9019cdf73a12e6c78d",
+      "bytes": 339084,
+      "triangles": 6780,
+      "bounds_min_m": [
+        -0.1272081434726715,
+        -0.04263085871934891,
+        -0.1272081881761551
+      ],
+      "bounds_max_m": [
+        0.12710845470428467,
+        0.041533611714839935,
+        0.1269323080778122
+      ],
+      "embedded_provenance": "VCG"
+    },
+    "package://lms1xx/meshes/sick-lms1xx.stl": {
+      "available": false,
+      "source_package": "lms1xx"
+    },
+    "package://arm2/meshes/base_arm.STL": {
+      "available": false,
+      "source_package": "arm2"
+    },
+    "package://arm2/meshes/arm.STL": {
+      "available": false,
+      "source_package": "arm2"
+    },
+    "package://arm2/meshes/bucket.STL": {
+      "available": false,
+      "source_package": "arm2"
+    }
+  },
+  "missing_meshes": [
+    "package://lms1xx/meshes/sick-lms1xx.stl",
+    "package://arm2/meshes/base_arm.STL",
+    "package://arm2/meshes/arm.STL",
+    "package://arm2/meshes/bucket.STL"
+  ],
+  "invalid_inertia_links": [
+    "rear_left_wheel_link",
+    "front_left_wheel_link",
+    "rear_right_wheel_link",
+    "front_right_wheel_link"
+  ],
+  "faithful_conversion_ready": false,
+  "steering": {
+    "mechanism": "skid_steer",
+    "steering_joint": null,
+    "chassis_articulation_joint": null
+  },
+  "license": {
+    "repository": "MIT",
+    "description_package": "TODO",
+    "mesh_origin": "not independently established; STL header says VCG",
+    "redistribution": "do not publish converted mesh assets pending provenance review"
+  }
+}

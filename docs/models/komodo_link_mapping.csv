@@ -1,0 +1,20 @@
+source_link,diagnostic_runtime_body,difference
+base_footprint,base_footprint,fixed-link merge preserves transforms and combined inertia
+base_link,base_footprint,fixed-link merge preserves transforms and combined inertia
+rear_left_wheel_link,rear_left_wheel_link,moving body preserved
+front_left_wheel_link,front_left_wheel_link,moving body preserved
+rear_right_wheel_link,rear_right_wheel_link,moving body preserved
+front_right_wheel_link,front_right_wheel_link,moving body preserved
+laser_link,,sensor frame removed in diagnostic variant
+rgb_cam_link,,sensor frame removed in diagnostic variant
+rear_urf_link,,sensor frame removed in diagnostic variant
+right_urf_link,,sensor frame removed in diagnostic variant
+left_urf_link,,sensor frame removed in diagnostic variant
+camera_link,,sensor frame removed in diagnostic variant
+camera_rgb_frame,,sensor frame removed in diagnostic variant
+camera_rgb_optical_frame,,sensor frame removed in diagnostic variant
+camera_depth_frame,,sensor frame removed in diagnostic variant
+camera_depth_optical_frame,,sensor frame removed in diagnostic variant
+base_arm,base_footprint,fixed-link merge preserves transforms and combined inertia; missing mesh replaced by explicit primitive proxy
+arm,arm,moving body preserved; missing mesh replaced by explicit primitive proxy
+bucket,bucket,moving body preserved; missing mesh replaced by explicit primitive proxy
