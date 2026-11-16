@@ -74,3 +74,14 @@ def test_huge_site_rejected_before_allocating_the_full_particle_grid():
     import pytest
     with pytest.raises(ValueError, match='candidate-cell budget'):
         generate_pile(replace(PileConfig(), half_length_m=100, half_width_m=100, height_m=100), 42)
+
+
+def test_released_column_geometry_and_seed():
+    from wheel_loader_rl.config import load_config
+    cfg = load_config('configs/sand_column.toml')
+    centers = generate_pile(cfg.pile, cfg.seed)
+    assert len(centers) > 500
+    xy = centers[:, :2] - np.array([cfg.pile.center_x_m, 0])
+    assert np.linalg.norm(xy, axis=1).max() <= cfg.pile.half_length_m - cfg.pile.radius_m
+    assert centers[:, 2].max() + cfg.pile.radius_m <= cfg.pile.height_m
+    assert np.array_equal(centers, generate_pile(cfg.pile, cfg.seed))

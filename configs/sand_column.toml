@@ -1,0 +1,20 @@
+# Released-column diagnostic. Coarse spheres, not validated dry sand.
+seed = 42
+physics_hz = 200
+policy_hz = 20
+episode_length_s = 20.0
+[pile]
+shape = "column"
+radius_m = 0.03
+spacing_m = 0.061
+half_length_m = 0.3
+half_width_m = 0.3
+height_m = 0.65
+center_x_m = 0.0
+jitter_m = 0.0002
+# Solid-particle density; bulk density depends on packing.
+particle_density_kgpm3 = 2600.0
+contact_dimensions = 6
+static_friction = 0.65
+dynamic_friction = 0.5
+rolling_friction = 0.005

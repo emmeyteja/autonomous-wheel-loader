@@ -11,7 +11,7 @@ def generate_pile(cfg: PileConfig, seed: int) -> np.ndarray:
     """Return sphere centers (particles, 3), float32, meters in scene frame.
 
     +X is the loading direction, +Y left, +Z up. Mound and flat-topped
-    trapezoidal stockpiles are supported. This defines initial geometry only;
+    trapezoidal stockpiles and released elliptical columns are supported. This defines initial geometry only;
     physics is free to rearrange it. Spheres start above ground and without overlaps.
     Uses a local RNG; it does not mutate training or global NumPy RNG state.
     Material density describes sphere solids, not calibrated bulk-soil density.
@@ -28,6 +28,11 @@ def generate_pile(cfg: PileConfig, seed: int) -> np.ndarray:
     if cfg.shape == 'mound':
         surface = cfg.height_m * (1 - (grid[:, 0] / cfg.half_length_m)**2 - (grid[:, 1] / cfg.half_width_m)**2)
         inside = grid[:, 2] + cfg.radius_m + cfg.jitter_m <= surface
+    elif cfg.shape == 'column':
+        # Erode the column footprint to keep whole spheres inside the cylinder.
+        footprint = ((grid[:, 0] / (cfg.half_length_m - cfg.radius_m - cfg.jitter_m))**2
+                     + (grid[:, 1] / (cfg.half_width_m - cfg.radius_m - cfg.jitter_m))**2)
+        inside = (footprint <= 1) & (grid[:, 2] + cfg.radius_m + cfg.jitter_m <= cfg.height_m)
     else:
         tangent = math.tan(math.radians(cfg.slope_deg))
         # Erode each inclined face by a whole sphere radius plus the worst

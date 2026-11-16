@@ -48,12 +48,14 @@ class PileConfig:
     def __post_init__(self):
         for name in ('radius_m', 'spacing_m', 'half_length_m', 'half_width_m', 'height_m', 'particle_density_kgpm3'):
             _positive(name, getattr(self, name))
-        if self.shape not in ('mound', 'trapezoid'):
-            raise ValueError('shape must be mound or trapezoid')
+        if self.shape not in ('mound', 'trapezoid', 'column'):
+            raise ValueError('shape must be mound, trapezoid or column')
         if not math.isfinite(self.slope_deg) or not 0 < self.slope_deg < 90:
             raise ValueError('slope_deg must be finite and between 0 and 90 degrees')
         if type(self.max_particles) is not int or not 1 <= self.max_particles <= 16384:
             raise ValueError('max_particles must be an integer in [1, 16384]')
+        if self.shape == 'column' and min(self.half_length_m, self.half_width_m) <= self.radius_m + self.jitter_m:
+            raise ValueError('column footprint must accommodate radius and jitter')
         if self.shape == 'trapezoid':
             run = self.height_m / math.tan(math.radians(self.slope_deg))
             if run >= min(self.half_length_m, self.half_width_m):

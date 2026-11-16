@@ -1,6 +1,6 @@
 """A coarse rigid-sphere pile settling under Isaac Lab/Newton physics.
 
-This is a material-motion demo, not calibrated soil or a bucket-transfer test.
+Supports a free-pile demo and optional scripted loader probe; neither is calibrated soil.
 """
 from pathlib import Path
 from importlib import metadata
@@ -13,11 +13,12 @@ import numpy as np
 
 from wheel_loader_rl.config import EnvironmentConfig
 from wheel_loader_rl.pile import generate_pile, pile_geometry
+from wheel_loader_rl.material_metrics import settling_metrics
 
 
 def simulate_pile(
     cfg: EnvironmentConfig, output: Path, duration_s: float = 5.0,
-    drop_height_m: float = 0.0, fps: int = 25, interactive: bool = False,
+    drop_height_m: float = 0.0, fps: int = 25, interactive: bool = False, loader_probe: bool = False,
 ) -> Path:
     """Run one scene and save recorded particle centers plus a technical summary."""
     if not math.isfinite(duration_s) or duration_s <= 0:
@@ -28,6 +29,9 @@ def simulate_pile(
         raise ValueError('fps must divide physics_hz exactly')
     if cfg.num_envs != 1:
         raise ValueError('pile demo supports one scene; this is not a batch benchmark')
+    if loader_probe:
+        from wheel_loader_rl.controllers.scripted_loading import validate_loading_limits
+        validate_loading_limits(cfg.action_limits)
     import torch
     import isaaclab.sim as sim_utils
     from isaaclab.app import launch_simulation
@@ -61,6 +65,10 @@ def simulate_pile(
         ground = AssetBaseCfg(prim_path='/World/Ground', spawn=sim_utils.GroundPlaneCfg())
         grains = RigidObjectCollectionCfg(rigid_objects=objects)
 
+    if loader_probe:
+        from wheel_loader_rl.simulation.loader_probe import loader_config
+        PileSceneCfg.loader = loader_config(output)
+
     visualizers = []
     if interactive:
         from isaaclab_visualizers.newton import NewtonGLVisualizerCfg
@@ -69,7 +77,7 @@ def simulate_pile(
         dt=1 / cfg.physics_hz, device='cuda:0', visualizer_cfgs=visualizers,
         physics=NewtonCfg(solver_cfg=MJWarpSolverCfg(
             njmax=max(4096, 40 * len(centers)), nconmax=max(1024, 8 * len(centers)),
-            solver='cg', cone='pyramidal', integrator='implicitfast',
+            iterations=200 if loader_probe else 100, solver='cg', cone='pyramidal', integrator='implicitfast',
             save_to_mjcf=str(output / 'effective_model.xml'),
         )),
     )
@@ -77,6 +85,7 @@ def simulate_pile(
     steps = math.ceil(duration_s * cfg.physics_hz)
     stride = cfg.physics_hz // fps
     frames, timestamps = [], []
+    loader_poses, loader_joints = [], []
     with launch_simulation(sim_cfg):
         sim = sim_utils.SimulationContext(sim_cfg)
         try:
@@ -91,6 +100,11 @@ def simulate_pile(
                                      -2 * cfg.pile.half_width_m, 2.5 * cfg.pile.height_m),
                                 target=(cfg.pile.center_x_m, 0.0, cfg.pile.height_m / 2))
             grains = scene['grains']
+            if loader_probe:
+                from wheel_loader_rl.controllers.scripted_loading import loading_targets
+                loader = scene['loader']
+                joint_indices = [loader.joint_names.index(name) for name in ('travel', 'lift', 'curl')]
+                print('Loader joints:', loader.joint_names, 'bodies:', loader.body_names)
             torch.cuda.synchronize()
             started = time.perf_counter()
             for step in range(steps + 1):
@@ -100,8 +114,22 @@ def simulate_pile(
                 if step % stride == 0:
                     frames.append(grains.data.object_pos_w.torch[0].detach().cpu().numpy().copy())
                     timestamps.append(step / cfg.physics_hz)
+                    if loader_probe:
+                        # Isaac Lab 3 proxy uses xyzw; recorded domain poses use wxyz.
+                        pose = loader.data.body_link_pose_w.torch[0].detach().cpu().numpy().copy()
+                        pose[:, 3:] = pose[:, [6, 3, 4, 5]]
+                        loader_poses.append(pose)
+                        loader_joints.append(loader.data.joint_pos.torch[0].detach().cpu().numpy().copy())
                 if step == steps or not sim.is_running():
                     break
+                if loader_probe:
+                    target = torch.tensor(loading_targets((step + 1) / cfg.physics_hz), device=sim.device, dtype=torch.float32)[None]
+                    loader.actuators.target_command.set_position_index(value=target, joint_ids=joint_indices)
+                    loader.write_data_to_sim()
+                    if not (torch.isfinite(loader.data.joint_pos.torch).all()
+                            and torch.isfinite(loader.data.joint_vel.torch).all()
+                            and torch.isfinite(loader.data.body_link_pose_w.torch).all()):
+                        raise RuntimeError('Nonfinite loader joint state')
                 sim.step(render=False)
                 scene.update(sim_cfg.dt)
                 if interactive:
@@ -122,11 +150,16 @@ def simulate_pile(
     final_radial = np.linalg.norm(positions[-1, :, :2] - reference_xy, axis=1)
     speed_estimate = (positions[-1] - positions[-2]) * fps if len(positions) > 1 else np.zeros_like(positions[-1])
     trace = output / 'pile_motion.npz'
-    np.savez_compressed(trace, positions_m=positions, time_s=np.asarray(timestamps), radius_m=cfg.pile.radius_m)
+    extra = {}
+    if loader_probe:
+        extra = {'loader_body_poses': np.asarray(loader_poses), 'loader_joint_positions': np.asarray(loader_joints),
+                 'loader_body_names': np.asarray(loader.body_names), 'loader_joint_names': np.asarray(loader.joint_names)}
+    np.savez_compressed(trace, positions_m=positions, time_s=np.asarray(timestamps), radius_m=cfg.pile.radius_m, **extra)
     summary = {
-        'demo': 'coarse rigid-sphere settling; no loader or bucket-transfer test',
+        'demo': 'scripted articulated loader/material feasibility probe' if loader_probe else 'coarse rigid-sphere settling; no loader or bucket-transfer test',
         'seed': cfg.seed, 'particle_count': len(centers), 'physics_steps': step,
         'initial_geometry': pile_geometry(cfg.pile),
+        'settling': settling_metrics(positions, timestamps, cfg.pile.radius_m) if len(positions) > 1 else None,
         'sphere_diameter_m': 2 * cfg.pile.radius_m,
         'initial_total_particle_mass_kg': len(centers) * cfg.pile.sphere_mass_kg,
         'final_total_particle_mass_kg': len(centers) * cfg.pile.sphere_mass_kg,
@@ -148,6 +181,17 @@ def simulate_pile(
         'assumptions': {'static_friction': cfg.pile.static_friction, 'dynamic_friction': cfg.pile.dynamic_friction, 'rolling_friction': cfg.pile.rolling_friction,
                         'sphere_radius_m': cfg.pile.radius_m, 'sphere_mass_kg': cfg.pile.sphere_mass_kg},
     }
+    if loader_probe:
+        from wheel_loader_rl.material_accounting import transfer_metrics
+        summary['material_transfer'] = transfer_metrics(positions, timestamps, np.asarray(loader_poses)[:, loader.body_names.index('bucket')],
+                                                        cfg.pile.radius_m, cfg.pile.sphere_mass_kg)
+        summary['mass_note'] = 'See material_transfer for identity-based acquisition, retention, release and final partition.'
+        summary['settling'] = None  # Moving bucket invalidates the free-pile settling diagnostic.
+        summary['loader'] = {'approximation': 'rail chassis, fixed wheels, lift/curl joints; no traction or steering',
+                             'joint_names': loader.joint_names, 'body_names': loader.body_names,
+                             'recorded_pose_quaternion_order': 'wxyz',
+                             'configured_target_rate_limits': {'travel_mps': cfg.action_limits.longitudinal_mps, 'lift_radps': cfg.action_limits.lift_radps, 'curl_radps': cfg.action_limits.curl_radps},
+                             'solver_iteration_limit': 200}
     (output / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
     print(json.dumps(summary, indent=2))
     return trace
