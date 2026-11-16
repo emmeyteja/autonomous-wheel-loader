@@ -1,45 +1,47 @@
-# Loader kinematics
+# WA320-like kinematics
 
-## Current `loader_approximation.xml`
+Original primitive geometry; no Komodo geometry and no manufacturer CAD. The architecture follows Aoshima's WA320-7 description. All unmeasured pivots and limits are explicitly estimated in `configs/vehicle/wa320.yaml`.
 
-- This is a rail-mounted, open serial chain with one prismatic and two revolute joints. It is **not** an articulated steering chassis, a Z-bar linkage, or a hydraulic loader model. Its wheels are fixed shapes.
-- World frame: +X forward, +Y left, +Z up; metres and radians. Joint coordinates are travel `s`, lift `l`, curl `c`. Positive lift/curl rotate about **-Y**, raising a point ahead of the hinge.
-- Chassis origin: `(-3+s, 0, 0.7)`; boom pivot: `(-2.5+s, 0, 1.0)`; pivot-to-bucket offset at zero lift: `a=(2,0,-0.96)`.
-- For a point `u=(ux,uy,uz)` fixed in the bucket, with column-vector rotations:
+## Chassis and wheels
 
-```text
-p_world = (-2.5+s, 0, 1) + Ry(-l) a + Ry(-(l+c)) u
-R_world_bucket = Ry(-(l+c))
+- Rear frame → central revolute joint about +Z → front frame. Positive articulation yaws the front left relative to the rear.
+- Rear and front axle centres sit at −wheelbase/2 and +wheelbase/2 along their respective frames. Four wheels rotate about local +Y; positive rotation drives forward.
+- No axle oscillation, tire compliance, differential/driveline dynamics or power sharing yet.
+- Boom and linkage elevation rotations use local −Y: positive planar X/Z angle raises a forward-pointing member.
 
-x = -2.5+s + 2 cos(l) + .96 sin(l) + ux cos(l+c) - uz sin(l+c)
-y = uy
-z = 1 + 2 sin(l) - .96 cos(l) + ux sin(l+c) + uz cos(l+c)
-```
-
-- The bucket origin uses `u=(0,0,0)`; the front floor lip uses `u=(1.4,0,0.02)`. Curl changes bucket orientation about its back hinge; it does not move that hinge. Bucket pitch measured as nose-up angle is `l+c`.
-- Joint ranges: `s∈[-1,4] m`, `l∈[0,.8] rad`, `c∈[-1.3,.9] rad`. Script target-rate limits: 1 m/s, .4 rad/s, .6 rad/s. These are assumptions, not machine specifications.
-- The boom starts with a geometric slope `atan2(-.96,2)≈-25.64°`; lift is an increment from that pose. Scripted joint targets feed position PD drives directly. There is no inverse-kinematics solver, linkage solver or end-effector trajectory controller.
-- These equations describe the reference frames, not cylinder strokes, forces, traction, linkage mechanical advantage, or physical accuracy. The existing simulation probe remains a material-contact experiment.
-
-## Komodo source chain
-
-- Source: [pinned `komodo2.xacro`](https://github.com/osheraz/komodo/blob/d53759100ced7439dd501620f955f347087e4f63/komodo2_description/urdf/komodo2.xacro).
-- Komodo has four continuous wheel joints about local +Y, plus `arm_joint` and `bucket_joint` about local -X. It has **no steering hinge, steering knuckles, four-bar linkage, or hydraulic cylinders**.
-- Wheelbase is .33 m and wheel-centre track is .3791 m. URDF collision radius is .127 m. Skid-steering turns the base by differential wheel-ground forces, not by changing a chassis angle.
-- `base_footprint → base_link` includes a -π yaw. The mount lies at -X of base_link, but the arm extends toward **+X of base_link**: the bucket hinge is at approximately x=+.3985 m at zero joint angles. The -π base yaw puts this hinge toward **-X of base_footprint**. This frame/sign mismatch needs an explicit validated adapter convention. Do not equate the local joint axes with world axes.
-- For homogeneous transforms `T(x,y,z)`, fixed-axis URDF `R(r,p,y)=Rz(y) Ry(p) Rx(r)`, and `Raxis(a,q)`:
+For equal hinge-to-axle distances `L = wheelbase/2`, rear speed `v`, articulation `a` and articulation rate `a_dot`, the no-slip reference is:
 
 ```text
-H_footprint_bucket =
-  T(0,0,.1275) Rz(-3.14159265358)
-  T(-.3,0,.17) Rz(-1.57079632679)
-  T(0,.068765,.18244) R(-.0065548, 8.1987e-19, 1.4009e-16)
-  Raxis((-1,0,0), q_arm)
-  T(0,.63123,-.22318) R(.0093956,-2.6528e-16,1.0777e-16)
-  Raxis((-1,0,0), q_bucket)
+rear yaw rate  w_r = (v sin(a) − L a_dot) / (L cos(a) + L)
+front yaw rate w_f = w_r + a_dot
+front speed   v_f = v cos(a) + L w_r sin(a)
+wheel rates       = (axle speed ∓ track_width/2 × axle yaw rate) / wheel_radius
 ```
 
-- Direction check from the source FK: increasing arm angle from 0 to .2 rad lowers the bucket hinge from z≈.2526 m to z≈.1320 m in `base_footprint`. A raising command therefore needs decreasing arm angle near zero. This differs from the old approximation’s positive-up lift convention. For the diagnostic proxy’s +Y-facing opening, increasing bucket angle tips the lip downward; original cutting-edge semantics remain unverified without its mesh.
-- Arm range [-.1,.32] rad; bucket range [-.5,.9] rad. Bucket orientation depends on both coordinates. Its hinge position depends on the arm coordinate alone.
-- A cutting-edge pose cannot be recovered accurately without the missing bucket mesh or a dimensioned drawing. The diagnostic primitive bucket supplies a separate, explicitly assumed shape.
-- [Complete joint/link mapping](komodo_mapping.json) records each origin, axis, limit, mass, inertia and geometry. [Model evaluation](KOMODO_EVALUATION.md) records conversion differences and limitations.
+The minus sign applies to the left wheel. This is a reference controller; contact slip may violate these kinematic assumptions.
+
+## Closed Z-bar geometry
+
+In the boom's planar X/Z frame:
+
+```text
+B = boom pivot; P = B + [boom_length, 0]             (bucket pin)
+C = B + [boom_length × pivot_fraction, 0]           (bellcrank pivot)
+E = C + R(phi) [upper_length, 0]                    (tilt-cylinder pin)
+D = C − R(phi) [lower_length, 0]                    (rod pin)
+F = P + R(beta) bucket_anchor                      (bucket attachment)
+|F − D| = rod_length                               (loop closure)
+```
+
+`phi` is the driven bellcrank angle relative to the boom; `beta` is the passive bucket angle relative to the boom. Solve `F` from the intersection of the circle about `P` with radius `|bucket_anchor|` and the circle about `D` with radius `rod_length`. Keep one assembly branch; reject disjoint/tangent circles rather than switching branches or silently stretching a bar. Rod orientation is `atan2(F_z−D_z, F_x−D_x)`.
+
+The front-frame pose adds boom elevation and pivot translation. Central yaw then maps the entire front assembly into the rear frame. Nominal offsets are baked into URDF joint origins; joint positions are displacements from those offsets.
+
+- URDF contains the spanning tree. `closure.json` specifies the missing rod-to-bucket revolute joint.
+- Isaac conversion adds that passive USD loop joint and marks it excluded from the reduced-coordinate articulation, following [NVIDIA's closed-loop workflow](https://docs.omniverse.nvidia.com/kit/docs/omni_physics/latest/dev_guide/rigid_bodies_articulations/articulations.html#closed-loops).
+- Rod and bucket have no drives. Physics must enforce the loop; independent servo targets or visual pose updates do not count.
+- The tilt-cylinder length is computed from the fixed front-frame anchor to `E`. It is geometry metadata only. Current boom/bellcrank rotary drives do not model the paper's two lift cylinders and one tilt cylinder.
+- This is an estimated Z-bar topology, not a verified reproduction of Komatsu's proprietary parallel/PZ linkage or hydraulic ratios.
+- A rectangular joint envelope is not a collision-free workspace. Ground/bucket clearance and self-collision need simulator checks over actual operating paths.
+
+The former rail-constrained model and its kinematics are archived in `extras/legacy_loading`.

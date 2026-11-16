@@ -1,0 +1,7 @@
+# SOURCE: estimated diagnostic geometry; not a measured stockpile.
+backend: rigid_pile
+length: 4.0  # m
+width: 5.0  # m
+height: 1.5  # m
+crest_length: 1.5  # m
+# This obstacle cannot yield, flow, fill a bucket, or measure scooping performance.

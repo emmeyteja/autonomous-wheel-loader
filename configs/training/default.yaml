@@ -1,0 +1,3 @@
+vehicle_model: wa320
+mode: foundation  # Geometric validation only. PPO is gated until scripted loading works.
+terrain: rigid_pile

@@ -1,12 +1,12 @@
 # Modular architecture and Autoware interoperability
 
-Status: accepted development requirements; the modules and adapters below are planned, not implemented.
+Canonical vehicle and milestone direction: [active WA320 architecture](architecture/ACTIVE_SYSTEM.md). This document retains the domain, scaling and optional adapter contracts; implemented capabilities are reported separately.
 
 ## Goals
 
 Reuse Autoware interfaces where their semantics fit. Keep the software modular so vehicle models, simulators, loading controllers, learning algorithms, and future planners can evolve independently. Scale training through batched simulation and scale integrations through explicit boundaries.
 
-This supplements [DESIGN.md](DESIGN.md). The first milestone remains simulation infrastructure; it does not require running a full Autoware stack or implementing a ROS bridge.
+This supplements [DESIGN.md](DESIGN.md). The first integrated milestone is the articulated WA320 rigid-terrain foundation; it does not require running a full Autoware stack or implementing a ROS bridge.
 
 ## Full-cycle extension
 
@@ -75,7 +75,7 @@ Future world models and attack-pose planners consume recorded state/action/pile 
 - Batch tests verify reset isolation and profile throughput/memory at increasing environment counts.
 - Import/dependency checks prevent ROS and simulator dependencies leaking into pure modules.
 
-No runtime tests for these planned components have passed yet. Add the checks with each implementation rather than claiming architectural requirements as working features.
+Simulator checks apply to their specific asset/backend only. Archived Komodo and rail-loader results do not validate the active WA320 model.
 
 ## Upstream references
 

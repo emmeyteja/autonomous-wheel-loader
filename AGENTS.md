@@ -1,6 +1,6 @@
 # Development guidance
 
-Read `docs/ARCHITECTURE.md` before changing module boundaries or introducing dependencies. Follow `docs/PROJECT_GOALS.md`, `docs/DESIGN.md`, and `docs/M0_OBJECTIVES.md` for scope and acceptance criteria. Report incomplete gates accurately; M0 is complete only when its required simulator and material checks pass.
+Read `docs/ARCHITECTURE.md` before changing boundaries or dependencies. `docs/architecture/ACTIVE_SYSTEM.md` is the canonical direction: original WA320-like articulated loader, rigid terrain before granular, scripted scoop before PPO, stable PPO before world models. `extras/komodo` and `extras/legacy_loading` are optional references; active code must not import them. Treat estimates as estimates. Report incomplete physics gates accurately; conversion or algebraic closure is not physical validation.
 
 Track work and defects in GitHub issues assigned to the appropriate milestone. Keep durable design and reproduction instructions in documentation. Publish only project-relevant, sanitized technical information.
 

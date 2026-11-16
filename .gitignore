@@ -45,3 +45,6 @@ wandb/
 
 # Private local notes and diagnostics
 .local/
+
+# Original portable WA320 assets, reviewed for external references and private paths
+!assets/wheel_loader/wa320/usd/*.usda

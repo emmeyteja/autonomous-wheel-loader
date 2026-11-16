@@ -43,15 +43,7 @@ Modules exchange typed domain contracts. Keep their logic separate from simulato
 
 ## Delivery sequence
 
-- **M0 — Foundation:** verified simulator setup, loader articulation, material-interaction feasibility, task registration, smoke tests, and extensible scene/contracts. See [M0 objectives](M0_OBJECTIVES.md).
-- **M1 — Basic loading RL:** state observations, bounded actions, decomposed rewards, PPO/checkpoints, and independent evaluation against random actions.
-- **M2 — Useful loading:** credible material interaction, scripted loading baseline, and measured productivity/force/slip comparisons.
-- **M3 — Loading generalization:** domain randomization and held-out scenarios.
-- **M4/M5 — Research extensions:** world modeling and learned attack-pose evaluation as described in the original design. These do not block baseline cycle integration.
-- **M6 — Travel and zone dumping:** articulated motion, configurable bed/zones, dump-pose feasibility, scripted dumping, material accounting, and scenario evaluation.
-- **M7 — Repeated autonomous cycle:** supervisor integrates attack, loading, travel, dumping, state updates, replanning, recovery, and mission completion. Establish a scripted baseline before replacing individual skills with learned policies.
-
-After M2, travel/dumping baseline development can proceed independently of M3–M5 through stable contracts. Do not require one end-to-end RL policy to learn the entire mission.
+The [canonical WA320 gates](architecture/ACTIVE_SYSTEM.md#canonical-gates) supersede the original milestone numbering: kinematics → dynamics → rigid terrain → granular terrain → scripted scoop → PPO → world model. Travel, configurable zone dumping and repeated cycles remain downstream mission capabilities. A world model is optional for an initial scripted full cycle.
 
 ## Full-cycle acceptance criteria
 
@@ -66,4 +58,4 @@ Freeze numeric thresholds and scenario configurations before evaluating. Thresho
 
 ## Relationship to the original design
 
-[DESIGN.md](DESIGN.md) remains the detailed bucket-loading research specification. Its instruction to defer the full work cycle applies to the early loading milestones, not the repository's eventual goal. This proposal extends the original roadmap with travel, flexible zone dumping, and repeated mission execution. This document governs the overall scope, and the architecture requirements apply to every milestone.
+The earlier loading-first design is archived under `extras/legacy_loading`. The active architecture governs vehicle choice and milestone ordering; this document governs the end-to-end mission and dumping scope.

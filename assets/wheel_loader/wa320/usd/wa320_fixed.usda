@@ -1,0 +1,1339 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "URDF USD Converter v0.3.2"
+    }
+    defaultPrim = "wa320"
+    doc = "Original WA320-like parametric asset; estimated geometry and dynamics."
+    endTimeCode = 1000000
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    startTimeCode = 0
+    upAxis = "Z"
+)
+
+over "Flattened_Prototype_13"
+{
+    def Shader "PreviewSurface" (
+        apiSchemas = ["NodeDefAPI"]
+    )
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_13.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_13.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_13.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_13.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_14"
+{
+    def Shader "PreviewSurface" (
+        apiSchemas = ["NodeDefAPI"]
+    )
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_14.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_14.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_14.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_14.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_15"
+{
+    def Shader "PreviewSurface" (
+        apiSchemas = ["NodeDefAPI"]
+    )
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_15.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_15.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_15.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_15.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_16"
+{
+    def Shader "PreviewSurface" (
+        apiSchemas = ["NodeDefAPI"]
+    )
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_16.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_16.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_16.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_16.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+def Xform "wa320" (
+    apiSchemas = ["GeomModelAPI", "IsaacRobotAPI"]
+    assetInfo = {
+        string name = "wa320"
+    }
+    kind = "component"
+)
+{
+    float3[] extentsHint = [(-2.95, -1.3425, -1.1), (4.4906874, 1.3425, 2.1), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (-2.95, -1.3425, -1.1), (4.4906874, 1.3425, 2.1)]
+    custom rel isaac:physics:robotJoints
+    custom rel isaac:physics:robotLinks
+    custom token isaac:robotType = "Default"
+
+    def Scope "Physics"
+    {
+        def PhysicsRevoluteJoint "articulation_joint" (
+            apiSchemas = ["PhysxJointAPI", "NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular", "IsaacJointAPI"]
+        )
+        {
+            float drive:angular:physics:damping = 1745.3292
+            float drive:angular:physics:maxForce = 120000
+            float drive:angular:physics:stiffness = 17453.293
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 11.459156
+            uniform token physics:axis = "Z"
+            rel physics:body0 = </wa320/Geometry/rear_frame>
+            rel physics:body1 = </wa320/Geometry/rear_frame/front_frame>
+            point3f physics:localPos0 = (0, 0, 0)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -38.5
+            float physics:upperLimit = 38.5
+            float physxJoint:maxJointVelocity = 11.459156
+            custom float urdf:limit:effort = 120000
+        }
+
+        def PhysicsRevoluteJoint "rear_left_wheel_joint" (
+            apiSchemas = ["PhysxJointAPI", "NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular", "IsaacJointAPI"]
+        )
+        {
+            float drive:angular:physics:damping = 34.906586
+            float drive:angular:physics:maxForce = 12000
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 229.18312
+            uniform token physics:axis = "Y"
+            rel physics:body0 = </wa320/Geometry/rear_frame>
+            rel physics:body1 = </wa320/Geometry/rear_frame/rear_left_wheel>
+            point3f physics:localPos0 = (-1.515, 1.025, -0.405)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physxJoint:maxJointVelocity = 229.18312
+            custom float urdf:limit:effort = 12000
+        }
+
+        def PhysicsRevoluteJoint "rear_right_wheel_joint" (
+            apiSchemas = ["PhysxJointAPI", "NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular", "IsaacJointAPI"]
+        )
+        {
+            float drive:angular:physics:damping = 34.906586
+            float drive:angular:physics:maxForce = 12000
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 229.18312
+            uniform token physics:axis = "Y"
+            rel physics:body0 = </wa320/Geometry/rear_frame>
+            rel physics:body1 = </wa320/Geometry/rear_frame/rear_right_wheel>
+            point3f physics:localPos0 = (-1.515, -1.025, -0.405)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physxJoint:maxJointVelocity = 229.18312
+            custom float urdf:limit:effort = 12000
+        }
+
+        def PhysicsFixedJoint "root_joint" (
+            apiSchemas = ["IsaacJointAPI"]
+        )
+        {
+            rel physics:body0 = </wa320>
+            rel physics:body1 = </wa320/Geometry/rear_frame>
+            point3f physics:localPos0 = (0, 0, 0)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+
+        def PhysicsRevoluteJoint "front_left_wheel_joint" (
+            apiSchemas = ["PhysxJointAPI", "NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular", "IsaacJointAPI"]
+        )
+        {
+            float drive:angular:physics:damping = 34.906586
+            float drive:angular:physics:maxForce = 12000
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 229.18312
+            uniform token physics:axis = "Y"
+            rel physics:body0 = </wa320/Geometry/rear_frame/front_frame>
+            rel physics:body1 = </wa320/Geometry/rear_frame/front_frame/front_left_wheel>
+            point3f physics:localPos0 = (1.515, 1.025, -0.405)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physxJoint:maxJointVelocity = 229.18312
+            custom float urdf:limit:effort = 12000
+        }
+
+        def PhysicsRevoluteJoint "front_right_wheel_joint" (
+            apiSchemas = ["PhysxJointAPI", "NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular", "IsaacJointAPI"]
+        )
+        {
+            float drive:angular:physics:damping = 34.906586
+            float drive:angular:physics:maxForce = 12000
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 229.18312
+            uniform token physics:axis = "Y"
+            rel physics:body0 = </wa320/Geometry/rear_frame/front_frame>
+            rel physics:body1 = </wa320/Geometry/rear_frame/front_frame/front_right_wheel>
+            point3f physics:localPos0 = (1.515, -1.025, -0.405)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physxJoint:maxJointVelocity = 229.18312
+            custom float urdf:limit:effort = 12000
+        }
+
+        def PhysicsRevoluteJoint "boom_joint" (
+            apiSchemas = ["PhysxJointAPI", "NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular", "IsaacJointAPI"]
+        )
+        {
+            float drive:angular:physics:damping = 1745.3292
+            float drive:angular:physics:maxForce = 180000
+            float drive:angular:physics:stiffness = 17453.293
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 6.8754935
+            uniform token physics:axis = "Y"
+            rel physics:body0 = </wa320/Geometry/rear_frame/front_frame>
+            rel physics:body1 = </wa320/Geometry/rear_frame/front_frame/boom>
+            point3f physics:localPos0 = (0.55, 0, 0.5)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0, -0.9921977, 0, 0.12467454)
+            quatf physics:localRot1 = (0, -1, 0, 0)
+            float physics:lowerLimit = 0
+            float physics:upperLimit = 71.61973
+            float physxJoint:maxJointVelocity = 6.8754935
+            custom float urdf:limit:effort = 180000
+        }
+
+        def PhysicsRevoluteJoint "tilt_joint" (
+            apiSchemas = ["PhysxJointAPI", "NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular", "IsaacJointAPI"]
+        )
+        {
+            float drive:angular:physics:damping = 1745.3292
+            float drive:angular:physics:maxForce = 100000
+            float drive:angular:physics:stiffness = 17453.293
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 8.594367
+            uniform token physics:axis = "Y"
+            rel physics:body0 = </wa320/Geometry/rear_frame/front_frame/boom>
+            rel physics:body1 = </wa320/Geometry/rear_frame/front_frame/boom/bellcrank>
+            point3f physics:localPos0 = (1.485, 0, 0)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0, -0.8525245, 0, -0.52268726)
+            quatf physics:localRot1 = (0, -1, 0, 0)
+            float physics:lowerLimit = -45.836624
+            float physics:upperLimit = 45.836624
+            float physxJoint:maxJointVelocity = 8.594367
+            custom float urdf:limit:effort = 100000
+        }
+
+        def PhysicsRevoluteJoint "bucket_joint" (
+            apiSchemas = ["PhysxJointAPI", "NewtonJointAPI", "PhysicsJointStateAPI:angular", "IsaacJointAPI"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 171.88734
+            uniform token physics:axis = "Y"
+            rel physics:body0 = </wa320/Geometry/rear_frame/front_frame/boom>
+            rel physics:body1 = </wa320/Geometry/rear_frame/front_frame/boom/bucket>
+            point3f physics:localPos0 = (2.7, 0, 0)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0, -0.9999557, 0, 0.0094111925)
+            quatf physics:localRot1 = (0, -1, 0, 0)
+            float physics:lowerLimit = -85.94367
+            float physics:upperLimit = 28.64789
+            float physxJoint:maxJointVelocity = 171.88734
+            custom float urdf:limit:effort = 0
+        }
+
+        def PhysicsRevoluteJoint "rod_joint" (
+            apiSchemas = ["PhysxJointAPI", "NewtonJointAPI", "PhysicsJointStateAPI:angular", "IsaacJointAPI"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 171.88734
+            uniform token physics:axis = "Y"
+            rel physics:body0 = </wa320/Geometry/rear_frame/front_frame/boom/bellcrank>
+            rel physics:body1 = </wa320/Geometry/rear_frame/front_frame/boom/bellcrank/rod>
+            point3f physics:localPos0 = (-0.45, 0, 2.220446e-16)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0, -0.9694231, 0, 0.24539524)
+            quatf physics:localRot1 = (0, -1, 0, 0)
+            float physics:lowerLimit = -180
+            float physics:upperLimit = 180
+            float physxJoint:maxJointVelocity = 171.88734
+            custom float urdf:limit:effort = 0
+        }
+    }
+
+    def Scope "Geometry"
+    {
+        def Xform "rear_frame" (
+            apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsArticulationRootAPI", "NewtonArticulationRootAPI", "PhysicsMassAPI", "NewtonMassAPI", "IsaacLinkAPI"]
+        )
+        {
+            double[] newton:inertia = [1873.9583333333337, 5548.958333333335, 6477.916666666667, 0, 0, 0]
+            bool newton:selfCollisionEnabled = 1
+            point3f physics:centerOfMass = (-1.475, 0, 0.1)
+            float3 physics:diagonalInertia = (1873.9584, 5548.9585, 6477.9165)
+            float physics:mass = 7000
+            quatf physics:principalAxes = (1, 0, 0, 0)
+
+            def Xform "front_frame" (
+                apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI", "IsaacLinkAPI"]
+            )
+            {
+                double[] newton:inertia = [565.8333333333334, 729.1666666666666, 1149.1666666666667, 0, 0, 0]
+                point3f physics:centerOfMass = (1.05, 0, -0.2)
+                float3 physics:diagonalInertia = (565.8333, 729.1667, 1149.1666)
+                float physics:mass = 3500
+                quatf physics:principalAxes = (1, 0, 0, 0)
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                def Xform "front_left_wheel" (
+                    apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI", "IsaacLinkAPI"]
+                )
+                {
+                    double[] newton:inertia = [56.63583333333332, 96.60499999999999, 56.63583333333332, 0, 0, 0]
+                    point3f physics:centerOfMass = (0, 0, 0)
+                    float3 physics:diagonalInertia = (56.635834, 56.635834, 96.605)
+                    float physics:mass = 400
+                    quatf physics:principalAxes = (-0.70710677, 0.70710677, 0, 0)
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
+                    double3 xformOp:translate = (1.515, 1.025, -0.405)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                    def Cylinder "cylinder" (
+                        apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        uniform token axis = "Z"
+                        float3[] extent = [(-0.695, -0.695, -0.25), (0.695, 0.695, 0.25)]
+                        double height = 0.5
+                        rel material:binding = </wa320/Materials/dark>
+                        double radius = 0.695
+                        quatf xformOp:orient = (0.70710677, 0.70710677, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
+                        double3 xformOp:translate = (0, 0, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                    }
+
+                    def Cylinder "cylinder_1" (
+                        apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                        displayName = "cylinder"
+                        uiHints = {
+                            string displayName = "cylinder"
+                        }
+                    )
+                    {
+                        uniform token axis = "Z"
+                        float3[] extent = [(-0.695, -0.695, -0.25), (0.695, 0.695, 0.25)]
+                        double height = 0.5
+                        rel material:binding:physics = </wa320/RigidContact>
+                        bool physics:collisionEnabled = 0
+                        uniform token purpose = "guide"
+                        double radius = 0.695
+                        quatf xformOp:orient = (0.70710677, 0.70710677, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
+                        double3 xformOp:translate = (0, 0, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                    }
+
+                    def Mesh "tire_contact" (
+                        apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI", "PhysxConvexHullCollisionAPI", "MaterialBindingAPI"]
+                    )
+                    {
+                        int[] faceVertexCounts = [64, 64, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+                        int[] faceVertexIndices = [63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 0, 1, 65, 64, 1, 2, 66, 65, 2, 3, 67, 66, 3, 4, 68, 67, 4, 5, 69, 68, 5, 6, 70, 69, 6, 7, 71, 70, 7, 8, 72, 71, 8, 9, 73, 72, 9, 10, 74, 73, 10, 11, 75, 74, 11, 12, 76, 75, 12, 13, 77, 76, 13, 14, 78, 77, 14, 15, 79, 78, 15, 16, 80, 79, 16, 17, 81, 80, 17, 18, 82, 81, 18, 19, 83, 82, 19, 20, 84, 83, 20, 21, 85, 84, 21, 22, 86, 85, 22, 23, 87, 86, 23, 24, 88, 87, 24, 25, 89, 88, 25, 26, 90, 89, 26, 27, 91, 90, 27, 28, 92, 91, 28, 29, 93, 92, 29, 30, 94, 93, 30, 31, 95, 94, 31, 32, 96, 95, 32, 33, 97, 96, 33, 34, 98, 97, 34, 35, 99, 98, 35, 36, 100, 99, 36, 37, 101, 100, 37, 38, 102, 101, 38, 39, 103, 102, 39, 40, 104, 103, 40, 41, 105, 104, 41, 42, 106, 105, 42, 43, 107, 106, 43, 44, 108, 107, 44, 45, 109, 108, 45, 46, 110, 109, 46, 47, 111, 110, 47, 48, 112, 111, 48, 49, 113, 112, 49, 50, 114, 113, 50, 51, 115, 114, 51, 52, 116, 115, 52, 53, 117, 116, 53, 54, 118, 117, 54, 55, 119, 118, 55, 56, 120, 119, 56, 57, 121, 120, 57, 58, 122, 121, 58, 59, 123, 122, 59, 60, 124, 123, 60, 61, 125, 124, 61, 62, 126, 125, 62, 63, 127, 126, 63, 0, 64, 127]
+                        rel material:binding:physics = </wa320/RigidContact>
+                        uniform token physics:approximation = "convexHull"
+                        custom int physxConvexHullCollision:hullVertexLimit = 128
+                        point3f[] points = [(0.695, -0.25, 0), (0.6916534, -0.25, 0.06812191), (0.68164575, -0.25, 0.13558777), (0.6650735, -0.25, 0.20174785), (0.6420963, -0.25, 0.26596498), (0.6129353, -0.25, 0.32762074), (0.5778714, -0.25, 0.3861213), (0.5372423, -0.25, 0.44090334), (0.49143922, -0.25, 0.49143922), (0.44090334, -0.25, 0.5372423), (0.3861213, -0.25, 0.5778714), (0.32762074, -0.25, 0.6129353), (0.26596498, -0.25, 0.6420963), (0.20174785, -0.25, 0.6650735), (0.13558777, -0.25, 0.68164575), (0.06812191, -0.25, 0.6916534), (4.2556477e-17, -0.25, 0.695), (-0.06812191, -0.25, 0.6916534), (-0.13558777, -0.25, 0.68164575), (-0.20174785, -0.25, 0.6650735), (-0.26596498, -0.25, 0.6420963), (-0.32762074, -0.25, 0.6129353), (-0.3861213, -0.25, 0.5778714), (-0.44090334, -0.25, 0.5372423), (-0.49143922, -0.25, 0.49143922), (-0.5372423, -0.25, 0.44090334), (-0.5778714, -0.25, 0.3861213), (-0.6129353, -0.25, 0.32762074), (-0.6420963, -0.25, 0.26596498), (-0.6650735, -0.25, 0.20174785), (-0.68164575, -0.25, 0.13558777), (-0.6916534, -0.25, 0.06812191), (-0.695, -0.25, 8.5112954e-17), (-0.6916534, -0.25, -0.06812191), (-0.68164575, -0.25, -0.13558777), (-0.6650735, -0.25, -0.20174785), (-0.6420963, -0.25, -0.26596498), (-0.6129353, -0.25, -0.32762074), (-0.5778714, -0.25, -0.3861213), (-0.5372423, -0.25, -0.44090334), (-0.49143922, -0.25, -0.49143922), (-0.44090334, -0.25, -0.5372423), (-0.3861213, -0.25, -0.5778714), (-0.32762074, -0.25, -0.6129353), (-0.26596498, -0.25, -0.6420963), (-0.20174785, -0.25, -0.6650735), (-0.13558777, -0.25, -0.68164575), (-0.06812191, -0.25, -0.6916534), (-1.2766942e-16, -0.25, -0.695), (0.06812191, -0.25, -0.6916534), (0.13558777, -0.25, -0.68164575), (0.20174785, -0.25, -0.6650735), (0.26596498, -0.25, -0.6420963), (0.32762074, -0.25, -0.6129353), (0.3861213, -0.25, -0.5778714), (0.44090334, -0.25, -0.5372423), (0.49143922, -0.25, -0.49143922), (0.5372423, -0.25, -0.44090334), (0.5778714, -0.25, -0.3861213), (0.6129353, -0.25, -0.32762074), (0.6420963, -0.25, -0.26596498), (0.6650735, -0.25, -0.20174785), (0.68164575, -0.25, -0.13558777), (0.6916534, -0.25, -0.06812191), (0.695, 0.25, 0), (0.6916534, 0.25, 0.06812191), (0.68164575, 0.25, 0.13558777), (0.6650735, 0.25, 0.20174785), (0.6420963, 0.25, 0.26596498), (0.6129353, 0.25, 0.32762074), (0.5778714, 0.25, 0.3861213), (0.5372423, 0.25, 0.44090334), (0.49143922, 0.25, 0.49143922), (0.44090334, 0.25, 0.5372423), (0.3861213, 0.25, 0.5778714), (0.32762074, 0.25, 0.6129353), (0.26596498, 0.25, 0.6420963), (0.20174785, 0.25, 0.6650735), (0.13558777, 0.25, 0.68164575), (0.06812191, 0.25, 0.6916534), (4.2556477e-17, 0.25, 0.695), (-0.06812191, 0.25, 0.6916534), (-0.13558777, 0.25, 0.68164575), (-0.20174785, 0.25, 0.6650735), (-0.26596498, 0.25, 0.6420963), (-0.32762074, 0.25, 0.6129353), (-0.3861213, 0.25, 0.5778714), (-0.44090334, 0.25, 0.5372423), (-0.49143922, 0.25, 0.49143922), (-0.5372423, 0.25, 0.44090334), (-0.5778714, 0.25, 0.3861213), (-0.6129353, 0.25, 0.32762074), (-0.6420963, 0.25, 0.26596498), (-0.6650735, 0.25, 0.20174785), (-0.68164575, 0.25, 0.13558777), (-0.6916534, 0.25, 0.06812191), (-0.695, 0.25, 8.5112954e-17), (-0.6916534, 0.25, -0.06812191), (-0.68164575, 0.25, -0.13558777), (-0.6650735, 0.25, -0.20174785), (-0.6420963, 0.25, -0.26596498), (-0.6129353, 0.25, -0.32762074), (-0.5778714, 0.25, -0.3861213), (-0.5372423, 0.25, -0.44090334), (-0.49143922, 0.25, -0.49143922), (-0.44090334, 0.25, -0.5372423), (-0.3861213, 0.25, -0.5778714), (-0.32762074, 0.25, -0.6129353), (-0.26596498, 0.25, -0.6420963), (-0.20174785, 0.25, -0.6650735), (-0.13558777, 0.25, -0.68164575), (-0.06812191, 0.25, -0.6916534), (-1.2766942e-16, 0.25, -0.695), (0.06812191, 0.25, -0.6916534), (0.13558777, 0.25, -0.68164575), (0.20174785, 0.25, -0.6650735), (0.26596498, 0.25, -0.6420963), (0.32762074, 0.25, -0.6129353), (0.3861213, 0.25, -0.5778714), (0.44090334, 0.25, -0.5372423), (0.49143922, 0.25, -0.49143922), (0.5372423, 0.25, -0.44090334), (0.5778714, 0.25, -0.3861213), (0.6129353, 0.25, -0.32762074), (0.6420963, 0.25, -0.26596498), (0.6650735, 0.25, -0.20174785), (0.68164575, 0.25, -0.13558777), (0.6916534, 0.25, -0.06812191)]
+                        uniform token purpose = "guide"
+                        uniform token subdivisionScheme = "none"
+                    }
+                }
+
+                def Xform "front_right_wheel" (
+                    apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI", "IsaacLinkAPI"]
+                )
+                {
+                    double[] newton:inertia = [56.63583333333332, 96.60499999999999, 56.63583333333332, 0, 0, 0]
+                    point3f physics:centerOfMass = (0, 0, 0)
+                    float3 physics:diagonalInertia = (56.635834, 56.635834, 96.605)
+                    float physics:mass = 400
+                    quatf physics:principalAxes = (-0.70710677, 0.70710677, 0, 0)
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
+                    double3 xformOp:translate = (1.515, -1.025, -0.405)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                    def Cylinder "cylinder" (
+                        apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        uniform token axis = "Z"
+                        float3[] extent = [(-0.695, -0.695, -0.25), (0.695, 0.695, 0.25)]
+                        double height = 0.5
+                        rel material:binding = </wa320/Materials/dark>
+                        double radius = 0.695
+                        quatf xformOp:orient = (0.70710677, 0.70710677, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
+                        double3 xformOp:translate = (0, 0, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                    }
+
+                    def Cylinder "cylinder_1" (
+                        apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                        displayName = "cylinder"
+                        uiHints = {
+                            string displayName = "cylinder"
+                        }
+                    )
+                    {
+                        uniform token axis = "Z"
+                        float3[] extent = [(-0.695, -0.695, -0.25), (0.695, 0.695, 0.25)]
+                        double height = 0.5
+                        rel material:binding:physics = </wa320/RigidContact>
+                        bool physics:collisionEnabled = 0
+                        uniform token purpose = "guide"
+                        double radius = 0.695
+                        quatf xformOp:orient = (0.70710677, 0.70710677, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
+                        double3 xformOp:translate = (0, 0, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                    }
+
+                    def Mesh "tire_contact" (
+                        apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI", "PhysxConvexHullCollisionAPI", "MaterialBindingAPI"]
+                    )
+                    {
+                        int[] faceVertexCounts = [64, 64, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+                        int[] faceVertexIndices = [63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 0, 1, 65, 64, 1, 2, 66, 65, 2, 3, 67, 66, 3, 4, 68, 67, 4, 5, 69, 68, 5, 6, 70, 69, 6, 7, 71, 70, 7, 8, 72, 71, 8, 9, 73, 72, 9, 10, 74, 73, 10, 11, 75, 74, 11, 12, 76, 75, 12, 13, 77, 76, 13, 14, 78, 77, 14, 15, 79, 78, 15, 16, 80, 79, 16, 17, 81, 80, 17, 18, 82, 81, 18, 19, 83, 82, 19, 20, 84, 83, 20, 21, 85, 84, 21, 22, 86, 85, 22, 23, 87, 86, 23, 24, 88, 87, 24, 25, 89, 88, 25, 26, 90, 89, 26, 27, 91, 90, 27, 28, 92, 91, 28, 29, 93, 92, 29, 30, 94, 93, 30, 31, 95, 94, 31, 32, 96, 95, 32, 33, 97, 96, 33, 34, 98, 97, 34, 35, 99, 98, 35, 36, 100, 99, 36, 37, 101, 100, 37, 38, 102, 101, 38, 39, 103, 102, 39, 40, 104, 103, 40, 41, 105, 104, 41, 42, 106, 105, 42, 43, 107, 106, 43, 44, 108, 107, 44, 45, 109, 108, 45, 46, 110, 109, 46, 47, 111, 110, 47, 48, 112, 111, 48, 49, 113, 112, 49, 50, 114, 113, 50, 51, 115, 114, 51, 52, 116, 115, 52, 53, 117, 116, 53, 54, 118, 117, 54, 55, 119, 118, 55, 56, 120, 119, 56, 57, 121, 120, 57, 58, 122, 121, 58, 59, 123, 122, 59, 60, 124, 123, 60, 61, 125, 124, 61, 62, 126, 125, 62, 63, 127, 126, 63, 0, 64, 127]
+                        rel material:binding:physics = </wa320/RigidContact>
+                        uniform token physics:approximation = "convexHull"
+                        custom int physxConvexHullCollision:hullVertexLimit = 128
+                        point3f[] points = [(0.695, -0.25, 0), (0.6916534, -0.25, 0.06812191), (0.68164575, -0.25, 0.13558777), (0.6650735, -0.25, 0.20174785), (0.6420963, -0.25, 0.26596498), (0.6129353, -0.25, 0.32762074), (0.5778714, -0.25, 0.3861213), (0.5372423, -0.25, 0.44090334), (0.49143922, -0.25, 0.49143922), (0.44090334, -0.25, 0.5372423), (0.3861213, -0.25, 0.5778714), (0.32762074, -0.25, 0.6129353), (0.26596498, -0.25, 0.6420963), (0.20174785, -0.25, 0.6650735), (0.13558777, -0.25, 0.68164575), (0.06812191, -0.25, 0.6916534), (4.2556477e-17, -0.25, 0.695), (-0.06812191, -0.25, 0.6916534), (-0.13558777, -0.25, 0.68164575), (-0.20174785, -0.25, 0.6650735), (-0.26596498, -0.25, 0.6420963), (-0.32762074, -0.25, 0.6129353), (-0.3861213, -0.25, 0.5778714), (-0.44090334, -0.25, 0.5372423), (-0.49143922, -0.25, 0.49143922), (-0.5372423, -0.25, 0.44090334), (-0.5778714, -0.25, 0.3861213), (-0.6129353, -0.25, 0.32762074), (-0.6420963, -0.25, 0.26596498), (-0.6650735, -0.25, 0.20174785), (-0.68164575, -0.25, 0.13558777), (-0.6916534, -0.25, 0.06812191), (-0.695, -0.25, 8.5112954e-17), (-0.6916534, -0.25, -0.06812191), (-0.68164575, -0.25, -0.13558777), (-0.6650735, -0.25, -0.20174785), (-0.6420963, -0.25, -0.26596498), (-0.6129353, -0.25, -0.32762074), (-0.5778714, -0.25, -0.3861213), (-0.5372423, -0.25, -0.44090334), (-0.49143922, -0.25, -0.49143922), (-0.44090334, -0.25, -0.5372423), (-0.3861213, -0.25, -0.5778714), (-0.32762074, -0.25, -0.6129353), (-0.26596498, -0.25, -0.6420963), (-0.20174785, -0.25, -0.6650735), (-0.13558777, -0.25, -0.68164575), (-0.06812191, -0.25, -0.6916534), (-1.2766942e-16, -0.25, -0.695), (0.06812191, -0.25, -0.6916534), (0.13558777, -0.25, -0.68164575), (0.20174785, -0.25, -0.6650735), (0.26596498, -0.25, -0.6420963), (0.32762074, -0.25, -0.6129353), (0.3861213, -0.25, -0.5778714), (0.44090334, -0.25, -0.5372423), (0.49143922, -0.25, -0.49143922), (0.5372423, -0.25, -0.44090334), (0.5778714, -0.25, -0.3861213), (0.6129353, -0.25, -0.32762074), (0.6420963, -0.25, -0.26596498), (0.6650735, -0.25, -0.20174785), (0.68164575, -0.25, -0.13558777), (0.6916534, -0.25, -0.06812191), (0.695, 0.25, 0), (0.6916534, 0.25, 0.06812191), (0.68164575, 0.25, 0.13558777), (0.6650735, 0.25, 0.20174785), (0.6420963, 0.25, 0.26596498), (0.6129353, 0.25, 0.32762074), (0.5778714, 0.25, 0.3861213), (0.5372423, 0.25, 0.44090334), (0.49143922, 0.25, 0.49143922), (0.44090334, 0.25, 0.5372423), (0.3861213, 0.25, 0.5778714), (0.32762074, 0.25, 0.6129353), (0.26596498, 0.25, 0.6420963), (0.20174785, 0.25, 0.6650735), (0.13558777, 0.25, 0.68164575), (0.06812191, 0.25, 0.6916534), (4.2556477e-17, 0.25, 0.695), (-0.06812191, 0.25, 0.6916534), (-0.13558777, 0.25, 0.68164575), (-0.20174785, 0.25, 0.6650735), (-0.26596498, 0.25, 0.6420963), (-0.32762074, 0.25, 0.6129353), (-0.3861213, 0.25, 0.5778714), (-0.44090334, 0.25, 0.5372423), (-0.49143922, 0.25, 0.49143922), (-0.5372423, 0.25, 0.44090334), (-0.5778714, 0.25, 0.3861213), (-0.6129353, 0.25, 0.32762074), (-0.6420963, 0.25, 0.26596498), (-0.6650735, 0.25, 0.20174785), (-0.68164575, 0.25, 0.13558777), (-0.6916534, 0.25, 0.06812191), (-0.695, 0.25, 8.5112954e-17), (-0.6916534, 0.25, -0.06812191), (-0.68164575, 0.25, -0.13558777), (-0.6650735, 0.25, -0.20174785), (-0.6420963, 0.25, -0.26596498), (-0.6129353, 0.25, -0.32762074), (-0.5778714, 0.25, -0.3861213), (-0.5372423, 0.25, -0.44090334), (-0.49143922, 0.25, -0.49143922), (-0.44090334, 0.25, -0.5372423), (-0.3861213, 0.25, -0.5778714), (-0.32762074, 0.25, -0.6129353), (-0.26596498, 0.25, -0.6420963), (-0.20174785, 0.25, -0.6650735), (-0.13558777, 0.25, -0.68164575), (-0.06812191, 0.25, -0.6916534), (-1.2766942e-16, 0.25, -0.695), (0.06812191, 0.25, -0.6916534), (0.13558777, 0.25, -0.68164575), (0.20174785, 0.25, -0.6650735), (0.26596498, 0.25, -0.6420963), (0.32762074, 0.25, -0.6129353), (0.3861213, 0.25, -0.5778714), (0.44090334, 0.25, -0.5372423), (0.49143922, 0.25, -0.49143922), (0.5372423, 0.25, -0.44090334), (0.5778714, 0.25, -0.3861213), (0.6129353, 0.25, -0.32762074), (0.6420963, 0.25, -0.26596498), (0.6650735, 0.25, -0.20174785), (0.68164575, 0.25, -0.13558777), (0.6916534, 0.25, -0.06812191)]
+                        uniform token purpose = "guide"
+                        uniform token subdivisionScheme = "none"
+                    }
+                }
+
+                def Xform "boom" (
+                    apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI", "IsaacLinkAPI"]
+                )
+                {
+                    double[] newton:inertia = [136.6625, 915.3000000000002, 1043.8625000000002, 0, 0, 0]
+                    point3f physics:centerOfMass = (1.35, 0, 0)
+                    float3 physics:diagonalInertia = (136.6625, 915.3, 1043.8625)
+                    float physics:mass = 1500
+                    quatf physics:principalAxes = (1, 0, 0, 0)
+                    quatf xformOp:orient = (0.9921977, 0, 0.12467454, 0)
+                    float3 xformOp:scale = (1, 1, 1)
+                    double3 xformOp:translate = (0.55, 0, 0.5)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                    def Xform "bellcrank" (
+                        apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI", "IsaacLinkAPI"]
+                    )
+                    {
+                        double[] newton:inertia = [0.10666666666666667, 9.240833333333333, 9.240833333333333, 0, 0, 0]
+                        point3f physics:centerOfMass = (0.075, 0, 0)
+                        float3 physics:diagonalInertia = (0.10666667, 9.240833, 9.240833)
+                        float physics:mass = 100
+                        quatf physics:principalAxes = (1, 0, 0, 0)
+                        quatf xformOp:orient = (0.8525245, 0, -0.52268726, 0)
+                        float3 xformOp:scale = (1, 1, 1)
+                        double3 xformOp:translate = (1.485, 0, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                        def Xform "rod" (
+                            apiSchemas = ["PhysicsFilteredPairsAPI", "PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI", "IsaacLinkAPI"]
+                        )
+                        {
+                            double[] newton:inertia = [0.08, 15.840625000000003, 15.840625000000003, 0, 0, 0]
+                            point3f physics:centerOfMass = (0.795, 0, 0)
+                            float3 physics:diagonalInertia = (0.08, 15.840625, 15.840625)
+                            rel physics:filteredPairs = </wa320/Geometry/rear_frame/front_frame/boom/bucket>
+                            float physics:mass = 75
+                            quatf physics:principalAxes = (1, 0, 0, 0)
+                            quatf xformOp:orient = (0.9694231, 0, 0.24539524, 0)
+                            float3 xformOp:scale = (1, 1, 1)
+                            double3 xformOp:translate = (-0.45, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                            def Cube "box" (
+                                apiSchemas = ["MaterialBindingAPI"]
+                            )
+                            {
+                                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                                rel material:binding = </wa320/Materials/steel>
+                                double size = 1
+                                quatf xformOp:orient = (1, 0, 0, 0)
+                                float3 xformOp:scale = (1.59, 0.08, 0.08)
+                                double3 xformOp:translate = (0.795, 0, 0)
+                                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                            }
+
+                            def Cube "box_1" (
+                                apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                                displayName = "box"
+                                uiHints = {
+                                    string displayName = "box"
+                                }
+                            )
+                            {
+                                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                                rel material:binding:physics = </wa320/RigidContact>
+                                uniform token purpose = "guide"
+                                double size = 1
+                                quatf xformOp:orient = (1, 0, 0, 0)
+                                float3 xformOp:scale = (1.59, 0.08, 0.08)
+                                double3 xformOp:translate = (0.795, 0, 0)
+                                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                            }
+                        }
+
+                        def Cube "box" (
+                            apiSchemas = ["MaterialBindingAPI"]
+                        )
+                        {
+                            float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                            rel material:binding = </wa320/Materials/dark>
+                            double size = 1
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1.05, 0.08, 0.08)
+                            double3 xformOp:translate = (0.075, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def Cube "box_1" (
+                            apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                            displayName = "box"
+                            uiHints = {
+                                string displayName = "box"
+                            }
+                        )
+                        {
+                            float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                            rel material:binding:physics = </wa320/RigidContact>
+                            uniform token purpose = "guide"
+                            double size = 1
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1.05, 0.08, 0.08)
+                            double3 xformOp:translate = (0.075, 0, 0)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+                    }
+
+                    def Xform "bucket" (
+                        apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI", "IsaacLinkAPI"]
+                    )
+                    {
+                        double[] newton:inertia = [957.7429166666667, 345.3333333333333, 1069.7429166666666, 0, 0, 0]
+                        point3f physics:centerOfMass = (0.55, 0, -0.05)
+                        float3 physics:diagonalInertia = (345.33334, 957.7429, 1069.7429)
+                        float physics:mass = 1400
+                        quatf physics:principalAxes = (6.123234e-17, 0.70710677, 0.70710677, 0)
+                        quatf xformOp:orient = (0.9999557, 0, 0.0094111925, 0)
+                        float3 xformOp:scale = (1, 1, 1)
+                        double3 xformOp:translate = (2.7, 0, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                        def Cube "box" (
+                            apiSchemas = ["MaterialBindingAPI"]
+                        )
+                        {
+                            float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                            rel material:binding = </wa320/Materials/yellow>
+                            double size = 1
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1.4, 2.685, 0.06)
+                            double3 xformOp:translate = (0.55, 0, -0.55)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def Cube "box_1" (
+                            apiSchemas = ["MaterialBindingAPI"]
+                            displayName = "box"
+                            uiHints = {
+                                string displayName = "box"
+                            }
+                        )
+                        {
+                            float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                            rel material:binding = </wa320/Materials/yellow>
+                            double size = 1
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (0.06, 2.685, 1)
+                            double3 xformOp:translate = (-0.15, 0, -0.05)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def Cube "box_2" (
+                            apiSchemas = ["MaterialBindingAPI"]
+                            displayName = "box"
+                            uiHints = {
+                                string displayName = "box"
+                            }
+                        )
+                        {
+                            float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                            rel material:binding = </wa320/Materials/yellow>
+                            double size = 1
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1.4, 0.06, 1)
+                            double3 xformOp:translate = (0.55, -1.3125, -0.05)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def Cube "box_3" (
+                            apiSchemas = ["MaterialBindingAPI"]
+                            displayName = "box"
+                            uiHints = {
+                                string displayName = "box"
+                            }
+                        )
+                        {
+                            float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                            rel material:binding = </wa320/Materials/yellow>
+                            double size = 1
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1.4, 0.06, 1)
+                            double3 xformOp:translate = (0.55, 1.3125, -0.05)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def Cube "box_4" (
+                            apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                            displayName = "box"
+                            uiHints = {
+                                string displayName = "box"
+                            }
+                        )
+                        {
+                            float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                            rel material:binding:physics = </wa320/RigidContact>
+                            uniform token purpose = "guide"
+                            double size = 1
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1.4, 2.685, 0.06)
+                            double3 xformOp:translate = (0.55, 0, -0.55)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def Cube "box_5" (
+                            apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                            displayName = "box"
+                            uiHints = {
+                                string displayName = "box"
+                            }
+                        )
+                        {
+                            float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                            rel material:binding:physics = </wa320/RigidContact>
+                            uniform token purpose = "guide"
+                            double size = 1
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (0.06, 2.685, 1)
+                            double3 xformOp:translate = (-0.15, 0, -0.05)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def Cube "box_6" (
+                            apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                            displayName = "box"
+                            uiHints = {
+                                string displayName = "box"
+                            }
+                        )
+                        {
+                            float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                            rel material:binding:physics = </wa320/RigidContact>
+                            uniform token purpose = "guide"
+                            double size = 1
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1.4, 0.06, 1)
+                            double3 xformOp:translate = (0.55, -1.3125, -0.05)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+
+                        def Cube "box_7" (
+                            apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                            displayName = "box"
+                            uiHints = {
+                                string displayName = "box"
+                            }
+                        )
+                        {
+                            float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                            rel material:binding:physics = </wa320/RigidContact>
+                            uniform token purpose = "guide"
+                            double size = 1
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1.4, 0.06, 1)
+                            double3 xformOp:translate = (0.55, 1.3125, -0.05)
+                            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                        }
+                    }
+
+                    def Cube "box" (
+                        apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                        rel material:binding = </wa320/Materials/yellow>
+                        double size = 1
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (2.7, 0.18, 0.18)
+                        double3 xformOp:translate = (1.35, -0.425, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                    }
+
+                    def Cube "box_1" (
+                        apiSchemas = ["MaterialBindingAPI"]
+                        displayName = "box"
+                        uiHints = {
+                            string displayName = "box"
+                        }
+                    )
+                    {
+                        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                        rel material:binding = </wa320/Materials/yellow>
+                        double size = 1
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (2.7, 0.18, 0.18)
+                        double3 xformOp:translate = (1.35, 0.425, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                    }
+
+                    def Cube "box_2" (
+                        apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                        displayName = "box"
+                        uiHints = {
+                            string displayName = "box"
+                        }
+                    )
+                    {
+                        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                        rel material:binding:physics = </wa320/RigidContact>
+                        uniform token purpose = "guide"
+                        double size = 1
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (2.7, 0.18, 0.18)
+                        double3 xformOp:translate = (1.35, -0.425, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                    }
+
+                    def Cube "box_3" (
+                        apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                        displayName = "box"
+                        uiHints = {
+                            string displayName = "box"
+                        }
+                    )
+                    {
+                        float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                        rel material:binding:physics = </wa320/RigidContact>
+                        uniform token purpose = "guide"
+                        double size = 1
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (2.7, 0.18, 0.18)
+                        double3 xformOp:translate = (1.35, 0.425, 0)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                    }
+                }
+
+                def Cube "box" (
+                    apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                    rel material:binding = </wa320/Materials/yellow>
+                    double size = 1
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (1.5, 0.2, 0.5)
+                    double3 xformOp:translate = (1.05, -0.45, -0.2)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def Cube "box_1" (
+                    apiSchemas = ["MaterialBindingAPI"]
+                    displayName = "box"
+                    uiHints = {
+                        string displayName = "box"
+                    }
+                )
+                {
+                    float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                    rel material:binding = </wa320/Materials/yellow>
+                    double size = 1
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (1.5, 0.2, 0.5)
+                    double3 xformOp:translate = (1.05, 0.45, -0.2)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def Cube "box_2" (
+                    apiSchemas = ["MaterialBindingAPI"]
+                    displayName = "box"
+                    uiHints = {
+                        string displayName = "box"
+                    }
+                )
+                {
+                    float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                    rel material:binding = </wa320/Materials/yellow>
+                    double size = 1
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (0.4, 1.3, 0.2)
+                    double3 xformOp:translate = (1.515, 0, -0.405)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def Cube "box_3" (
+                    apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                    displayName = "box"
+                    uiHints = {
+                        string displayName = "box"
+                    }
+                )
+                {
+                    float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                    rel material:binding:physics = </wa320/RigidContact>
+                    uniform token purpose = "guide"
+                    double size = 1
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (1.5, 0.2, 0.5)
+                    double3 xformOp:translate = (1.05, -0.45, -0.2)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def Cube "box_4" (
+                    apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                    displayName = "box"
+                    uiHints = {
+                        string displayName = "box"
+                    }
+                )
+                {
+                    float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                    rel material:binding:physics = </wa320/RigidContact>
+                    uniform token purpose = "guide"
+                    double size = 1
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (1.5, 0.2, 0.5)
+                    double3 xformOp:translate = (1.05, 0.45, -0.2)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def Cube "box_5" (
+                    apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                    displayName = "box"
+                    uiHints = {
+                        string displayName = "box"
+                    }
+                )
+                {
+                    float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                    rel material:binding:physics = </wa320/RigidContact>
+                    uniform token purpose = "guide"
+                    double size = 1
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (0.4, 1.3, 0.2)
+                    double3 xformOp:translate = (1.515, 0, -0.405)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+            }
+
+            def Xform "rear_left_wheel" (
+                apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI", "IsaacLinkAPI"]
+            )
+            {
+                double[] newton:inertia = [56.63583333333332, 96.60499999999999, 56.63583333333332, 0, 0, 0]
+                point3f physics:centerOfMass = (0, 0, 0)
+                float3 physics:diagonalInertia = (56.635834, 56.635834, 96.605)
+                float physics:mass = 400
+                quatf physics:principalAxes = (-0.70710677, 0.70710677, 0, 0)
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (-1.515, 1.025, -0.405)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                def Cylinder "cylinder" (
+                    apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    uniform token axis = "Z"
+                    float3[] extent = [(-0.695, -0.695, -0.25), (0.695, 0.695, 0.25)]
+                    double height = 0.5
+                    rel material:binding = </wa320/Materials/dark>
+                    double radius = 0.695
+                    quatf xformOp:orient = (0.70710677, 0.70710677, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
+                    double3 xformOp:translate = (0, 0, 0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def Cylinder "cylinder_1" (
+                    apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                    displayName = "cylinder"
+                    uiHints = {
+                        string displayName = "cylinder"
+                    }
+                )
+                {
+                    uniform token axis = "Z"
+                    float3[] extent = [(-0.695, -0.695, -0.25), (0.695, 0.695, 0.25)]
+                    double height = 0.5
+                    rel material:binding:physics = </wa320/RigidContact>
+                    bool physics:collisionEnabled = 0
+                    uniform token purpose = "guide"
+                    double radius = 0.695
+                    quatf xformOp:orient = (0.70710677, 0.70710677, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
+                    double3 xformOp:translate = (0, 0, 0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def Mesh "tire_contact" (
+                    apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI", "PhysxConvexHullCollisionAPI", "MaterialBindingAPI"]
+                )
+                {
+                    int[] faceVertexCounts = [64, 64, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+                    int[] faceVertexIndices = [63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 0, 1, 65, 64, 1, 2, 66, 65, 2, 3, 67, 66, 3, 4, 68, 67, 4, 5, 69, 68, 5, 6, 70, 69, 6, 7, 71, 70, 7, 8, 72, 71, 8, 9, 73, 72, 9, 10, 74, 73, 10, 11, 75, 74, 11, 12, 76, 75, 12, 13, 77, 76, 13, 14, 78, 77, 14, 15, 79, 78, 15, 16, 80, 79, 16, 17, 81, 80, 17, 18, 82, 81, 18, 19, 83, 82, 19, 20, 84, 83, 20, 21, 85, 84, 21, 22, 86, 85, 22, 23, 87, 86, 23, 24, 88, 87, 24, 25, 89, 88, 25, 26, 90, 89, 26, 27, 91, 90, 27, 28, 92, 91, 28, 29, 93, 92, 29, 30, 94, 93, 30, 31, 95, 94, 31, 32, 96, 95, 32, 33, 97, 96, 33, 34, 98, 97, 34, 35, 99, 98, 35, 36, 100, 99, 36, 37, 101, 100, 37, 38, 102, 101, 38, 39, 103, 102, 39, 40, 104, 103, 40, 41, 105, 104, 41, 42, 106, 105, 42, 43, 107, 106, 43, 44, 108, 107, 44, 45, 109, 108, 45, 46, 110, 109, 46, 47, 111, 110, 47, 48, 112, 111, 48, 49, 113, 112, 49, 50, 114, 113, 50, 51, 115, 114, 51, 52, 116, 115, 52, 53, 117, 116, 53, 54, 118, 117, 54, 55, 119, 118, 55, 56, 120, 119, 56, 57, 121, 120, 57, 58, 122, 121, 58, 59, 123, 122, 59, 60, 124, 123, 60, 61, 125, 124, 61, 62, 126, 125, 62, 63, 127, 126, 63, 0, 64, 127]
+                    rel material:binding:physics = </wa320/RigidContact>
+                    uniform token physics:approximation = "convexHull"
+                    custom int physxConvexHullCollision:hullVertexLimit = 128
+                    point3f[] points = [(0.695, -0.25, 0), (0.6916534, -0.25, 0.06812191), (0.68164575, -0.25, 0.13558777), (0.6650735, -0.25, 0.20174785), (0.6420963, -0.25, 0.26596498), (0.6129353, -0.25, 0.32762074), (0.5778714, -0.25, 0.3861213), (0.5372423, -0.25, 0.44090334), (0.49143922, -0.25, 0.49143922), (0.44090334, -0.25, 0.5372423), (0.3861213, -0.25, 0.5778714), (0.32762074, -0.25, 0.6129353), (0.26596498, -0.25, 0.6420963), (0.20174785, -0.25, 0.6650735), (0.13558777, -0.25, 0.68164575), (0.06812191, -0.25, 0.6916534), (4.2556477e-17, -0.25, 0.695), (-0.06812191, -0.25, 0.6916534), (-0.13558777, -0.25, 0.68164575), (-0.20174785, -0.25, 0.6650735), (-0.26596498, -0.25, 0.6420963), (-0.32762074, -0.25, 0.6129353), (-0.3861213, -0.25, 0.5778714), (-0.44090334, -0.25, 0.5372423), (-0.49143922, -0.25, 0.49143922), (-0.5372423, -0.25, 0.44090334), (-0.5778714, -0.25, 0.3861213), (-0.6129353, -0.25, 0.32762074), (-0.6420963, -0.25, 0.26596498), (-0.6650735, -0.25, 0.20174785), (-0.68164575, -0.25, 0.13558777), (-0.6916534, -0.25, 0.06812191), (-0.695, -0.25, 8.5112954e-17), (-0.6916534, -0.25, -0.06812191), (-0.68164575, -0.25, -0.13558777), (-0.6650735, -0.25, -0.20174785), (-0.6420963, -0.25, -0.26596498), (-0.6129353, -0.25, -0.32762074), (-0.5778714, -0.25, -0.3861213), (-0.5372423, -0.25, -0.44090334), (-0.49143922, -0.25, -0.49143922), (-0.44090334, -0.25, -0.5372423), (-0.3861213, -0.25, -0.5778714), (-0.32762074, -0.25, -0.6129353), (-0.26596498, -0.25, -0.6420963), (-0.20174785, -0.25, -0.6650735), (-0.13558777, -0.25, -0.68164575), (-0.06812191, -0.25, -0.6916534), (-1.2766942e-16, -0.25, -0.695), (0.06812191, -0.25, -0.6916534), (0.13558777, -0.25, -0.68164575), (0.20174785, -0.25, -0.6650735), (0.26596498, -0.25, -0.6420963), (0.32762074, -0.25, -0.6129353), (0.3861213, -0.25, -0.5778714), (0.44090334, -0.25, -0.5372423), (0.49143922, -0.25, -0.49143922), (0.5372423, -0.25, -0.44090334), (0.5778714, -0.25, -0.3861213), (0.6129353, -0.25, -0.32762074), (0.6420963, -0.25, -0.26596498), (0.6650735, -0.25, -0.20174785), (0.68164575, -0.25, -0.13558777), (0.6916534, -0.25, -0.06812191), (0.695, 0.25, 0), (0.6916534, 0.25, 0.06812191), (0.68164575, 0.25, 0.13558777), (0.6650735, 0.25, 0.20174785), (0.6420963, 0.25, 0.26596498), (0.6129353, 0.25, 0.32762074), (0.5778714, 0.25, 0.3861213), (0.5372423, 0.25, 0.44090334), (0.49143922, 0.25, 0.49143922), (0.44090334, 0.25, 0.5372423), (0.3861213, 0.25, 0.5778714), (0.32762074, 0.25, 0.6129353), (0.26596498, 0.25, 0.6420963), (0.20174785, 0.25, 0.6650735), (0.13558777, 0.25, 0.68164575), (0.06812191, 0.25, 0.6916534), (4.2556477e-17, 0.25, 0.695), (-0.06812191, 0.25, 0.6916534), (-0.13558777, 0.25, 0.68164575), (-0.20174785, 0.25, 0.6650735), (-0.26596498, 0.25, 0.6420963), (-0.32762074, 0.25, 0.6129353), (-0.3861213, 0.25, 0.5778714), (-0.44090334, 0.25, 0.5372423), (-0.49143922, 0.25, 0.49143922), (-0.5372423, 0.25, 0.44090334), (-0.5778714, 0.25, 0.3861213), (-0.6129353, 0.25, 0.32762074), (-0.6420963, 0.25, 0.26596498), (-0.6650735, 0.25, 0.20174785), (-0.68164575, 0.25, 0.13558777), (-0.6916534, 0.25, 0.06812191), (-0.695, 0.25, 8.5112954e-17), (-0.6916534, 0.25, -0.06812191), (-0.68164575, 0.25, -0.13558777), (-0.6650735, 0.25, -0.20174785), (-0.6420963, 0.25, -0.26596498), (-0.6129353, 0.25, -0.32762074), (-0.5778714, 0.25, -0.3861213), (-0.5372423, 0.25, -0.44090334), (-0.49143922, 0.25, -0.49143922), (-0.44090334, 0.25, -0.5372423), (-0.3861213, 0.25, -0.5778714), (-0.32762074, 0.25, -0.6129353), (-0.26596498, 0.25, -0.6420963), (-0.20174785, 0.25, -0.6650735), (-0.13558777, 0.25, -0.68164575), (-0.06812191, 0.25, -0.6916534), (-1.2766942e-16, 0.25, -0.695), (0.06812191, 0.25, -0.6916534), (0.13558777, 0.25, -0.68164575), (0.20174785, 0.25, -0.6650735), (0.26596498, 0.25, -0.6420963), (0.32762074, 0.25, -0.6129353), (0.3861213, 0.25, -0.5778714), (0.44090334, 0.25, -0.5372423), (0.49143922, 0.25, -0.49143922), (0.5372423, 0.25, -0.44090334), (0.5778714, 0.25, -0.3861213), (0.6129353, 0.25, -0.32762074), (0.6420963, 0.25, -0.26596498), (0.6650735, 0.25, -0.20174785), (0.68164575, 0.25, -0.13558777), (0.6916534, 0.25, -0.06812191)]
+                    uniform token purpose = "guide"
+                    uniform token subdivisionScheme = "none"
+                }
+            }
+
+            def Xform "rear_right_wheel" (
+                apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI", "IsaacLinkAPI"]
+            )
+            {
+                double[] newton:inertia = [56.63583333333332, 96.60499999999999, 56.63583333333332, 0, 0, 0]
+                point3f physics:centerOfMass = (0, 0, 0)
+                float3 physics:diagonalInertia = (56.635834, 56.635834, 96.605)
+                float physics:mass = 400
+                quatf physics:principalAxes = (-0.70710677, 0.70710677, 0, 0)
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (-1.515, -1.025, -0.405)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                def Cylinder "cylinder" (
+                    apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    uniform token axis = "Z"
+                    float3[] extent = [(-0.695, -0.695, -0.25), (0.695, 0.695, 0.25)]
+                    double height = 0.5
+                    rel material:binding = </wa320/Materials/dark>
+                    double radius = 0.695
+                    quatf xformOp:orient = (0.70710677, 0.70710677, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
+                    double3 xformOp:translate = (0, 0, 0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def Cylinder "cylinder_1" (
+                    apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                    displayName = "cylinder"
+                    uiHints = {
+                        string displayName = "cylinder"
+                    }
+                )
+                {
+                    uniform token axis = "Z"
+                    float3[] extent = [(-0.695, -0.695, -0.25), (0.695, 0.695, 0.25)]
+                    double height = 0.5
+                    rel material:binding:physics = </wa320/RigidContact>
+                    bool physics:collisionEnabled = 0
+                    uniform token purpose = "guide"
+                    double radius = 0.695
+                    quatf xformOp:orient = (0.70710677, 0.70710677, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
+                    double3 xformOp:translate = (0, 0, 0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                }
+
+                def Mesh "tire_contact" (
+                    apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI", "PhysxConvexHullCollisionAPI", "MaterialBindingAPI"]
+                )
+                {
+                    int[] faceVertexCounts = [64, 64, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+                    int[] faceVertexIndices = [63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 0, 1, 65, 64, 1, 2, 66, 65, 2, 3, 67, 66, 3, 4, 68, 67, 4, 5, 69, 68, 5, 6, 70, 69, 6, 7, 71, 70, 7, 8, 72, 71, 8, 9, 73, 72, 9, 10, 74, 73, 10, 11, 75, 74, 11, 12, 76, 75, 12, 13, 77, 76, 13, 14, 78, 77, 14, 15, 79, 78, 15, 16, 80, 79, 16, 17, 81, 80, 17, 18, 82, 81, 18, 19, 83, 82, 19, 20, 84, 83, 20, 21, 85, 84, 21, 22, 86, 85, 22, 23, 87, 86, 23, 24, 88, 87, 24, 25, 89, 88, 25, 26, 90, 89, 26, 27, 91, 90, 27, 28, 92, 91, 28, 29, 93, 92, 29, 30, 94, 93, 30, 31, 95, 94, 31, 32, 96, 95, 32, 33, 97, 96, 33, 34, 98, 97, 34, 35, 99, 98, 35, 36, 100, 99, 36, 37, 101, 100, 37, 38, 102, 101, 38, 39, 103, 102, 39, 40, 104, 103, 40, 41, 105, 104, 41, 42, 106, 105, 42, 43, 107, 106, 43, 44, 108, 107, 44, 45, 109, 108, 45, 46, 110, 109, 46, 47, 111, 110, 47, 48, 112, 111, 48, 49, 113, 112, 49, 50, 114, 113, 50, 51, 115, 114, 51, 52, 116, 115, 52, 53, 117, 116, 53, 54, 118, 117, 54, 55, 119, 118, 55, 56, 120, 119, 56, 57, 121, 120, 57, 58, 122, 121, 58, 59, 123, 122, 59, 60, 124, 123, 60, 61, 125, 124, 61, 62, 126, 125, 62, 63, 127, 126, 63, 0, 64, 127]
+                    rel material:binding:physics = </wa320/RigidContact>
+                    uniform token physics:approximation = "convexHull"
+                    custom int physxConvexHullCollision:hullVertexLimit = 128
+                    point3f[] points = [(0.695, -0.25, 0), (0.6916534, -0.25, 0.06812191), (0.68164575, -0.25, 0.13558777), (0.6650735, -0.25, 0.20174785), (0.6420963, -0.25, 0.26596498), (0.6129353, -0.25, 0.32762074), (0.5778714, -0.25, 0.3861213), (0.5372423, -0.25, 0.44090334), (0.49143922, -0.25, 0.49143922), (0.44090334, -0.25, 0.5372423), (0.3861213, -0.25, 0.5778714), (0.32762074, -0.25, 0.6129353), (0.26596498, -0.25, 0.6420963), (0.20174785, -0.25, 0.6650735), (0.13558777, -0.25, 0.68164575), (0.06812191, -0.25, 0.6916534), (4.2556477e-17, -0.25, 0.695), (-0.06812191, -0.25, 0.6916534), (-0.13558777, -0.25, 0.68164575), (-0.20174785, -0.25, 0.6650735), (-0.26596498, -0.25, 0.6420963), (-0.32762074, -0.25, 0.6129353), (-0.3861213, -0.25, 0.5778714), (-0.44090334, -0.25, 0.5372423), (-0.49143922, -0.25, 0.49143922), (-0.5372423, -0.25, 0.44090334), (-0.5778714, -0.25, 0.3861213), (-0.6129353, -0.25, 0.32762074), (-0.6420963, -0.25, 0.26596498), (-0.6650735, -0.25, 0.20174785), (-0.68164575, -0.25, 0.13558777), (-0.6916534, -0.25, 0.06812191), (-0.695, -0.25, 8.5112954e-17), (-0.6916534, -0.25, -0.06812191), (-0.68164575, -0.25, -0.13558777), (-0.6650735, -0.25, -0.20174785), (-0.6420963, -0.25, -0.26596498), (-0.6129353, -0.25, -0.32762074), (-0.5778714, -0.25, -0.3861213), (-0.5372423, -0.25, -0.44090334), (-0.49143922, -0.25, -0.49143922), (-0.44090334, -0.25, -0.5372423), (-0.3861213, -0.25, -0.5778714), (-0.32762074, -0.25, -0.6129353), (-0.26596498, -0.25, -0.6420963), (-0.20174785, -0.25, -0.6650735), (-0.13558777, -0.25, -0.68164575), (-0.06812191, -0.25, -0.6916534), (-1.2766942e-16, -0.25, -0.695), (0.06812191, -0.25, -0.6916534), (0.13558777, -0.25, -0.68164575), (0.20174785, -0.25, -0.6650735), (0.26596498, -0.25, -0.6420963), (0.32762074, -0.25, -0.6129353), (0.3861213, -0.25, -0.5778714), (0.44090334, -0.25, -0.5372423), (0.49143922, -0.25, -0.49143922), (0.5372423, -0.25, -0.44090334), (0.5778714, -0.25, -0.3861213), (0.6129353, -0.25, -0.32762074), (0.6420963, -0.25, -0.26596498), (0.6650735, -0.25, -0.20174785), (0.68164575, -0.25, -0.13558777), (0.6916534, -0.25, -0.06812191), (0.695, 0.25, 0), (0.6916534, 0.25, 0.06812191), (0.68164575, 0.25, 0.13558777), (0.6650735, 0.25, 0.20174785), (0.6420963, 0.25, 0.26596498), (0.6129353, 0.25, 0.32762074), (0.5778714, 0.25, 0.3861213), (0.5372423, 0.25, 0.44090334), (0.49143922, 0.25, 0.49143922), (0.44090334, 0.25, 0.5372423), (0.3861213, 0.25, 0.5778714), (0.32762074, 0.25, 0.6129353), (0.26596498, 0.25, 0.6420963), (0.20174785, 0.25, 0.6650735), (0.13558777, 0.25, 0.68164575), (0.06812191, 0.25, 0.6916534), (4.2556477e-17, 0.25, 0.695), (-0.06812191, 0.25, 0.6916534), (-0.13558777, 0.25, 0.68164575), (-0.20174785, 0.25, 0.6650735), (-0.26596498, 0.25, 0.6420963), (-0.32762074, 0.25, 0.6129353), (-0.3861213, 0.25, 0.5778714), (-0.44090334, 0.25, 0.5372423), (-0.49143922, 0.25, 0.49143922), (-0.5372423, 0.25, 0.44090334), (-0.5778714, 0.25, 0.3861213), (-0.6129353, 0.25, 0.32762074), (-0.6420963, 0.25, 0.26596498), (-0.6650735, 0.25, 0.20174785), (-0.68164575, 0.25, 0.13558777), (-0.6916534, 0.25, 0.06812191), (-0.695, 0.25, 8.5112954e-17), (-0.6916534, 0.25, -0.06812191), (-0.68164575, 0.25, -0.13558777), (-0.6650735, 0.25, -0.20174785), (-0.6420963, 0.25, -0.26596498), (-0.6129353, 0.25, -0.32762074), (-0.5778714, 0.25, -0.3861213), (-0.5372423, 0.25, -0.44090334), (-0.49143922, 0.25, -0.49143922), (-0.44090334, 0.25, -0.5372423), (-0.3861213, 0.25, -0.5778714), (-0.32762074, 0.25, -0.6129353), (-0.26596498, 0.25, -0.6420963), (-0.20174785, 0.25, -0.6650735), (-0.13558777, 0.25, -0.68164575), (-0.06812191, 0.25, -0.6916534), (-1.2766942e-16, 0.25, -0.695), (0.06812191, 0.25, -0.6916534), (0.13558777, 0.25, -0.68164575), (0.20174785, 0.25, -0.6650735), (0.26596498, 0.25, -0.6420963), (0.32762074, 0.25, -0.6129353), (0.3861213, 0.25, -0.5778714), (0.44090334, 0.25, -0.5372423), (0.49143922, 0.25, -0.49143922), (0.5372423, 0.25, -0.44090334), (0.5778714, 0.25, -0.3861213), (0.6129353, 0.25, -0.32762074), (0.6420963, 0.25, -0.26596498), (0.6650735, 0.25, -0.20174785), (0.68164575, 0.25, -0.13558777), (0.6916534, 0.25, -0.06812191)]
+                    uniform token purpose = "guide"
+                    uniform token subdivisionScheme = "none"
+                }
+            }
+
+            def Cube "box" (
+                apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </wa320/Materials/yellow>
+                double size = 1
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (2.95, 1.55, 0.9)
+                double3 xformOp:translate = (-1.475, 0, 0.1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+
+            def Cube "box_1" (
+                apiSchemas = ["MaterialBindingAPI"]
+                displayName = "box"
+                uiHints = {
+                    string displayName = "box"
+                }
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding = </wa320/Materials/glass>
+                double size = 1
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1.3, 1.35, 1.7)
+                double3 xformOp:translate = (-0.9, 0, 1.25)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+
+            def Cube "box_2" (
+                apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                displayName = "box"
+                uiHints = {
+                    string displayName = "box"
+                }
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding:physics = </wa320/RigidContact>
+                uniform token purpose = "guide"
+                double size = 1
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (2.95, 1.55, 0.9)
+                double3 xformOp:translate = (-1.475, 0, 0.1)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+
+            def Cube "box_3" (
+                apiSchemas = ["MaterialBindingAPI", "NewtonCollisionAPI", "PhysicsCollisionAPI"]
+                displayName = "box"
+                uiHints = {
+                    string displayName = "box"
+                }
+            )
+            {
+                float3[] extent = [(-0.5, -0.5, -0.5), (0.5, 0.5, 0.5)]
+                rel material:binding:physics = </wa320/RigidContact>
+                uniform token purpose = "guide"
+                double size = 1
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1.3, 1.35, 1.7)
+                double3 xformOp:translate = (-0.9, 0, 1.25)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+        }
+    }
+
+    def Scope "Materials"
+    {
+        def Material "yellow" (
+            instanceable = true
+            add references = </Flattened_Prototype_13>
+        )
+        {
+            color3f inputs:diffuseColor = (0.8900055, 0.33034378, 0.0030954955)
+            float inputs:metallic = 0
+            float inputs:opacity = 1
+            float inputs:roughness = 0.5
+            token inputs:wrapMode = "repeat"
+            token outputs:displacement (
+                displayGroup = "Outputs"
+            )
+            token outputs:surface (
+                displayGroup = "Outputs"
+            )
+            token outputs:surface.connect = </wa320/Materials/yellow/PreviewSurface.outputs:surface>
+            token outputs:volume (
+                displayGroup = "Outputs"
+            )
+        }
+
+        def Material "glass" (
+            instanceable = true
+            add references = </Flattened_Prototype_16>
+        )
+        {
+            color3f inputs:diffuseColor = (0.02198094, 0.08353512, 0.13286832)
+            float inputs:metallic = 0
+            float inputs:opacity = 1
+            float inputs:roughness = 0.5
+            token inputs:wrapMode = "repeat"
+            token outputs:displacement (
+                displayGroup = "Outputs"
+            )
+            token outputs:surface (
+                displayGroup = "Outputs"
+            )
+            token outputs:surface.connect = </wa320/Materials/glass/PreviewSurface.outputs:surface>
+            token outputs:volume (
+                displayGroup = "Outputs"
+            )
+        }
+
+        def Material "dark" (
+            instanceable = true
+            add references = </Flattened_Prototype_14>
+        )
+        {
+            color3f inputs:diffuseColor = (0.013411745, 0.015325204, 0.017389098)
+            float inputs:metallic = 0
+            float inputs:opacity = 1
+            float inputs:roughness = 0.5
+            token inputs:wrapMode = "repeat"
+            token outputs:displacement (
+                displayGroup = "Outputs"
+            )
+            token outputs:surface (
+                displayGroup = "Outputs"
+            )
+            token outputs:surface.connect = </wa320/Materials/dark/PreviewSurface.outputs:surface>
+            token outputs:volume (
+                displayGroup = "Outputs"
+            )
+        }
+
+        def Material "steel" (
+            instanceable = true
+            add references = </Flattened_Prototype_15>
+        )
+        {
+            color3f inputs:diffuseColor = (0.19599414, 0.21404114, 0.233022)
+            float inputs:metallic = 0
+            float inputs:opacity = 1
+            float inputs:roughness = 0.5
+            token inputs:wrapMode = "repeat"
+            token outputs:displacement (
+                displayGroup = "Outputs"
+            )
+            token outputs:surface (
+                displayGroup = "Outputs"
+            )
+            token outputs:surface.connect = </wa320/Materials/steel/PreviewSurface.outputs:surface>
+            token outputs:volume (
+                displayGroup = "Outputs"
+            )
+        }
+    }
+
+    def PhysicsRevoluteJoint "zbar_closure"
+    {
+        uniform token physics:axis = "Y"
+        rel physics:body0 = </wa320/Geometry/rear_frame/front_frame/boom/bellcrank/rod>
+        rel physics:body1 = </wa320/Geometry/rear_frame/front_frame/boom/bucket>
+        bool physics:collisionEnabled = 0
+        uniform bool physics:excludeFromArticulation = 1
+        point3f physics:localPos0 = (1.59, 0, 0)
+        point3f physics:localPos1 = (-0.12, 0, 0.5)
+    }
+
+    def Material "RigidContact" (
+        apiSchemas = ["PhysicsMaterialAPI"]
+    )
+    {
+        float physics:dynamicFriction = 0.7
+        float physics:restitution = 0
+        float physics:staticFriction = 0.8
+    }
+}
+
+over "Flattened_Prototype_9"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_9.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_9.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_9.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_9.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_10"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_10.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_10.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_10.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_10.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_11"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_11.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_11.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_11.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_11.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_12"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_12.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_12.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_12.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_12.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_5"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_5.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_5.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_5.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_5.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_6"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_6.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_6.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_6.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_6.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_7"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_7.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_7.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_7.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_7.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_8"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_8.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_8.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_8.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_8.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_1"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_1.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_1.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_1.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_1.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_2"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_2.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_2.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_2.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_2.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_3"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_3.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_3.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_3.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_3.inputs:roughness>
+        token outputs:surface
+    }
+}
+
+over "Flattened_Prototype_4"
+{
+    def Shader "PreviewSurface"
+    {
+        uniform token info:id = "UsdPreviewSurface"
+        color3f inputs:diffuseColor.connect = </Flattened_Prototype_4.inputs:diffuseColor>
+        float inputs:metallic.connect = </Flattened_Prototype_4.inputs:metallic>
+        float inputs:opacity.connect = </Flattened_Prototype_4.inputs:opacity>
+        float inputs:roughness.connect = </Flattened_Prototype_4.inputs:roughness>
+        token outputs:surface
+    }
+}

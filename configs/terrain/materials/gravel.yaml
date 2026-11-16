@@ -1,0 +1,12 @@
+# gravel: configuration contract only; no calibration data available.
+# SOURCE: unmeasured. Null values deliberately block granular simulation.
+material: gravel
+validated: false
+density: null  # kg/m^3; specify bulk or particle density when calibrating
+friction: null  # dimensionless contact coefficient, not bulk repose angle
+rolling_resistance: null  # specify the selected contact law and units
+stiffness: null  # Pa for Young modulus; choose a contact law before filling
+restitution: null  # dimensionless
+cohesion: null  # Pa; even zero must be justified for the chosen sample
+particle_size: null  # m; distinguish physical grains from simulation elements
+particle_distribution: null  # distribution and quantiles required

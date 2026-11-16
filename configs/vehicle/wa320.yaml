@@ -1,0 +1,82 @@
+# WA320-7-like original parametric model; NOT manufacturer CAD.
+# Units: m, kg, s, rad, N m. X forward, Y left, Z up.
+vehicle:
+  mass: 15175.0  # SOURCE: Aoshima 2024, section 4.1; Japanese WA320-7 specification
+  wheelbase: 3.03  # SOURCE: Komatsu specification; Aoshima 2024
+  track_width: 2.05  # SOURCE: Komatsu specification; Aoshima 2024
+  wheel_radius: 0.695  # SOURCE: Aoshima 2024, wheel diameter 1.39 m / 2
+  bucket_width: 2.685  # SOURCE: Aoshima 2024; Komatsu specification
+  bucket_volume: 3.0  # SOURCE: Aoshima 2024; capacity metadata, NOT generated shell volume
+  wheel_width: 0.5  # SOURCE: estimated; no tire/contact calibration
+  articulation_height: 1.1  # SOURCE: estimated; root frame height above ground at nominal tire radius
+articulation:
+  min_angle: -0.6719517620178169  # SOURCE: derived, Komatsu specification -38.5 degrees
+  max_angle: 0.6719517620178169  # SOURCE: derived, Komatsu specification +38.5 degrees
+  max_velocity: 0.2  # SOURCE: estimated, diagnostic rate
+  max_torque: 120000.0  # SOURCE: estimated, equivalent rotary drive; NOT cylinder force
+boom:
+  pivot: [0.55, 0.5]  # SOURCE: estimated, front-frame X/Z relative to articulation
+  length: 2.7  # SOURCE: estimated, boom pivot to bucket pin
+  initial_elevation: -0.25  # SOURCE: estimated, X/Z angle above forward
+  min_angle: 0.0  # SOURCE: estimated, displacement from initial elevation
+  max_angle: 1.25  # SOURCE: estimated, NOT measured mechanical stop
+  max_velocity: 0.12  # SOURCE: estimated, diagnostic rate
+  max_torque: 180000.0  # SOURCE: estimated, equivalent rotary drive; NOT breakout/cylinder force
+  rail_spacing: 0.85  # SOURCE: estimated, paired boom arms
+  rail_thickness: 0.18  # SOURCE: estimated, proxy section
+linkage:
+  bellcrank_pivot_fraction: 0.55  # SOURCE: estimated, position along boom
+  bellcrank_upper_length: 0.6  # SOURCE: estimated, upper arm to tilt cylinder pin
+  bellcrank_lower_length: 0.45  # SOURCE: estimated, opposite arm to connecting rod pin
+  initial_bellcrank_angle: 1.1  # SOURCE: estimated, relative to boom
+  rod_length: 1.59  # SOURCE: estimated, fixed Z-bar rod pin distance
+  bucket_anchor: [-0.12, 0.5]  # SOURCE: estimated, bucket X/Z relative to bucket pin
+  tilt_cylinder_base: [-0.25, 0.1]  # SOURCE: estimated, X/Z relative to boom pivot; geometry only
+  min_angle: -0.8  # SOURCE: estimated, bellcrank displacement from initial angle
+  max_angle: 0.8  # SOURCE: estimated, feasible branch; NOT hydraulic stroke limit
+  max_velocity: 0.15  # SOURCE: estimated, diagnostic bellcrank rate
+  max_torque: 100000.0  # SOURCE: estimated, equivalent bellcrank drive; hydraulics not modeled
+  rod_min_angle: -3.141592653589793  # SOURCE: estimated, passive rod envelope
+  rod_max_angle: 3.141592653589793  # SOURCE: estimated, passive rod envelope
+  passive_max_velocity: 3.0  # SOURCE: estimated, passive joint diagnostic bound
+  bar_thickness: 0.08  # SOURCE: estimated, visual/collision proxy
+bucket:
+  lip: [1.25, -0.55]  # SOURCE: estimated, bucket-local X/Z to cutting lip
+  back_bottom: [-0.15, -0.55]  # SOURCE: estimated, bucket-local X/Z
+  back_top: [-0.15, 0.45]  # SOURCE: estimated, bucket-local X/Z
+  plate_thickness: 0.06  # SOURCE: estimated, original compound-box shell
+  min_angle: -1.5  # SOURCE: estimated, passive bucket displacement safety envelope
+  max_angle: 0.5  # SOURCE: estimated, passive bucket displacement safety envelope
+geometry:
+  rear_box_size: [2.95, 1.55, 0.9]  # SOURCE: estimated, counterweight/engine proxy
+  rear_box_center: [-1.475, 0.0, 0.1]  # SOURCE: estimated, rear-frame XYZ
+  front_box_size: [1.5, 1.3, 0.5]  # SOURCE: estimated, front-frame proxy
+  front_rail_spacing: 0.9  # SOURCE: estimated, open central channel for Z-bar
+  front_rail_width: 0.2  # SOURCE: estimated, forked front frame
+  front_axle_box_size: [0.4, 1.3, 0.2]  # SOURCE: estimated, low axle crossmember
+  front_box_center: [1.05, 0.0, -0.2]  # SOURCE: estimated, front-frame XYZ
+  cab_size: [1.3, 1.35, 1.7]  # SOURCE: estimated, total nominal cab top 3.2 m
+  cab_center: [-0.9, 0.0, 1.25]  # SOURCE: estimated, rear-frame XYZ
+masses:
+  rear_frame: 7000.0  # SOURCE: estimated mass allocation; includes cab/counterweight
+  front_frame: 3500.0  # SOURCE: estimated mass allocation
+  wheel: 400.0  # SOURCE: estimated, each of four wheels
+  boom: 1500.0  # SOURCE: estimated, paired arms lumped
+  bucket: 1400.0  # SOURCE: estimated, NOT a verified bucket option
+  bellcrank: 100.0  # SOURCE: estimated
+  rod: 75.0  # SOURCE: estimated; allocation sums to nominal machine mass
+contact:
+  static_friction: 0.8  # SOURCE: estimated, rigid ground test only
+  dynamic_friction: 0.7  # SOURCE: estimated, rigid ground test only
+  restitution: 0.0  # SOURCE: estimated, rigid ground test only
+wheels:
+  collision_sides: 64  # SOURCE: estimated numerical contact mesh resolution; not tire tread
+  max_velocity: 4.0  # SOURCE: estimated, low-speed diagnostic rad/s
+  max_torque: 12000.0  # SOURCE: estimated, per wheel; driveline/power sharing not modeled
+solver:
+  dt: 0.004166666666666667  # SOURCE: estimated, 240 Hz starting point; validate loop residual
+  position_iterations: 64  # SOURCE: estimated, PhysX diagnostic setting
+  velocity_iterations: 4  # SOURCE: estimated, PhysX diagnostic setting
+  wheel_damping: 2000.0  # SOURCE: estimated, N m s / rad
+  joint_stiffness: 1000000.0  # SOURCE: estimated, N m / rad, diagnostic position drives
+  joint_damping: 100000.0  # SOURCE: estimated, N m s / rad

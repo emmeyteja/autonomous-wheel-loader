@@ -8,12 +8,12 @@ version = "0.0.1"
 description = "Simulation-only autonomous wheel loader reinforcement learning research scaffold"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
-dependencies = ["numpy>=1.26,<3"]
+dependencies = ["numpy>=1.26,<3", "PyYAML>=6,<7"]
 
 [project.optional-dependencies]
 model-audit = ["xacro==2.1.1"]
 sim = ["isaaclab==3.0.0"]
-dev = ["pytest>=8,<10", "torch==2.11.0"]
+dev = ["pytest>=8,<10"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit"]
@@ -21,6 +21,3 @@ pythonpath = ["src"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.setuptools.package-data]
-wheel_loader_rl = ["assets/*.xml"]
