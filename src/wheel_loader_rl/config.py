@@ -35,12 +35,21 @@ class PileConfig:
     half_width_m: float = 0.6
     height_m: float = 0.6
     particle_density_kgpm3: float = 1600.0
+    static_friction: float = 0.65
+    dynamic_friction: float = 0.5
+    rolling_friction: float = 0.02
     center_x_m: float = 2.0
     jitter_m: float = 0.005
 
     def __post_init__(self):
         for name in ('radius_m', 'spacing_m', 'half_length_m', 'half_width_m', 'height_m', 'particle_density_kgpm3'):
             _positive(name, getattr(self, name))
+        for name in ('static_friction', 'dynamic_friction', 'rolling_friction'):
+            value = getattr(self, name)
+            if not math.isfinite(value) or value < 0:
+                raise ValueError(f'{name} must be finite and nonnegative')
+        if self.dynamic_friction > self.static_friction:
+            raise ValueError('dynamic_friction must not exceed static_friction')
         if not math.isfinite(self.center_x_m):
             raise ValueError('center_x_m must be finite')
         if not math.isfinite(self.jitter_m) or self.jitter_m < 0:

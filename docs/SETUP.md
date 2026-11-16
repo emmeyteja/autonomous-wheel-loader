@@ -42,3 +42,12 @@ Runtime inventory and diagnostic outputs stay local under `outputs/m0/`; do not 
 `configs/env.toml` defines timing, seed, environment count, physical action bounds, and a procedural coarse-sphere pile layout. Parameters are initial uncalibrated simulation assumptions. `generate_pile` produces geometry only; it does not simulate contacts, acquisition, release, or calibrated soil behavior.
 
 The three loading action columns are longitudinal velocity [m/s], lift rate [rad/s], and curl rate [rad/s]. State and command frames use +X forward, +Y left, +Z up. Steering remains a separate future motion contract.
+
+## Pile demo
+
+- Run `./scripts/demo_pile.sh` for a headless rigid-sphere simulation and local video.
+- Run `./scripts/demo_pile.sh --interactive --no-video` for the Newton desktop viewer; requires a display.
+- Defaults: 65 coarse spheres, five simulated seconds, 25 video frames per second.
+- Video: `outputs/pile_demo/pile_settling.mp4`; raw positions and summary stay in the same ignored directory.
+- Video export requires `ffmpeg` on PATH; `--no-video` skips export.
+- This shows gravity and contacts, not calibrated soil, bucket loading, or loader motion.

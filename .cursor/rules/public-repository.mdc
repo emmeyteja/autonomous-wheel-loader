@@ -15,3 +15,5 @@ alwaysApply: true
 - Preserve dependency versions and technical reproducibility without publishing personal machine identity.
 - Review staged files and author/committer identity before pushing. Check history when removing previously published information.
 - When an authorized history correction is necessary, make a local recovery backup, verify the remote head, and use an explicit force-with-lease; never overwrite others' new commits.
+
+- Keep the README short and use bullet points. Omit sections on first objectives, development roadmaps, research scope, and public-information policy; use issues for planning and tracking.

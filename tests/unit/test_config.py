@@ -49,3 +49,13 @@ import wheel_loader_rl.config, wheel_loader_rl.pile, wheel_loader_rl.env.actions
 assert not any(name.split('.')[0] in {'isaaclab', 'isaacsim', 'rclpy', 'torch'} for name in sys.modules)
 """
     subprocess.run([sys.executable, '-c', code], check=True)
+
+
+@pytest.mark.parametrize('updates', [
+    {'static_friction': -1}, {'dynamic_friction': math.nan},
+    {'rolling_friction': math.inf}, {'rolling_friction': -0.1},
+    {'static_friction': 0.2, 'dynamic_friction': 0.3},
+])
+def test_invalid_material_contact_parameters_rejected(updates):
+    with pytest.raises(ValueError):
+        replace(PileConfig(), **updates)
