@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 import numpy as np
 
 from wheel_loader_rl.config import EnvironmentConfig
-from wheel_loader_rl.pile import generate_pile
+from wheel_loader_rl.pile import generate_pile, pile_geometry
 
 
 def simulate_pile(
@@ -68,7 +68,8 @@ def simulate_pile(
     sim_cfg = sim_utils.SimulationCfg(
         dt=1 / cfg.physics_hz, device='cuda:0', visualizer_cfgs=visualizers,
         physics=NewtonCfg(solver_cfg=MJWarpSolverCfg(
-            njmax=4096, nconmax=1024, cone='pyramidal', integrator='implicitfast',
+            njmax=max(4096, 40 * len(centers)), nconmax=max(1024, 8 * len(centers)),
+            solver='cg', cone='pyramidal', integrator='implicitfast',
             save_to_mjcf=str(output / 'effective_model.xml'),
         )),
     )
@@ -86,7 +87,9 @@ def simulate_pile(
             effective_modes = {int(geom.get('condim', '3')) for geom in effective_geoms}
             if len(effective_geoms) != len(centers) or effective_modes != {cfg.pile.contact_dimensions}:
                 raise RuntimeError('Exported solver contact dimensions do not match the pile configuration')
-            sim.set_camera_view(eye=(5.0, -4.0, 3.0), target=(cfg.pile.center_x_m, 0.0, 0.4))
+            sim.set_camera_view(eye=(cfg.pile.center_x_m + 2 * cfg.pile.half_length_m,
+                                     -2 * cfg.pile.half_width_m, 2.5 * cfg.pile.height_m),
+                                target=(cfg.pile.center_x_m, 0.0, cfg.pile.height_m / 2))
             grains = scene['grains']
             torch.cuda.synchronize()
             started = time.perf_counter()
@@ -123,6 +126,12 @@ def simulate_pile(
     summary = {
         'demo': 'coarse rigid-sphere settling; no loader or bucket-transfer test',
         'seed': cfg.seed, 'particle_count': len(centers), 'physics_steps': step,
+        'initial_geometry': pile_geometry(cfg.pile),
+        'sphere_diameter_m': 2 * cfg.pile.radius_m,
+        'initial_total_particle_mass_kg': len(centers) * cfg.pile.sphere_mass_kg,
+        'final_total_particle_mass_kg': len(centers) * cfg.pile.sphere_mass_kg,
+        'mass_note': 'Fixed particle count only; bucket-transfer conservation is not tested.',
+        'solver': 'mujoco_warp_cg',
         'physics_hz': cfg.physics_hz, 'recording_fps': fps, 'simulated_duration_s': step / cfg.physics_hz,
         'drop_height_m': drop_height_m, 'all_states_finite': True,
         'contact_dimensions': cfg.pile.contact_dimensions,

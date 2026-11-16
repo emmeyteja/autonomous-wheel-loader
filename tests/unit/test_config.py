@@ -65,3 +65,13 @@ def test_invalid_material_contact_parameters_rejected(updates):
 def test_unsupported_pile_contact_dimension_rejected(value):
     with pytest.raises(ValueError):
         replace(PileConfig(), contact_dimensions=value)
+
+
+@pytest.mark.parametrize('updates', [
+    {'shape': 'unknown'}, {'slope_deg': 0}, {'slope_deg': 90},
+    {'slope_deg': math.nan}, {'max_particles': 0}, {'max_particles': True},
+    {'shape': 'trapezoid', 'height_m': 2.0, 'slope_deg': 30},
+])
+def test_invalid_stockpile_shape_and_resolution_rejected(updates):
+    with pytest.raises(ValueError):
+        replace(PileConfig(), **updates)

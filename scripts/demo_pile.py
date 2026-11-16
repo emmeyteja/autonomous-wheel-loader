@@ -8,7 +8,7 @@ from wheel_loader_rl.config import load_config
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--config', type=Path, default=Path('configs/env.toml'))
+    parser.add_argument('--config', type=Path, default=Path('configs/pile_trapezoid_dense.toml'))
     parser.add_argument('--seed', type=int)
     parser.add_argument('--duration-s', type=float, default=5.0)
     parser.add_argument('--drop-height-m', type=float, default=0.0)

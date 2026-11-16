@@ -41,10 +41,19 @@ def render_pile_video(trace: Path, output: Path, fps: int = 25) -> Path:
                 for surface in surfaces:
                     surface.remove()
                 surfaces.clear()
-                for index, point in enumerate(frame):
-                    xyz = sphere + point
-                    shade = 0.5 + 0.35 * ((index % 7) / 6)
-                    surfaces.append(ax.plot_surface(xyz[..., 0], xyz[..., 1], xyz[..., 2], color=(shade, shade*0.66, shade*0.31), linewidth=0, antialiased=True, shade=True, zorder=2))
+                if len(frame) > 256:
+                    # One point-cloud artist keeps dense previews practical. Every
+                    # point still comes directly from the recorded physics state.
+                    size = (2 * radius / span * 600)**2
+                    surfaces.append(ax.scatter(frame[:, 0], frame[:, 1], frame[:, 2],
+                                               s=size, c=frame[:, 2], cmap='YlOrBr',
+                                               vmin=0, vmax=high[2], edgecolors='none',
+                                               depthshade=True, zorder=2))
+                else:
+                    for index, point in enumerate(frame):
+                        xyz = sphere + point
+                        shade = 0.5 + 0.35 * ((index % 7) / 6)
+                        surfaces.append(ax.plot_surface(xyz[..., 0], xyz[..., 1], xyz[..., 2], color=(shade, shade*0.66, shade*0.31), linewidth=0, antialiased=True, shade=True, zorder=2))
                 timer.set_text(f'{seconds:4.2f} s')
                 writer.grab_frame()
                 if seconds == times[0]:

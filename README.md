@@ -12,6 +12,7 @@ Run the pile demo:
 ./scripts/demo_pile.sh
 ```
 
-- Saves a video to `outputs/pile_demo/pile_settling.mp4`.
+- Default: 966-ball trapezoidal pile; saves `outputs/pile_demo/pile_settling.mp4`.
+- Faster preset: `./scripts/demo_pile.sh --config configs/pile_trapezoid.toml`.
 - Desktop viewer: `./scripts/demo_pile.sh --interactive --no-video`.
 - Tests: `./scripts/test_core.sh`.
