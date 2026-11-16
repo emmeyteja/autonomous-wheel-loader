@@ -11,7 +11,7 @@ def main():
     parser.add_argument('--config', type=Path, default=Path('configs/env.toml'))
     parser.add_argument('--seed', type=int)
     parser.add_argument('--duration-s', type=float, default=5.0)
-    parser.add_argument('--drop-height-m', type=float, default=0.8)
+    parser.add_argument('--drop-height-m', type=float, default=0.0)
     parser.add_argument('--fps', type=int, default=25)
     parser.add_argument('--interactive', action='store_true', help='Open the Newton viewer; requires a desktop display.')
     parser.add_argument('--no-video', action='store_true', help='Save physics data only; skip ffmpeg rendering.')

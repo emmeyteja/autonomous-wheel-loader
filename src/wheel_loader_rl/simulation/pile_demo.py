@@ -7,6 +7,7 @@ from importlib import metadata
 import json
 import math
 import time
+import xml.etree.ElementTree as ET
 
 import numpy as np
 
@@ -16,7 +17,7 @@ from wheel_loader_rl.pile import generate_pile
 
 def simulate_pile(
     cfg: EnvironmentConfig, output: Path, duration_s: float = 5.0,
-    drop_height_m: float = 0.8, fps: int = 25, interactive: bool = False,
+    drop_height_m: float = 0.0, fps: int = 25, interactive: bool = False,
 ) -> Path:
     """Run one scene and save recorded particle centers plus a technical summary."""
     if not math.isfinite(duration_s) or duration_s <= 0:
@@ -34,7 +35,7 @@ def simulate_pile(
     from isaaclab.scene import InteractiveScene, InteractiveSceneCfg
     from isaaclab.utils import configclass
     from isaaclab_newton.physics import NewtonCfg, MJWarpSolverCfg
-    from isaaclab_newton.sim.schemas import NewtonCollisionCfg
+    from isaaclab_newton.sim.schemas import NewtonCollisionCfg, MujocoCollisionCfg
 
     centers = generate_pile(cfg.pile, cfg.seed)
     centers[:, 2] += drop_height_m
@@ -46,7 +47,7 @@ def simulate_pile(
                 radius=cfg.pile.radius_m,
                 rigid_props=sim_utils.UsdPhysicsRigidBodyCfg(),
                 mass_props=sim_utils.MassCfg(mass=cfg.pile.sphere_mass_kg),
-                collision_props=[sim_utils.UsdPhysicsCollisionCfg(collision_enabled=True), NewtonCollisionCfg()],
+                collision_props=[sim_utils.UsdPhysicsCollisionCfg(collision_enabled=True), NewtonCollisionCfg(), MujocoCollisionCfg(condim=cfg.pile.contact_dimensions)],
                 physics_material=sim_utils.NewtonMaterialPropertiesCfg(
                     static_friction=cfg.pile.static_friction, dynamic_friction=cfg.pile.dynamic_friction, rolling_friction=cfg.pile.rolling_friction,
                 ),
@@ -67,7 +68,8 @@ def simulate_pile(
     sim_cfg = sim_utils.SimulationCfg(
         dt=1 / cfg.physics_hz, device='cuda:0', visualizer_cfgs=visualizers,
         physics=NewtonCfg(solver_cfg=MJWarpSolverCfg(
-            njmax=2048, nconmax=1024, cone='pyramidal', integrator='implicitfast',
+            njmax=4096, nconmax=1024, cone='pyramidal', integrator='implicitfast',
+            save_to_mjcf=str(output / 'effective_model.xml'),
         )),
     )
     output.mkdir(parents=True, exist_ok=True)
@@ -79,6 +81,11 @@ def simulate_pile(
         try:
             scene = InteractiveScene(PileSceneCfg(num_envs=1, env_spacing=6.0))
             sim.reset()
+            effective_geoms = [geom for geom in ET.parse(output / 'effective_model.xml').getroot().iter('geom')
+                               if 'Grain_' in geom.get('name', '')]
+            effective_modes = {int(geom.get('condim', '3')) for geom in effective_geoms}
+            if len(effective_geoms) != len(centers) or effective_modes != {cfg.pile.contact_dimensions}:
+                raise RuntimeError('Exported solver contact dimensions do not match the pile configuration')
             sim.set_camera_view(eye=(5.0, -4.0, 3.0), target=(cfg.pile.center_x_m, 0.0, 0.4))
             grains = scene['grains']
             torch.cuda.synchronize()
@@ -107,6 +114,10 @@ def simulate_pile(
     positions = np.asarray(frames, dtype=np.float32)
     if positions[-1, :, 2].min() < cfg.pile.radius_m * 0.5:
         raise RuntimeError('Excessive ground penetration in final pile state')
+    reference_xy = positions[0, :, :2].mean(axis=0)
+    initial_radial = np.linalg.norm(positions[0, :, :2] - reference_xy, axis=1)
+    final_radial = np.linalg.norm(positions[-1, :, :2] - reference_xy, axis=1)
+    speed_estimate = (positions[-1] - positions[-2]) * fps if len(positions) > 1 else np.zeros_like(positions[-1])
     trace = output / 'pile_motion.npz'
     np.savez_compressed(trace, positions_m=positions, time_s=np.asarray(timestamps), radius_m=cfg.pile.radius_m)
     summary = {
@@ -114,6 +125,12 @@ def simulate_pile(
         'seed': cfg.seed, 'particle_count': len(centers), 'physics_steps': step,
         'physics_hz': cfg.physics_hz, 'recording_fps': fps, 'simulated_duration_s': step / cfg.physics_hz,
         'drop_height_m': drop_height_m, 'all_states_finite': True,
+        'contact_dimensions': cfg.pile.contact_dimensions,
+        'initial_radius_p90_m': float(np.quantile(initial_radial, 0.9)),
+        'final_radius_p90_m': float(np.quantile(final_radial, 0.9)),
+        'final_top_height_m': float(positions[-1, :, 2].max() + cfg.pile.radius_m),
+        'final_elevated_fraction': float(np.mean(positions[-1, :, 2] > 2 * cfg.pile.radius_m)),
+        'final_max_speed_estimate_mps': float(np.linalg.norm(speed_estimate, axis=1).max()),
         'initial_mean_height_m': float(positions[0, :, 2].mean()),
         'final_mean_height_m': float(positions[-1, :, 2].mean()),
         'final_min_center_height_m': float(positions[-1, :, 2].min()),

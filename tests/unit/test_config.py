@@ -59,3 +59,9 @@ assert not any(name.split('.')[0] in {'isaaclab', 'isaacsim', 'rclpy', 'torch'} 
 def test_invalid_material_contact_parameters_rejected(updates):
     with pytest.raises(ValueError):
         replace(PileConfig(), **updates)
+
+
+@pytest.mark.parametrize('value', [1, 4, 7, True])
+def test_unsupported_pile_contact_dimension_rejected(value):
+    with pytest.raises(ValueError):
+        replace(PileConfig(), contact_dimensions=value)

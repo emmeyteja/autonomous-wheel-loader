@@ -18,3 +18,5 @@ alwaysApply: true
 - Add abstractions at actual integration boundaries; avoid speculative services and deep class hierarchies.
 - Test contract conversions, limits, reset behavior, and batch isolation when implementing each boundary.
 - Keep this repository simulation-only; no real-machine actuation interface is authorized.
+
+- The first target material is dry sand. Do not describe the coarse-sphere demo or gravel-paper parameters as calibrated sand; validate bulk behavior and angle of repose before relying on excavation results.

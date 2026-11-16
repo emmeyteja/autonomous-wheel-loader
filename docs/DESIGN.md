@@ -1387,7 +1387,8 @@ Research references to reproduce/compare against:
 
 - Aoshima et al., 2024, "World Modeling for Autonomous Wheel Loaders", Automation 5(3), 259–281.
 - Morais et al., 2025, "Reinforcement Learning with World Models for Autonomous Excavation Optimization in Wheel Loaders", IFAC 2025.
-- Eriksson et al., 2024, "Optimizing a Bucket Filling Strategy for Wheel Loaders Inside a Dream Environment."
+- Eriksson, Ghabcheloo, and Geimer, 2024, "Optimizing bucket-filling strategies for wheel loaders inside a dream environment", Automation in Construction 168, 105804. https://doi.org/10.1016/j.autcon.2024.105804
+- Aoshima and Servin, "Examining the simulation-to-reality gap of a wheel loader digging in deformable terrain", Multibody System Dynamics 64, 121–148 (2025; published online 2024). https://doi.org/10.1007/s11044-024-10005-5
 
 ---
 

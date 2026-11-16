@@ -35,6 +35,7 @@ class PileConfig:
     half_width_m: float = 0.6
     height_m: float = 0.6
     particle_density_kgpm3: float = 1600.0
+    contact_dimensions: int = 6
     static_friction: float = 0.65
     dynamic_friction: float = 0.5
     rolling_friction: float = 0.02
@@ -44,6 +45,8 @@ class PileConfig:
     def __post_init__(self):
         for name in ('radius_m', 'spacing_m', 'half_length_m', 'half_width_m', 'height_m', 'particle_density_kgpm3'):
             _positive(name, getattr(self, name))
+        if type(self.contact_dimensions) is not int or self.contact_dimensions not in (3, 6):
+            raise ValueError('contact_dimensions must be 3 (sliding) or 6 (sliding and rolling)')
         for name in ('static_friction', 'dynamic_friction', 'rolling_friction'):
             value = getattr(self, name)
             if not math.isfinite(value) or value < 0:

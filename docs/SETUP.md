@@ -51,3 +51,7 @@ The three loading action columns are longitudinal velocity [m/s], lift rate [rad
 - Video: `outputs/pile_demo/pile_settling.mp4`; raw positions and summary stay in the same ignored directory.
 - Video export requires `ffmpeg` on PATH; `--no-video` skips export.
 - This shows gravity and contacts, not calibrated soil, bucket loading, or loader motion.
+
+- The rigid-sphere demo starts at ground level; use `--drop-height-m 0.8` only for an intentional drop experiment.
+- `pile.contact_dimensions = 6` enables rolling resistance in MuJoCo contacts; mode 3 omits it even when a rolling-friction coefficient is set. The exported effective model is checked at startup.
+- These coarse particles are a contact demo, not a calibrated dry-sand model. The first target material is dry sand; its repose angle, bulk density, and excavation response still require validation.
