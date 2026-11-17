@@ -70,5 +70,94 @@ class ConvertedAssetTests(unittest.TestCase):
             )
 
 
+
+
+class NewtonProfileAssetTests(unittest.TestCase):
+    def test_numerical_profile_preserves_vehicle_and_passive_drives(self):
+        import hashlib
+        import tempfile
+
+        from wheel_loader.environment.simulation.newton_profile import (
+            BOUNDED_JOINTS,
+            NewtonProfile,
+            prepare_asset,
+        )
+
+        source = ROOT / "assets/wheel_loader/wa320/usd/wa320_fixed.usda"
+        original_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+        settings = NewtonProfile()
+        with tempfile.TemporaryDirectory() as temporary:
+            output = prepare_asset(
+                source,
+                Path(temporary) / "prepared.usda",
+                settings,
+                require_fixed_base=True,
+            )
+            stage = Usd.Stage.Open(str(output))
+            original = Usd.Stage.Open(str(source))
+            for prim in stage.Traverse():
+                before = original.GetPrimAtPath(prim.GetPath())
+                if prim.HasAPI(UsdPhysics.RigidBodyAPI):
+                    for name in (
+                        "physics:mass",
+                        "physics:centerOfMass",
+                        "physics:diagonalInertia",
+                        "physics:principalAxes",
+                    ):
+                        self.assertEqual(
+                            prim.GetAttribute(name).Get(),
+                            before.GetAttribute(name).Get(),
+                        )
+                if prim.GetName() in BOUNDED_JOINTS:
+                    self.assertAlmostEqual(
+                        prim.GetAttribute("mjc:solreflimit").Get()[0],
+                        settings.stop_time_constant,
+                    )
+                    self.assertAlmostEqual(
+                        prim.GetAttribute("mjc:solimplimit").Get()[0],
+                        settings.stop_impedance,
+                    )
+                if prim.GetName() in ("rod_joint", "bucket_joint"):
+                    self.assertFalse(prim.HasAPI(UsdPhysics.DriveAPI, "angular"))
+            self.assertFalse(stage.GetPrimAtPath("/wa320/zbar_closure").IsActive())
+            self.assertTrue(original.GetPrimAtPath("/wa320/zbar_closure").IsActive())
+            constraints = [
+                prim
+                for prim in stage.Traverse()
+                if "MjcEqualityConnectAPI"
+                in (
+                    prim.GetMetadata("apiSchemas").GetAddedOrExplicitItems()
+                    if prim.GetMetadata("apiSchemas")
+                    else []
+                )
+            ]
+            self.assertEqual(len(constraints), 2)
+            for index, prim in enumerate(
+                sorted(constraints, key=lambda p: str(p.GetPath()))
+            ):
+                joint = UsdPhysics.SphericalJoint(prim)
+                self.assertTrue(joint.GetExcludeFromArticulationAttr().Get())
+                self.assertEqual(joint.GetBody0Rel().GetTargets()[0].name, "rod")
+                self.assertEqual(joint.GetBody1Rel().GetTargets()[0].name, "bucket")
+                self.assertAlmostEqual(joint.GetLocalPos0Attr().Get()[1], index * 0.1)
+                self.assertAlmostEqual(joint.GetLocalPos1Attr().Get()[1], index * 0.1)
+                self.assertAlmostEqual(
+                    prim.GetAttribute("mjc:solref").Get()[0],
+                    settings.loop_time_constant,
+                )
+            self.assertEqual(
+                hashlib.sha256(source.read_bytes()).hexdigest(), original_hash
+            )
+            with self.assertRaises(ValueError):
+                prepare_asset(source, source, settings)
+            with self.assertRaises(ValueError):
+                prepare_asset(
+                    ROOT / "assets/wheel_loader/wa320/usd/wa320.usda",
+                    Path(temporary) / "bad.usda",
+                    settings,
+                    require_fixed_base=True,
+                )
+
+
 if __name__ == "__main__":
     unittest.main()

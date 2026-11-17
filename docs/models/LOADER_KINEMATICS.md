@@ -45,3 +45,11 @@ The front-frame pose adds boom elevation and pivot translation. Central yaw then
 - A rectangular joint envelope is not a collision-free workspace. Ground/bucket clearance and self-collision need simulator checks over actual operating paths.
 
 The former rail-constrained model and its kinematics are archived in `extras/legacy_loading`.
+
+## Newton loop representation
+
+- The simulation integration prepares a local derived asset before scene import; the committed PhysX assets are unchanged.
+- Two spherical connect constraints, separated by 0.1 m along the common hinge axis, enforce the same five constrained relative degrees of freedom as the rod/bucket revolute closure. The original loop joint is disabled only in this derived asset.
+- Both connects remain outside the reduced-coordinate tree. Bucket and rod remain unactuated.
+- `configs/simulation/newton.yaml` sets solver subdivision and loop/stop compliance. These are numerical settings, not measured mechanical or hydraulic compliance.
+- The exported MuJoCo model is checked to ensure those settings reached the solver. See the [validation record](../experiments/WA320_FOUNDATION.md) for tested paths and remaining gaps.

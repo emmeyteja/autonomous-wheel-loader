@@ -38,13 +38,16 @@ python scripts/check_wa320_physx.py --usd outputs/wa320/usd/wa320.usda --pile --
 
 `--capture` optionally saves a verification image; it adds no camera observations or perception pipeline. Fixed-base tests must use the fixed asset; driving tests must use the floating asset. Logs/media/raw motion remain ignored under `outputs/`.
 
-These diagnostics use PhysX. They are not a registered Isaac Lab training environment. The optional Isaac Lab/Newton fixture currently fails the loop/limit gates; reproduce with the fixed USD:
+The PhysX and Isaac Lab/Newton probes are diagnostics, not a registered training environment. In the separate Isaac Lab 3 / Newton environment, run the committed fixed asset:
 
 ```bash
-python scripts/check_wa320_isaaclab.py --usd outputs/wa320/usd_fixed/wa320_fixed.usda
+python scripts/check_wa320_isaaclab.py --usd assets/wheel_loader/wa320/usd/wa320_fixed.usda
+python scripts/check_wa320_isaaclab.py --usd assets/wheel_loader/wa320/usd/wa320_fixed.usda --batch-reset --output outputs/wa320/batch_reset
 ```
 
-Do not enable that backend for loading or training until its failures are resolved. Keep simulator-specific behavior inside `environment/simulation/`; do not silently drop closure joints or replace passive links with pose animation.
+The default numerical profile is `configs/simulation/newton.yaml`; override it with `--physics-config`. It keeps 240 Hz control with eight solver substeps. A derived Newton asset and effective solver model are saved under the output directory before scene import. Source assets remain unchanged.
+
+The Newton fixture passes closure, six driven-joint stop challenges, sampled self-collision checks and repeatable reset. The separate two-environment test checks reset isolation. These checks do not validate physical accuracy, ground driving, material loading or training readiness. Keep simulator-specific behavior inside `environment/simulation/`.
 
 - [Parameter/calibration status](calibration/WA320.md).
 - [Validation record](experiments/WA320_FOUNDATION.md).
