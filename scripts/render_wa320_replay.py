@@ -13,8 +13,9 @@ def main():
     )
     parser.add_argument("--output", type=Path)
     parser.add_argument("--fps", type=int, default=20)
+    parser.add_argument("--speedup", type=float, default=1.0)
     args = parser.parse_args()
-    print(render_replay(args.input, args.output, fps=args.fps))
+    print(render_replay(args.input, args.output, fps=args.fps, speedup=args.speedup))
 
 
 if __name__ == "__main__":

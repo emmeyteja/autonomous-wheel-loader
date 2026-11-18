@@ -7,13 +7,20 @@ from pathlib import Path
 import numpy as np
 
 
-def render_replay(folder, output=None, *, fps=20):
+def render_replay(folder, output=None, *, fps=20, speedup=1.0):
     import mujoco
+    from PIL import Image, ImageDraw
 
     folder = Path(folder)
     output = Path(output) if output else folder / "replay.mp4"
     if not isinstance(fps, int) or isinstance(fps, bool) or not 1 <= fps <= 240:
         raise ValueError("Video frame rate must be an integer from 1 to 240")
+    if (
+        not isinstance(speedup, (int, float))
+        or not np.isfinite(speedup)
+        or speedup <= 0
+    ):
+        raise ValueError("Playback speed must be finite and positive")
     ffmpeg = shutil.which("ffmpeg")
     if ffmpeg is None:
         raise RuntimeError("Install ffmpeg to encode simulation video")
@@ -22,6 +29,11 @@ def render_replay(folder, output=None, *, fps=20):
         roots = recording["root_poses_xyzw"]
         times = recording["time_s"]
         names = recording["joint_names"].tolist()
+        phase_ids = recording["phase_ids"] if "phase_ids" in recording else np.array([])
+        phase_names = (
+            recording["phase_names"].tolist() if "phase_names" in recording else []
+        )
+        commands = recording["commands"] if "commands" in recording else np.array([])
     if (
         len(times) < 2
         or not np.all(np.diff(times) > 0)
@@ -102,7 +114,7 @@ def render_replay(folder, output=None, *, fps=20):
         ) as encoder:
             try:
                 indices = np.searchsorted(
-                    times, np.arange(times[0], times[-1], 1 / fps)
+                    times, np.arange(times[0], times[-1], speedup / fps)
                 )
                 for index in indices:
                     root = roots[index]
@@ -112,7 +124,63 @@ def render_replay(folder, output=None, *, fps=20):
                     mujoco.mj_forward(model, data)
                     camera.lookat[:] = root[:3] + np.array([0.5, 0, 0.7])
                     renderer.update_scene(data, camera)
-                    encoder.stdin.write(renderer.render().tobytes())
+                    frame = Image.fromarray(renderer.render())
+                    if len(phase_ids) == len(times):
+                        draw = ImageDraw.Draw(frame)
+                        draw.rectangle((12, 12, 780, 70), fill=(15, 20, 25))
+                        phase = (
+                            phase_names[int(phase_ids[index])]
+                            .replace("reverse_loaded", "reverse bucket raised")
+                            .replace("_", " ")
+                            .upper()
+                        )
+                        velocity = commands[index, 0]
+                        gear = (
+                            "REVERSE"
+                            if velocity < -0.01
+                            else ("FORWARD" if velocity > 0.01 else "STOPPED")
+                        )
+                        draw.text(
+                            (24, 22),
+                            f"{phase} | {gear} | t={times[index]:.1f}s | {speedup:g}x replay",
+                            fill="white",
+                        )
+                        draw.text(
+                            (24, 45),
+                            "Unladen motion rehearsal - no sand acquisition or payload transfer",
+                            fill=(255, 205, 90),
+                        )
+                        draw.rectangle((1020, 12, 1268, 256), fill=(15, 20, 25))
+                        low, high = (
+                            roots[:, :2].min(axis=0) - 1,
+                            roots[:, :2].max(axis=0) + 1,
+                        )
+
+                        def map_xy(point, low=low, high=high):
+                            value = (point - low) / (high - low)
+                            return (
+                                1040 + int(208 * value[0]),
+                                232 - int(190 * value[1]),
+                            )
+
+                        route = [map_xy(point) for point in roots[::120, :2]]
+                        draw.line(route, fill=(100, 110, 120), width=2)
+                        past = [map_xy(point) for point in roots[: index + 1 : 120, :2]]
+                        past.append(map_xy(root[:2]))
+                        if len(past) > 1:
+                            draw.line(past, fill=(255, 170, 40), width=3)
+                        px, py = map_xy(root[:2])
+                        draw.ellipse((px - 4, py - 4, px + 4, py + 4), fill="white")
+                        ox, oy = map_xy(np.array([0.0, 0.0]))
+                        draw.ellipse(
+                            (ox - 4, oy - 4, ox + 4, oy + 4),
+                            outline=(80, 255, 120),
+                            width=2,
+                        )
+                        draw.text(
+                            (1034, 24), "Recorded route | green: origin", fill="white"
+                        )
+                    encoder.stdin.write(np.asarray(frame).tobytes())
             finally:
                 encoder.stdin.close()
             if encoder.wait():

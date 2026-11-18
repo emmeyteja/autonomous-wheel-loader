@@ -68,3 +68,8 @@ The Newton fixture passes closure, six driven-joint stop challenges, sampled sel
 - [Parameter/calibration status](calibration/WA320.md).
 - [Validation record](experiments/WA320_FOUNDATION.md).
 - Previous particle demos and Komodo tools: `extras/legacy_loading` and `extras/komodo`.
+
+## Full V-cycle motion rehearsal
+
+- [Scenario definitions, commands and acceptance checks](experiments/V_CYCLE.md).
+- Run the V-cycle script with --case all for nominal, slow and wide cases. Each case tests the entire maneuver; these are unladen motion tests, without sand acquisition or payload transfer.

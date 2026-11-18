@@ -67,7 +67,7 @@ def contact_sweep(path, positions, roots, names):
     }
 
 
-def run_ground(p, usd, output, *, profile, contact_profile=None):
+def run_ground(p, usd, output, *, profile, contact_profile=None, scenario=None):
     import isaaclab.sim as sim_utils
     import torch
     from isaaclab.app import launch_simulation
@@ -79,10 +79,12 @@ def run_ground(p, usd, output, *, profile, contact_profile=None):
     from pxr import Gf, Sdf, Usd, UsdPhysics
 
     from wheel_loader.control.commands import LoaderCommand, wheel_rates
+    from wheel_loader.control.v_cycle import PHASES, VCycleController
     from wheel_loader.evaluation.rigid_ground import (
         evaluate_ground,
         evaluate_wheel_support,
     )
+    from wheel_loader.evaluation.v_cycle import evaluate_v_cycle
     from wheel_loader.vehicle.kinematics import passive_joint_positions
 
     from .fixture_checks import ground_reset_check, linkage_gap
@@ -168,6 +170,8 @@ def run_ground(p, usd, output, *, profile, contact_profile=None):
         ),
     )
     samples, roots, gaps, forces = [], [], [], []
+    phase_ids, commands = [], []
+    cycle = VCycleController(p, scenario) if scenario else None
     with launch_simulation(cfg):
         sim = sim_utils.SimulationContext(cfg)
         try:
@@ -189,7 +193,7 @@ def run_ground(p, usd, output, *, profile, contact_profile=None):
             )
             if initial_error > 1e-6:
                 raise RuntimeError("Ground initial joint pose was not applied")
-            for step in range(round(15 / dt)):
+            for step in range(round((scenario.max_duration if scenario else 15) / dt)):
                 t = step * dt
                 command = LoaderCommand(
                     rear_axle_speed=0.6 * min(1.0, max(0.0, (t - 2) / 2)),
@@ -197,7 +201,41 @@ def run_ground(p, usd, output, *, profile, contact_profile=None):
                     boom_angle=0.15,
                     tilt_angle=-0.3,
                 )
+                if cycle:
+                    root = robot.data.root_link_pose_w.torch[0].cpu().numpy()
+                    x, y, z, w = root[3:]
+                    yaw = float(
+                        np.arctan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
+                    )
+                    phase_index = cycle.phase
+                    command = cycle.command(
+                        t,
+                        dt,
+                        root[:2],
+                        yaw,
+                        articulation=float(
+                            robot.data.joint_pos.torch[
+                                0, names.index("articulation_joint")
+                            ]
+                        ),
+                    )
+                    phase_ids.append(phase_index)
+                    if cycle.phase != phase_index:
+                        print(
+                            f"V-cycle: {PHASES[phase_index]} complete at {t:.1f}s",
+                            flush=True,
+                        )
+                commands.append(
+                    [
+                        command.rear_axle_speed,
+                        command.articulation_angle,
+                        command.boom_angle,
+                        command.tilt_angle,
+                    ]
+                )
                 command.validate(p)
+                target[0, names.index("boom_joint")] = command.boom_angle
+                target[0, names.index("tilt_joint")] = command.tilt_angle
                 target[0, names.index("articulation_joint")] = (
                     command.articulation_angle
                 )
@@ -237,9 +275,24 @@ def run_ground(p, usd, output, *, profile, contact_profile=None):
                     .numpy()
                     .copy()
                 )
+                if cycle and cycle.done:
+                    break
             positions, roots = np.asarray(samples), np.asarray(roots)
             times = np.arange(len(positions)) * dt
-            evaluation = evaluate_ground(p, times, positions, roots, gaps, names)
+            evaluation = (
+                evaluate_v_cycle(
+                    p,
+                    asdict(scenario) | {"joint_names": names},
+                    positions,
+                    roots,
+                    phase_ids,
+                    commands,
+                    cycle.events,
+                    cycle.done and not cycle.timeout,
+                )
+                if cycle
+                else evaluate_ground(p, times, positions, roots, gaps, names)
+            )
             contacts = contact_sweep(
                 output / "effective_model.xml", positions, roots, names
             )
@@ -250,6 +303,7 @@ def run_ground(p, usd, output, *, profile, contact_profile=None):
                 | audit_ground_model(output / "effective_model.xml", contact_profile)
                 | evaluation["checks"]
                 | {
+                    "loop_closure": bool(max(gaps) < 0.005),
                     "four_wheels_contact_ground": contacts[
                         "four_wheels_contact_ground"
                     ],
@@ -263,11 +317,13 @@ def run_ground(p, usd, output, *, profile, contact_profile=None):
             result = {
                 "runtime": "Isaac Lab 3 / Newton / MuJoCo Warp",
                 "fixture": False,
+                "scenario": asdict(scenario) if scenario else None,
                 "initial_joint_error_rad": initial_error,
                 "floating_reset": reset_check,
                 "numerical_profile": asdict(profile),
                 "checks": checks,
                 **{key: value for key, value in evaluation.items() if key != "checks"},
+                "maximum_loop_gap_m": float(max(gaps)),
                 "contacts": contacts,
                 **{
                     key: value
@@ -290,6 +346,9 @@ def run_ground(p, usd, output, *, profile, contact_profile=None):
                 loop_gap_m=gaps,
                 time_s=times,
                 wheel_contact_forces_w=forces,
+                phase_ids=np.asarray(phase_ids),
+                phase_names=np.asarray(PHASES if cycle else []),
+                commands=np.asarray(commands),
             )
             (output / "validation.json").write_text(json.dumps(result, indent=2) + "\n")
             print(json.dumps(result, indent=2), flush=True)
