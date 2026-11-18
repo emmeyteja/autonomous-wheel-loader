@@ -105,19 +105,52 @@
       <mass value="400.0" />
       <inertia ixx="56.63583333333332" iyy="96.60499999999999" izz="56.63583333333332" ixy="0" ixz="0" iyz="0" />
     </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
-      <geometry>
-        <cylinder radius="0.695" length="0.5" />
-      </geometry>
-      <material name="dark" />
-    </visual>
     <collision>
       <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
       <geometry>
         <cylinder radius="0.695" length="0.5" />
       </geometry>
     </collision>
+    <visual name="tire_rubber">
+      <geometry>
+        <mesh filename="meshes/tire_rubber.obj" />
+      </geometry>
+      <material name="tire_rubber">
+        <color rgba="0.065 0.072 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_tread">
+      <geometry>
+        <mesh filename="meshes/tire_tread.obj" />
+      </geometry>
+      <material name="tire_tread">
+        <color rgba="0.095 0.103 0.11 1" />
+      </material>
+    </visual>
+    <visual name="tire_rim">
+      <geometry>
+        <mesh filename="meshes/tire_rim.obj" />
+      </geometry>
+      <material name="tire_rim">
+        <color rgba="0.95 0.58 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_hub">
+      <geometry>
+        <mesh filename="meshes/tire_hub.obj" />
+      </geometry>
+      <material name="tire_hub">
+        <color rgba="0.27 0.29 0.31 1" />
+      </material>
+    </visual>
+    <visual name="tire_bolts">
+      <geometry>
+        <mesh filename="meshes/tire_bolts.obj" />
+      </geometry>
+      <material name="tire_bolts">
+        <color rgba="0.55 0.57 0.59 1" />
+      </material>
+    </visual>
   </link>
   <joint name="rear_left_wheel_joint" type="continuous">
     <parent link="rear_frame" />
@@ -132,19 +165,52 @@
       <mass value="400.0" />
       <inertia ixx="56.63583333333332" iyy="96.60499999999999" izz="56.63583333333332" ixy="0" ixz="0" iyz="0" />
     </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
-      <geometry>
-        <cylinder radius="0.695" length="0.5" />
-      </geometry>
-      <material name="dark" />
-    </visual>
     <collision>
       <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
       <geometry>
         <cylinder radius="0.695" length="0.5" />
       </geometry>
     </collision>
+    <visual name="tire_rubber">
+      <geometry>
+        <mesh filename="meshes/tire_rubber.obj" />
+      </geometry>
+      <material name="tire_rubber">
+        <color rgba="0.065 0.072 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_tread">
+      <geometry>
+        <mesh filename="meshes/tire_tread.obj" />
+      </geometry>
+      <material name="tire_tread">
+        <color rgba="0.095 0.103 0.11 1" />
+      </material>
+    </visual>
+    <visual name="tire_rim">
+      <geometry>
+        <mesh filename="meshes/tire_rim.obj" />
+      </geometry>
+      <material name="tire_rim">
+        <color rgba="0.95 0.58 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_hub">
+      <geometry>
+        <mesh filename="meshes/tire_hub.obj" />
+      </geometry>
+      <material name="tire_hub">
+        <color rgba="0.27 0.29 0.31 1" />
+      </material>
+    </visual>
+    <visual name="tire_bolts">
+      <geometry>
+        <mesh filename="meshes/tire_bolts.obj" />
+      </geometry>
+      <material name="tire_bolts">
+        <color rgba="0.55 0.57 0.59 1" />
+      </material>
+    </visual>
   </link>
   <joint name="rear_right_wheel_joint" type="continuous">
     <parent link="rear_frame" />
@@ -159,19 +225,52 @@
       <mass value="400.0" />
       <inertia ixx="56.63583333333332" iyy="96.60499999999999" izz="56.63583333333332" ixy="0" ixz="0" iyz="0" />
     </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
-      <geometry>
-        <cylinder radius="0.695" length="0.5" />
-      </geometry>
-      <material name="dark" />
-    </visual>
     <collision>
       <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
       <geometry>
         <cylinder radius="0.695" length="0.5" />
       </geometry>
     </collision>
+    <visual name="tire_rubber">
+      <geometry>
+        <mesh filename="meshes/tire_rubber.obj" />
+      </geometry>
+      <material name="tire_rubber">
+        <color rgba="0.065 0.072 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_tread">
+      <geometry>
+        <mesh filename="meshes/tire_tread.obj" />
+      </geometry>
+      <material name="tire_tread">
+        <color rgba="0.095 0.103 0.11 1" />
+      </material>
+    </visual>
+    <visual name="tire_rim">
+      <geometry>
+        <mesh filename="meshes/tire_rim.obj" />
+      </geometry>
+      <material name="tire_rim">
+        <color rgba="0.95 0.58 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_hub">
+      <geometry>
+        <mesh filename="meshes/tire_hub.obj" />
+      </geometry>
+      <material name="tire_hub">
+        <color rgba="0.27 0.29 0.31 1" />
+      </material>
+    </visual>
+    <visual name="tire_bolts">
+      <geometry>
+        <mesh filename="meshes/tire_bolts.obj" />
+      </geometry>
+      <material name="tire_bolts">
+        <color rgba="0.55 0.57 0.59 1" />
+      </material>
+    </visual>
   </link>
   <joint name="front_left_wheel_joint" type="continuous">
     <parent link="front_frame" />
@@ -186,19 +285,52 @@
       <mass value="400.0" />
       <inertia ixx="56.63583333333332" iyy="96.60499999999999" izz="56.63583333333332" ixy="0" ixz="0" iyz="0" />
     </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
-      <geometry>
-        <cylinder radius="0.695" length="0.5" />
-      </geometry>
-      <material name="dark" />
-    </visual>
     <collision>
       <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
       <geometry>
         <cylinder radius="0.695" length="0.5" />
       </geometry>
     </collision>
+    <visual name="tire_rubber">
+      <geometry>
+        <mesh filename="meshes/tire_rubber.obj" />
+      </geometry>
+      <material name="tire_rubber">
+        <color rgba="0.065 0.072 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_tread">
+      <geometry>
+        <mesh filename="meshes/tire_tread.obj" />
+      </geometry>
+      <material name="tire_tread">
+        <color rgba="0.095 0.103 0.11 1" />
+      </material>
+    </visual>
+    <visual name="tire_rim">
+      <geometry>
+        <mesh filename="meshes/tire_rim.obj" />
+      </geometry>
+      <material name="tire_rim">
+        <color rgba="0.95 0.58 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_hub">
+      <geometry>
+        <mesh filename="meshes/tire_hub.obj" />
+      </geometry>
+      <material name="tire_hub">
+        <color rgba="0.27 0.29 0.31 1" />
+      </material>
+    </visual>
+    <visual name="tire_bolts">
+      <geometry>
+        <mesh filename="meshes/tire_bolts.obj" />
+      </geometry>
+      <material name="tire_bolts">
+        <color rgba="0.55 0.57 0.59 1" />
+      </material>
+    </visual>
   </link>
   <joint name="front_right_wheel_joint" type="continuous">
     <parent link="front_frame" />

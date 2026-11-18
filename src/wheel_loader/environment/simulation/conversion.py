@@ -149,9 +149,14 @@ def convert(p, urdf: Path, output: Path, *, fixed=False):
             UsdShade.MaterialBindingAPI.Apply(prim).Bind(
                 material, materialPurpose="physics"
             )
+    from .tire_visual import author_tire_visuals
+
+    author_tire_visuals(
+        stage, p["vehicle"]["wheel_radius"], p["vehicle"]["wheel_width"]
+    )
     # Plain URDF bounds are converted by the importer. Ensure passive drives stay absent.
     stage.GetRootLayer().Save()
-    # A portable, single-layer PhysX asset: all source geometry is original primitives.
+    # A portable, single-layer PhysX asset: all source geometry is original procedural geometry.
     portable = Path(output) / ("wa320_fixed.usda" if fixed else "wa320.usda")
     flattened = stage.Flatten()
     flattened.documentation = (

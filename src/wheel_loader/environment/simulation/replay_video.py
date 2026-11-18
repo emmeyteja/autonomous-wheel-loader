@@ -43,7 +43,11 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0):
         or not np.allclose(np.linalg.norm(roots[:, 3:], axis=1), 1, atol=1e-4)
     ):
         raise ValueError("Invalid recorded trajectory")
-    model = mujoco.MjModel.from_xml_path(str(folder / "effective_model.xml"))
+    from .tire_visual import replay_xml_with_tires
+
+    model = mujoco.MjModel.from_xml_string(
+        replay_xml_with_tires(folder / "effective_model.xml")
+    )
     model.vis.global_.offwidth, model.vis.global_.offheight = 1280, 720
     model.vis.headlight.active = 1
     model.vis.headlight.ambient[:] = [0.5, 0.5, 0.5]
@@ -61,7 +65,7 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0):
             if model.geom_type[i] == mujoco.mjtGeom.mjGEOM_PLANE:
                 model.geom_size[i, :2] = [50, 50]
         elif "wheel" in body:
-            model.geom_rgba[i] = [0.10, 0.11, 0.12, 1]
+            pass  # Procedural tire colors and hidden contact cylinders are retained.
         elif any(part in body for part in ("bucket", "rod", "bellcrank")):
             model.geom_rgba[i] = [0.45, 0.47, 0.50, 1]
         else:

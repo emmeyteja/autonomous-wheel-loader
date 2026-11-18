@@ -1,4 +1,4 @@
-"""Generate original primitive geometry; no Komodo, third-party CAD or mesh inputs.
+"""Generate original parametric geometry; no Komodo, third-party CAD or mesh inputs.
 
 URDF is a tree plus an explicit closure sidecar. Import integration must add
 that closure; the bare URDF must never be called a complete Z-bar dynamics model.
@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from .kinematics import solve_linkage
+from .tire_visual import tire_meshes, write_tire_meshes
 
 
 def vector(value):
@@ -107,6 +108,7 @@ def build_asset(p: dict, output: Path):
         ET.SubElement(node, "limit", **attrs)
 
     v, g, m = p["vehicle"], p["geometry"], p["masses"]
+    write_tire_meshes(v["wheel_radius"], v["wheel_width"], output / "meshes")
     rear = ET.SubElement(root, "link", name="rear_frame")
     inertia(rear, m["rear_frame"], g["rear_box_size"], g["rear_box_center"])
     shape(rear, g["rear_box_size"], g["rear_box_center"])
@@ -154,6 +156,16 @@ def build_asset(p: dict, output: Path):
                 cylinder=True,
                 material="dark",
             )
+            # Retain the cylinder collision and inertia; replace only its visual.
+            wheel.remove(wheel.find("visual"))
+            for part, (_, _, rgb) in tire_meshes(
+                v["wheel_radius"], v["wheel_width"]
+            ).items():
+                visual = ET.SubElement(wheel, "visual", name=f"tire_{part}")
+                geometry = ET.SubElement(visual, "geometry")
+                ET.SubElement(geometry, "mesh", filename=f"meshes/tire_{part}.obj")
+                material = ET.SubElement(visual, "material", name=f"tire_{part}")
+                ET.SubElement(material, "color", rgba=vector([*rgb, 1]))
             joint(
                 name + "_joint",
                 axle + "_frame",
