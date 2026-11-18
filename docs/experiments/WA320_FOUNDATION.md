@@ -4,7 +4,7 @@ Original estimated primitive model; a physical foundation experiment, not a cali
 
 ## Passed
 
-- Pure Python: 31 tests, including a 693-pose linkage sweep, independent pin reconstruction, singularity rejection, no-slip articulated wheel equations, parameter checks, archive isolation and PPO gating.
+- Pure Python: 40 tests, including a 693-pose linkage sweep, independent pin reconstruction, singularity rejection, no-slip articulated wheel equations, parameter checks, archive isolation and PPO gating.
 - Fresh core installation: same tests and `train.py --vehicle wa320` run without Isaac Lab, Isaac Sim, ROS, Torch or archived packages installed.
 - Optional archive regressions: 70 tests pass after relocation.
 - Two USD authoring tests: both portable assets have 10 bodies, 9 tree joints, nominal total mass 15,175 kg, mandatory passive closure, no bucket/rod drives, four explicit 128-vertex tire contact hulls, and no external/private paths.
@@ -30,10 +30,24 @@ Thresholds in the probes: closure gap ≤5 mm, passive-angle discrepancy ≤0.03
 
 This is numerical validation of an estimated model, not physical calibration. The numerical profile follows the [MuJoCo constraint model](https://mujoco.readthedocs.io/en/latest/modeling.html).
 
+## Newton rigid-ground diagnostic
+
+Open acceptance defect: [wheel-force continuity](https://github.com/emmeyteja/autonomous-wheel-loader/issues/5).
+
+- Floating asset, locally authored analytic plane, unchanged estimated vehicle/contact parameters; same eight-substep numerical profile. No downloaded scene is required.
+- Fifteen-second scenario: settle, ramp to 0.6 m/s rear-axle reference, drive straight, then ramp central articulation to 0.3 rad. The existing articulated wheel reference uses measured articulation and its rate.
+- Forward displacement: 5.236 m. Straight-section maximum heading: 0.000510 rad; lateral drift: 1.12 mm. Sustained-turn yaw change: 0.184 rad. These pass the existing travel/steering gates; speed-tracking accuracy is not calibrated.
+- Maximum linkage gap: 1.119 mm including settling. Joint limits, wheel rotation, 10 mm ground-penetration and 2 mm self-penetration gates pass at recorded control ticks.
+- **Acceptance failure:** all four measured upward wheel forces exceed 1 N simultaneously at only 29.0% of control ticks after settling. The diagnostic requires at least 90%. Mean total upward contact force is approximately 148.94 kN versus nominal weight 148.87 kN; average load support does not establish continuous per-wheel support.
+- Force samples come from the runtime contact sensor after each control tick. Collision distances are separately re-evaluated on CPU with the exported model and recorded floating-root/joint poses. Candidate contacts, geometric overlap and measured support force are reported separately.
+- Box-floor tests, sixteen-substep refinement and multi-contact box-floor mode also fail force continuity. They do not establish a fix. Investigate contact-force reporting/substep sampling, tire collider behavior and missing compliance before accepting rigid-ground dynamics.
+- Added CPU collision positive/negative controls: a clear floor reports no wheel contact; deliberate deep overlap fails penetration. Three integration tests pass in the Newton environment.
+- Raw trajectories and logs stay local under ignored outputs. No measured tire, hydraulic or material calibration has been added.
+
 ## Incomplete
 
 - Estimated rotary drives have load-dependent tracking error. No cylinder, hydraulic, driveline, tire-compliance or engine power-sharing validation exists.
-- Full-workspace collision/stop coverage, randomized loaded operation and measured-trajectory calibration remain open. Newton ground driving and material interaction are unvalidated. M1/M2 acceptance remains incomplete.
+- Full-workspace collision/stop coverage, randomized loaded operation and measured-trajectory calibration remain open. Newton travel/steering diagnostic gates pass, but ground acceptance fails the force-continuity gate; material interaction is unvalidated. M1/M2 acceptance remains incomplete.
 - The full algebraic joint envelope includes bucket poses below the ground. A task/controller must enforce workspace feasibility; independent joint bounds alone do not prevent ground contact.
 - Granular terrain, scripted material scooping, PPO and world models are not implemented in the active system. Historical particle results do not satisfy these gates.
 

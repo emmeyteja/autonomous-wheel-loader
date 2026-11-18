@@ -47,7 +47,15 @@ python scripts/check_wa320_isaaclab.py --usd assets/wheel_loader/wa320/usd/wa320
 
 The default numerical profile is `configs/simulation/newton.yaml`; override it with `--physics-config`. It keeps 240 Hz control with eight solver substeps. A derived Newton asset and effective solver model are saved under the output directory before scene import. Source assets remain unchanged.
 
-The Newton fixture passes closure, six driven-joint stop challenges, sampled self-collision checks and repeatable reset. The separate two-environment test checks reset isolation. These checks do not validate physical accuracy, ground driving, material loading or training readiness. Keep simulator-specific behavior inside `environment/simulation/`.
+For floating rigid-ground driving, use the floating asset:
+
+```bash
+python scripts/check_wa320_isaaclab.py --usd assets/wheel_loader/wa320/usd/wa320.usda --ground --output outputs/wa320/newton_ground
+```
+
+This creates an analytic plane locally with the configured estimated friction. It records rear-frame poses, wheel contact forces, joint states and collision geometry at 240 Hz. The current run **fails sustained wheel support** and exits nonzero after saving evidence; driving/steering passing alone does not accept the backend for loading.
+
+The Newton fixture passes closure, six driven-joint stop challenges, sampled self-collision checks and repeatable reset. The separate two-environment test checks reset isolation. These checks do not validate physical accuracy, calibrated driving, material loading or training readiness. Keep simulator-specific behavior inside `environment/simulation/`.
 
 - [Parameter/calibration status](calibration/WA320.md).
 - [Validation record](experiments/WA320_FOUNDATION.md).
