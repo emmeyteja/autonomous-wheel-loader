@@ -25,6 +25,11 @@ def main():
     parser.add_argument(
         "--physics-config", type=Path, default=Path("configs/simulation/newton.yaml")
     )
+    parser.add_argument(
+        "--ground-config",
+        type=Path,
+        default=Path("configs/simulation/newton_ground.yaml"),
+    )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument(
         "--ground", action="store_true", help="Validate floating rigid-ground driving"
@@ -43,11 +48,19 @@ def main():
         if args.ground
         else (run_batch_reset if args.batch_reset else run_probe)
     )
+    kwargs = {}
+    if args.ground:
+        from wheel_loader.environment.simulation.ground_contact import (
+            load_ground_profile,
+        )
+
+        kwargs["contact_profile"] = load_ground_profile(args.ground_config)
     runner(
         load_parameters(args.config),
         args.usd,
         args.output,
         profile=load_profile(args.physics_config),
+        **kwargs,
     )
 
 

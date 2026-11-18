@@ -53,7 +53,15 @@ For floating rigid-ground driving, use the floating asset:
 python scripts/check_wa320_isaaclab.py --usd assets/wheel_loader/wa320/usd/wa320.usda --ground --output outputs/wa320/newton_ground
 ```
 
-This creates an analytic plane locally with the configured estimated friction. It records rear-frame poses, wheel contact forces, joint states and collision geometry at 240 Hz. The current run **fails sustained wheel support** and exits nonzero after saving evidence; driving/steering passing alone does not accept the backend for loading.
+This creates an analytic plane locally with configured estimated friction and records rear-frame poses, wheel contact forces, joint states and collision geometry at 240 Hz. The passing ground approximation is selected by `configs/simulation/newton_ground.yaml` (`--ground-config` to override): analytical cylindrical tire contact, Newton solver, elliptic friction cone and a provisional 40 ms contact reference. Body mass/inertia and the committed PhysX assets are unchanged. An explicit consistent joint pose is written and checked before stepping; floating reset/replay is also checked.
+
+Create a playable replay from the recorded poses in the same Newton environment, with system `ffmpeg` installed:
+
+```bash
+MUJOCO_GL=egl python scripts/render_wa320_replay.py --input outputs/wa320/newton_ground
+```
+
+The command writes `replay.mp4` locally. It displays collision geometry with simple colors and replays recorded motion without advancing physics. Appearance does not establish physical accuracy.
 
 The Newton fixture passes closure, six driven-joint stop challenges, sampled self-collision checks and repeatable reset. The separate two-environment test checks reset isolation. These checks do not validate physical accuracy, calibrated driving, material loading or training readiness. Keep simulator-specific behavior inside `environment/simulation/`.
 

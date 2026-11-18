@@ -200,3 +200,52 @@ def self_collision_sweep(path, positions, joint_names):
         "positive_control_filters_unchanged": filters_unchanged,
         "passed": bool(not pairs and detected and filters_unchanged),
     }
+
+
+def ground_reset_check(robot, scene, sim, p, dt):
+    """Reset the floating loader twice and compare identical stationary replays."""
+    import torch
+
+    target = torch.zeros((1, len(robot.joint_names)), device=sim.device)
+    for name, value in passive_joint_positions(p, 0.15, -0.3).items():
+        target[0, robot.joint_names.index(name)] = value
+    root = torch.tensor(
+        [[0.0, 0, p["vehicle"]["articulation_height"] + 0.02, 0, 0, 0, 1]],
+        device=sim.device,
+    )
+    runs = []
+    gap = 0.0
+    reset_error = 0.0
+    for _ in range(2):
+        robot.write_joint_position_to_sim_index(position=target)
+        robot.write_joint_velocity_to_sim_index(velocity=torch.zeros_like(target))
+        robot.write_root_pose_to_sim_index(root_pose=root)
+        robot.write_root_velocity_to_sim_index(
+            root_velocity=torch.zeros((1, 6), device=sim.device)
+        )
+        robot.reset()
+        scene["wheel_contacts"].reset()
+        reset_error = max(
+            reset_error,
+            float(torch.max(torch.abs(robot.data.joint_pos.torch - target))),
+        )
+        trajectory = []
+        for _ in range(round(2 / dt)):
+            advance(robot, scene, sim, target, dt)
+            q = robot.data.joint_pos.torch[0].cpu().numpy()
+            pose = robot.data.root_link_pose_w.torch[0].cpu().numpy()
+            trajectory.append(np.concatenate([q, pose]))
+            gap = max(gap, linkage_gap(robot, p))
+        runs.append(np.asarray(trajectory))
+    error = float(np.max(np.abs(runs[1] - runs[0])))
+    return {
+        "maximum_joint_reset_error_rad": reset_error,
+        "maximum_replay_component_error": error,
+        "maximum_loop_gap_m": gap,
+        "passed": bool(
+            np.isfinite(runs).all()
+            and reset_error < 1e-6
+            and error < 1e-4
+            and gap < 0.005
+        ),
+    }

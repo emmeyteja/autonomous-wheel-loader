@@ -36,3 +36,5 @@ Track work and defects in GitHub issues assigned to the appropriate milestone. K
 - When an authorized history correction is necessary, make a local recovery backup, verify the remote head, and use an explicit force-with-lease; never overwrite others' new commits.
 
 - Keep the README short and use bullet points. Omit sections on first objectives, development roadmaps, research scope, and public-information policy; use issues for planning and tracking.
+
+- At the end of each simulation development step, include a playable video of the current recorded run. Label replay versus live simulation and state any failed acceptance checks. Keep video files under ignored outputs; do not imply that appearance proves physical accuracy.

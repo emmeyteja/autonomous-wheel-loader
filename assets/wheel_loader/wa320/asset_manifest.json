@@ -2,13 +2,14 @@
   "model": "WA320-like original estimated primitive geometry",
   "source_of_truth": "configs/vehicle/wa320.yaml",
   "importer": "isaacsim-asset-isolated 6.2.0.0; usd-exchange 3.0.1; usd-optimize 1.3.1",
-  "physics": "PhysX diagnostic paths and profiled Newton fixture pass; Newton ground force continuity fails; dynamics uncalibrated",
+  "physics": "PhysX diagnostic paths and profiled Newton fixture/ground diagnostics pass; dynamics and tire compliance uncalibrated",
   "sha256": {
     "configs/vehicle/wa320.yaml": "34a27ba1d15263a6e26f9b298dc6eefc3cb292b0e3eeb39f52b1c956358f00b6",
     "assets/wheel_loader/wa320/wa320.urdf": "d1a3a6528e7e9324616fd631d0b2a1ce47bd51ffd88efd782f6c4ef1f5c2a302",
     "assets/wheel_loader/wa320/closure.json": "bf797fb79d8edcc007afd44339daca4edaa8b0c526ef5d75c1ab4564b35ea939",
     "assets/wheel_loader/wa320/usd/wa320.usda": "1f6301ed38b2b654c84d5a096d858156b09bfdd2bf51bed6aa5deca92f206aed",
     "assets/wheel_loader/wa320/usd/wa320_fixed.usda": "5cac079f603c9d420657b0d815c803e3a36eb191ce1940628eb8a24cdd61e755",
-    "configs/simulation/newton.yaml": "d6f9f85f0df6086df7637d5348d358ccaa5622a5162be6b0654643354df29091"
+    "configs/simulation/newton.yaml": "d6f9f85f0df6086df7637d5348d358ccaa5622a5162be6b0654643354df29091",
+    "configs/simulation/newton_ground.yaml": "6512f0119c53f9b0fa80974e5ef57054377dcf127ac676dad8aa404d23c527d3"
   }
 }

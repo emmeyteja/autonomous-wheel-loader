@@ -53,3 +53,5 @@ The former rail-constrained model and its kinematics are archived in `extras/leg
 - Both connects remain outside the reduced-coordinate tree. Bucket and rod remain unactuated.
 - `configs/simulation/newton.yaml` sets solver subdivision and loop/stop compliance. These are numerical settings, not measured mechanical or hydraulic compliance.
 - The exported MuJoCo model is checked to ensure those settings reached the solver. See the [validation record](../experiments/WA320_FOUNDATION.md) for tested paths and remaining gaps.
+
+- Newton ground contact optionally uses analytical tire cylinders with the original nominal radius/width, selected by the ground profile. Tire body inertia and wheel hinges remain unchanged; this is rigid contact geometry, not a deformable tire model.

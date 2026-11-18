@@ -70,8 +70,6 @@ class ConvertedAssetTests(unittest.TestCase):
             )
 
 
-
-
 class NewtonProfileAssetTests(unittest.TestCase):
     def test_numerical_profile_preserves_vehicle_and_passive_drives(self):
         import hashlib
@@ -157,6 +155,83 @@ class NewtonProfileAssetTests(unittest.TestCase):
                     settings,
                     require_fixed_base=True,
                 )
+
+
+class NewtonTireContactTests(unittest.TestCase):
+    def test_derived_cylinders_preserve_mass_dimensions_and_source(self):
+        import hashlib
+        import tempfile
+
+        from pxr import UsdGeom
+
+        from wheel_loader.environment.simulation.ground_contact import (
+            GroundContactProfile,
+            author_tire_contacts,
+        )
+        from wheel_loader.environment.simulation.newton_profile import (
+            NewtonProfile,
+            prepare_asset,
+        )
+        from wheel_loader.vehicle.parameters import load_parameters
+
+        source = ROOT / "assets/wheel_loader/wa320/usd/wa320.usda"
+        digest = hashlib.sha256(source.read_bytes()).hexdigest()
+        p = load_parameters(ROOT / "configs/vehicle/wa320.yaml")
+        with tempfile.TemporaryDirectory() as temporary:
+            derived = prepare_asset(
+                source, Path(temporary) / "newton.usda", NewtonProfile()
+            )
+            stage = Usd.Stage.Open(str(derived))
+            before = {
+                str(prim.GetPath()): tuple(
+                    prim.GetAttribute(name).Get()
+                    for name in (
+                        "physics:mass",
+                        "physics:centerOfMass",
+                        "physics:diagonalInertia",
+                        "physics:principalAxes",
+                    )
+                )
+                for prim in stage.Traverse()
+                if prim.HasAPI(UsdPhysics.RigidBodyAPI)
+            }
+            settings = GroundContactProfile()
+            author_tire_contacts(stage, p, settings)
+            tires = [
+                prim for prim in stage.Traverse() if prim.GetName() == "tire_contact"
+            ]
+            self.assertEqual(len(tires), 4)
+            for prim in tires:
+                self.assertTrue(prim.IsA(UsdGeom.Cylinder))
+                shape = UsdGeom.Cylinder(prim)
+                self.assertEqual(shape.GetAxisAttr().Get(), "Y")
+                self.assertAlmostEqual(
+                    shape.GetRadiusAttr().Get(), p["vehicle"]["wheel_radius"]
+                )
+                self.assertAlmostEqual(
+                    shape.GetHeightAttr().Get(), p["vehicle"]["wheel_width"]
+                )
+                self.assertTrue(prim.HasAPI(UsdPhysics.CollisionAPI))
+                self.assertFalse(prim.HasAPI(UsdPhysics.MeshCollisionAPI))
+                self.assertAlmostEqual(
+                    prim.GetAttribute("mjc:solref").Get()[0],
+                    settings.contact_time_constant,
+                )
+            for path, values in before.items():
+                prim = stage.GetPrimAtPath(path)
+                self.assertEqual(
+                    values,
+                    tuple(
+                        prim.GetAttribute(name).Get()
+                        for name in (
+                            "physics:mass",
+                            "physics:centerOfMass",
+                            "physics:diagonalInertia",
+                            "physics:principalAxes",
+                        )
+                    ),
+                )
+            self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), digest)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,6 @@
+# Numerical contact approximation; no measured tire stiffness or damping data.
+solver: newton  # SOURCE: tested constrained contact solver
+cone: elliptic  # SOURCE: tested friction-cone representation
+tire_geometry: cylinder  # SOURCE: same radius/width as original hull; smooth rolling
+contact_time_constant: 0.04  # SOURCE: tested provisional contact reference, seconds
+damping_ratio: 1.0  # SOURCE: provisional normalized critical-damping reference

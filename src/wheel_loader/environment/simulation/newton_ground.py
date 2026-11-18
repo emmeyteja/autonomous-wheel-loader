@@ -67,7 +67,7 @@ def contact_sweep(path, positions, roots, names):
     }
 
 
-def run_ground(p, usd, output, *, profile):
+def run_ground(p, usd, output, *, profile, contact_profile=None):
     import isaaclab.sim as sim_utils
     import torch
     from isaaclab.app import launch_simulation
@@ -76,7 +76,7 @@ def run_ground(p, usd, output, *, profile):
     from isaaclab.sensors import ContactSensorCfg
     from isaaclab.utils import configclass
     from isaaclab_newton.physics import MJWarpSolverCfg, NewtonCfg
-    from pxr import Usd, UsdPhysics
+    from pxr import Gf, Sdf, Usd, UsdPhysics
 
     from wheel_loader.control.commands import LoaderCommand, wheel_rates
     from wheel_loader.evaluation.rigid_ground import (
@@ -85,7 +85,14 @@ def run_ground(p, usd, output, *, profile):
     )
     from wheel_loader.vehicle.kinematics import passive_joint_positions
 
-    from .fixture_checks import linkage_gap
+    from .fixture_checks import ground_reset_check, linkage_gap
+    from .ground_contact import (
+        GroundContactProfile,
+        audit_ground_model,
+        author_tire_contacts,
+    )
+
+    contact_profile = contact_profile or GroundContactProfile()
     from .isaaclab_probe import articulation_config
     from .newton_profile import audit_import, prepare_asset
 
@@ -101,6 +108,8 @@ def run_ground(p, usd, output, *, profile):
 
     from pxr import UsdGeom, UsdShade
 
+    author_tire_contacts(stage, p, contact_profile)
+
     floor_path = output / "ground.usda"
     floor_stage = Usd.Stage.CreateNew(str(floor_path.resolve()))
     floor_root = UsdGeom.Xform.Define(floor_stage, "/Ground")
@@ -109,6 +118,9 @@ def run_ground(p, usd, output, *, profile):
     UsdGeom.SetStageMetersPerUnit(floor_stage, 1.0)
     plane = UsdGeom.Plane.Define(floor_stage, "/Ground/CollisionPlane")
     plane.CreateAxisAttr("Z")
+    plane.GetPrim().CreateAttribute("mjc:solref", Sdf.ValueTypeNames.Float2).Set(
+        Gf.Vec2f(contact_profile.contact_time_constant, contact_profile.damping_ratio)
+    )
     UsdPhysics.CollisionAPI.Apply(plane.GetPrim())
     material = UsdShade.Material.Define(floor_stage, "/Ground/Material")
     physics = UsdPhysics.MaterialAPI.Apply(material.GetPrim())
@@ -145,7 +157,8 @@ def run_ground(p, usd, output, *, profile):
         physics=NewtonCfg(
             num_substeps=profile.num_substeps,
             solver_cfg=MJWarpSolverCfg(
-                solver="cg",
+                solver=contact_profile.solver,
+                cone=contact_profile.cone,
                 integrator="implicitfast",
                 iterations=profile.iterations,
                 njmax=profile.njmax,
@@ -166,6 +179,16 @@ def run_ground(p, usd, output, *, profile):
             velocity = torch.zeros_like(target)
             for name, value in passive_joint_positions(p, 0.15, -0.3).items():
                 target[0, names.index(name)] = value
+            # Newton 3's import initializes these joints at zero despite init_state.
+            # Write a closed, consistent pose before gravity/contact integration.
+            robot.write_joint_position_to_sim_index(position=target)
+            robot.write_joint_velocity_to_sim_index(velocity=velocity)
+            robot.reset()
+            initial_error = float(
+                torch.max(torch.abs(robot.data.joint_pos.torch - target))
+            )
+            if initial_error > 1e-6:
+                raise RuntimeError("Ground initial joint pose was not applied")
             for step in range(round(15 / dt)):
                 t = step * dt
                 command = LoaderCommand(
@@ -224,6 +247,7 @@ def run_ground(p, usd, output, *, profile):
             support = evaluate_wheel_support(times, forces)
             checks = (
                 audit_import(output / "effective_model.xml", profile)
+                | audit_ground_model(output / "effective_model.xml", contact_profile)
                 | evaluation["checks"]
                 | {
                     "four_wheels_contact_ground": contacts[
@@ -234,9 +258,13 @@ def run_ground(p, usd, output, *, profile):
                     "self_collision": contacts["self_penetration"],
                 }
             )
+            reset_check = ground_reset_check(robot, scene, sim, p, dt)
+            checks["floating_reset_repeatability"] = reset_check["passed"]
             result = {
                 "runtime": "Isaac Lab 3 / Newton / MuJoCo Warp",
                 "fixture": False,
+                "initial_joint_error_rad": initial_error,
+                "floating_reset": reset_check,
                 "numerical_profile": asdict(profile),
                 "checks": checks,
                 **{key: value for key, value in evaluation.items() if key != "checks"},
@@ -248,6 +276,7 @@ def run_ground(p, usd, output, *, profile):
                 },
                 "ground_collision": {
                     "enable_multiccd": False,
+                    **asdict(contact_profile),
                     "floor_geometry": "analytic Z-up plane",
                 },
                 "force_sensor_body_names": scene["wheel_contacts"].body_names,
