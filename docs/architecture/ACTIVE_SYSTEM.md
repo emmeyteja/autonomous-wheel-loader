@@ -5,7 +5,7 @@
 - Vehicle geometry and parameters live in `vehicle/`; SI commands and wheel references in `control/`; terrain geometry/selection in `terrain/`.
 - Simulator-specific conversion, scene setup, stepping and state extraction live in `environment/simulation/`. No Isaac/ROS imports in domain logic.
 - `evaluation/` owns repeatable checks. `training/` selects the vehicle and enforces prerequisites; foundation mode currently performs geometry validation, not learning.
-- Diagnostic wheel/bucket contact sensors and full V-cycle motion rehearsals, with an optional immovable rigid-pile contact test, are implemented. Policy observations, rewards, material scooping tasks and learned policies remain deferred until their milestone. Do not create substitute implementations that imply these work already.
+- Diagnostic wheel/bucket contact sensors and full V-cycle motion rehearsals, with an optional immovable rigid-pile contact test, are implemented. An experimental deterministic material scoop now couples coarse free grains to the v1 loader in the existing native CPU diagnostic path; [M2 acceptance is incomplete](../experiments/M2_SCRIPTED_SCOOP.md). Policy observations, rewards and learned policies remain deferred. Do not create substitute implementations that imply these work already.
 - Default: WA320 plus rigid pile. Registry exposes Komodo reference metadata only with explicit opt-in, never importing its implementation.
 - Optional Autoware adapters remain outside the core. Match units, frames and semantics; an articulation angle is not an Ackermann tire angle. Lift/curl need loader-specific contracts.
 
@@ -27,7 +27,7 @@ The first integrated physical foundation combines M0–M2 in Isaac Sim/Isaac Lab
 - `LoaderCommand`: rear-axle speed [m/s], front-relative-to-rear yaw [rad], boom displacement [rad], bellcrank displacement [rad]. These are diagnostic simulator commands, not a learned action space or hydraulic interface.
 - Bucket and rod angles are passive outputs. Do not add independent position drives to close the loop artificially.
 - Future batched task state/action tensors stay on the simulator device. ROS transport must not sit in the training loop. Isolate reset state, seeds and persistent dump-bed occupancy by environment.
-- Independent CPU material-column and instrumented blade-force diagnostics exist for contact-law investigation; they do not enable the production granular backend or establish Newton vehicle/material coupling.
+- CPU material-column, instrumented blade-force and deterministic loader/grain scoop experiments reuse the native MuJoCo diagnostic path. The scoop uses existing bounded normalized drive/steering/lift/curl commands and per-grain accounting; it does not enable the production granular registry or establish Isaac Lab/Newton GPU vehicle/material coupling.
 - Reserved terrain backends fail explicitly until implemented and calibrated. Missing material values are unknown, not zero.
 
 ## Measurement and sensor diagnostics

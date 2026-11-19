@@ -1,0 +1,50 @@
+# M2 coarse rigid-grain experiment, not calibrated gravel or dry sand.
+# No change to the active rigid-pile default or preserved vehicle assets.
+seed: 42
+max_particles: 1500
+radius_m: 0.12  # ESTIMATED coarse numerical element, not natural grain size.
+settle_s: 10.0
+max_duration_s: 70.0
+sample_hz: 20
+solver: CG
+solver_iterations: 1000  # Numerical convergence trial under grain contact; not material tuning.
+material:
+  particle_density_kg_m3: 2590.0  # Aoshima/Servin reference; solid, not bulk density.
+  sliding_friction: 0.65  # Existing column diagnostic trial, uncalibrated.
+  torsional_friction_m: 0.0096  # DERIVED: column 0.001 m * (0.12/0.0125).
+  rolling_friction_m: 0.0288  # DERIVED: column 0.003 m * (0.12/0.0125).
+  contact_time_s: 0.004  # Numerical contact setting, not measured stiffness.
+bucket_contact:
+  sliding_friction: 0.3  # ESTIMATED existing blade_force gravel blade/steel trial.
+  torsional_friction_m: 0.0096  # DERIVED radius scaling of blade diagnostic 0.001 m.
+  rolling_friction_m: 0.0096  # Separate from grain/grain rolling resistance.
+controller:
+  drive_speed_gain: 2.0  # ESTIMATED outer speed feedback; commands the existing wheel motors.
+  drive_integral_gain: 0.8  # 1/s; bounded reference with anti-windup.
+  approach_speed_m_s: 0.25
+  approach_distance_m: 0.5
+  attack_angle_deg: -5.0  # Cutting-edge tangent in world X/Z at planned lower pose.
+  attack_lip_height_m: 0.045  # ESTIMATED world lip-height plan, checked by linkage IK.
+  penetration_depth_m: 1.7
+  curl_start_fraction: 0.9
+  penetration_speed_m_s: 0.4
+  bucket_curl_velocity_m_s: 0.035
+  boom_lift_velocity_m_s: 0.06
+  breakout_threshold_N: 20000.0  # ESTIMATED safety trigger, not breakout-force rating.
+  reverse_distance_m: 1.5
+  reverse_speed_m_s: 0.25
+  stabilize_s: 3.0
+scenarios:
+  nominal: {height_m: 0.7, width_m: 1.2, slope_deg: 32.0, crest_length_m: 0.5}
+  low_shallow: {height_m: 0.5, width_m: 1.0, slope_deg: 28.0, crest_length_m: 0.5, density_kg_m3: 2400.0, attack_angle_deg: -6.0, penetration_depth_m: 1.8}
+  tall_deep: {height_m: 0.8, width_m: 1.5, slope_deg: 36.0, crest_length_m: 0.5, density_kg_m3: 2700.0, attack_angle_deg: -4.0, penetration_depth_m: 1.9, attack_lip_height_m: 0.045}
+acceptance:
+  mass_relative_tolerance: 1.0e-9
+  retained_mass_min_kg: 1.0
+  spilled_mass_min_kg: 0.01
+  material_overlap_max_radius_fraction: 0.15  # Numerical screen; not material accuracy.
+  pin_gap_max_m: 0.001
+  stroke_overrun_max_m: 0.001
+  tilt_max_deg: 12.0
+  repeat_position_tolerance_m: 1.0e-7
+  repeat_mass_tolerance_kg: 1.0e-7
