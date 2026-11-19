@@ -13,6 +13,7 @@ class Column:
     element_radius: float = 0.0125
     seed: int = 42
     max_particles: int = 2500
+    solid_volume_m3: float | None = None
 
     def generate(self):
         if (
@@ -59,4 +60,32 @@ class Column:
         if not points:
             raise ValueError("Empty column")
         radii = rng.uniform(0.95 * r, r, len(points))
-        return np.asarray(points), radii
+        xyz = np.asarray(points)
+        if self.solid_volume_m3 is not None:
+            available = float(np.sum(4 / 3 * np.pi * radii**3))
+            if not (
+                math.isfinite(self.solid_volume_m3)
+                and 0 < self.solid_volume_m3 <= available
+            ):
+                raise ValueError(
+                    "Target solid volume must be positive and fit without inflating grains"
+                )
+            # Preserve the generated size ratios and every element ID. Shrinking
+            # radii and expanding centre separations cannot introduce overlap.
+            radii *= (self.solid_volume_m3 / available) ** (1 / 3)
+            distance = np.linalg.norm(xyz[:, :2], axis=1)
+            nonzero = distance > 0
+            xy_scale = np.min((self.radius - radii[nonzero]) / distance[nonzero])
+            xyz[:, :2] *= xy_scale
+            z = xyz[:, 2] - np.mean(xyz[:, 2])
+            low, high = 1.0, self.height / np.ptp(z)
+            for _ in range(60):
+                scale = (low + high) / 2
+                extent = np.max(z * scale + radii) - np.min(z * scale - radii)
+                if extent < self.height:
+                    low = scale
+                else:
+                    high = scale
+            xyz[:, 2] = z * ((low + high) / 2)
+            xyz[:, 2] -= np.min(xyz[:, 2] - radii)
+        return xyz, radii

@@ -2,6 +2,7 @@
 default_material: gravel
 column_radius_m: 0.12
 column_height_m: 0.25
+target_mass_kg: 13.0  # Diagnostic mass, not Aoshima or a matched laboratory sample.
 radius_m: 0.0125  # Coarse simulation elements; not the natural grain-size distribution.
 duration_s: 12.0
 dt_s: 0.001

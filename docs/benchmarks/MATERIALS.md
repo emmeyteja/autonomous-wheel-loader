@@ -7,6 +7,8 @@
 - Normalize quantities only for a justified similarity study. Mass/fill ratio, force divided by a declared characteristic force, and dimensionless speed/depth/grain-size ratios can help compare trends; normalization does not remove differences in bucket geometry, cohesion, packing or power limits. Record every normalization and its units.
 - Fit material parameters on calibration experiments, then validate against held-out shapes, depths, speeds and loading cycles. Numerical stability, timestep agreement and matching one repose angle are separate from physical accuracy.
 
+- [Selected gravel heap protocol, open scans and geometric measurement check](GRAVEL_HEAP_PROTOCOL.md).
+
 ## References and suitable uses
 
 - **Gravel/full loader:** [Aoshima and Servin, DOI 10.1007/s11044-024-10005-5](https://doi.org/10.1007/s11044-024-10005-5), especially §§4–6. The field gravel includes fines and some moisture; reported bulk density is 1727 kg/m³. Their DEM uses 2590 kg/m³ solid density and targets 32° repose. Natural grains and simulation elements are different sizes. Compare motion/forces, loaded mass and work only with matched tests. The paper states normalized time series are available on request; this repository does not contain those field signals. Its reported accuracy is not our result.

@@ -7,11 +7,34 @@ def radial_surface(xyz, radii):
     """Fit four sector surface profiles. Sparse or flat profiles stay unavailable."""
     xyz, radii = np.asarray(xyz), np.asarray(radii)
     center = np.average(xyz[:, :2], axis=0, weights=radii**3)
+    return surface_profiles(xyz, radii * 2, center_xy=center, top_offsets=radii)
+
+
+def surface_profiles(xyz, bin_widths, *, center_xy=None, top_offsets=None):
+    """Sector fits for a leveled surface cloud; Z=0 must be the surveyed base.
+
+    Use the same profile estimator on reference scans and sphere-top samples.
+    Point-cloud spacing is a measurement choice, not a particle radius. No
+    automatic leveling or ground removal may silently alter a measured heap.
+    """
+    xyz = np.asarray(xyz)
+    width = float(np.median(bin_widths))
+    if (
+        xyz.ndim != 2
+        or xyz.shape[1] != 3
+        or len(xyz) < 4
+        or not np.isfinite(xyz).all()
+        or not np.isfinite(width)
+        or width <= 0
+    ):
+        raise ValueError("Need a finite surface cloud and positive bin width")
+    center = np.mean(xyz[:, :2], axis=0) if center_xy is None else np.asarray(center_xy)
+    if center.shape != (2,) or not np.isfinite(center).all():
+        raise ValueError("Need a finite XY center")
     planar = xyz[:, :2] - center
     distance = np.linalg.norm(planar, axis=1)
     heading = np.arctan2(planar[:, 1], planar[:, 0])
-    tops = xyz[:, 2] + radii
-    width = float(2 * np.median(radii))
+    tops = xyz[:, 2] if top_offsets is None else xyz[:, 2] + np.asarray(top_offsets)
     maximum = float(np.max(tops))
     profiles = {}
     for name, angle in [

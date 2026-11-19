@@ -14,7 +14,7 @@
 - M0: kinematic frames, four wheels, central articulation, boom, bucket and closed Z-bar geometry; joint ranges and geometry validation.
 - M1: identified masses, COMs, inertias, contact parameters and actuator limits. Estimated test values are provisional, not calibrated dynamics.
 - M2: rigid-ground driving, steering, approach and linkage motion; rigid-pile contact and repeatable resets in the simulator.
-- M3: validated granular terrain, starting with dry sand; DEM and multiscale are separate interchangeable backends.
+- M3: validated granular terrain; gravel benchmarking first, with dry sand retained as a separate calibration target; DEM and multiscale are separate interchangeable backends.
 - M4: scripted approach → penetrate → lift → curl → breakout → reverse, with material accounting.
 - M5: PPO only after M4 works.
 - M6: world model only after stable physics and PPO baseline.

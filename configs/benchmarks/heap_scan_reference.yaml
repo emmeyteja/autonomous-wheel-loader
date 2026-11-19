@@ -1,0 +1,43 @@
+# Public metadata only. Raw scans stay in ignored outputs.
+reference_id: klanfar_2025_gravel48
+paper_doi: 10.1038/s41597-025-04862-8
+dataset_doi: 10.6084/m9.figshare.28468526.v1
+dataset_api: https://api.figshare.com/v2/articles/28468526/versions/1
+data_license: CC0-1.0
+sample:
+  label: Gravel48
+  description: Natural sieved gravel aggregate
+  diameter_range_m: [0.004, 0.008]
+  solid_density_kg_m3: null  # Do not substitute Aoshima's different sample.
+  full_size_distribution: null
+apparatus:
+  preparation: mixed_poured_and_top_leveled
+  release: vertically_lifted_cylinder
+  mass_kg: 3.2
+  cylinder_internal_diameter_m: 0.103
+  lift_speed_m_s: 0.004
+  initial_fill_height_m: null  # Material/test dependent; not prescribed here.
+  measured_base_friction: null
+files:
+  gravel:
+    name: Gravel48-3D.rar
+    url: https://ndownloader.figshare.com/files/52560092
+    size_bytes: 2474404302
+    md5: f0d5e8078617cb4a7e96472c84faadff
+  dry_sand:
+    name: QuartzSand0712-3D.rar
+    url: https://ndownloader.figshare.com/files/52560125
+    size_bytes: 2556339443
+    md5: a1176f8faee4ed29735f65f9c45ca97c
+    diameter_range_m: [0.0007, 0.0012]
+  geometry_control:
+    name: CAD-3D.rar
+    url: https://ndownloader.figshare.com/files/52560131
+    size_bytes: 5594303
+    md5: c7a602fd8507e98db7f090d90325c964
+    member: 20191201-CAD35-h0-m1-t1/CAD35.xyz
+    sha256: 1ec4789c451fc92b7565fe508086caf5565217e880292bbf21c013314bcfece5
+    expected_angle_deg: 35.0
+    declared_base_z_source_units: -518.3507
+    bin_width_source_units: 10.0
+    angle_tolerance_deg: 0.5  # Project method check, not published lab uncertainty.

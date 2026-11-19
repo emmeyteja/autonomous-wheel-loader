@@ -22,6 +22,15 @@ def render_column(folder, output=None):
             recorded[k]
             for k in ("time_s", "xyz", "linear_velocity", "radii", "kinetic_energy_J")
         ]
+    intervals = np.diff(times)
+    if (
+        len(intervals) == 0
+        or not np.isfinite(intervals).all()
+        or intervals[0] <= 0
+        or not np.allclose(intervals, intervals[0], rtol=1e-6, atol=1e-8)
+    ):
+        raise ValueError("Replay needs uniformly sampled timestamps")
+    frame_rate = 1 / float(intervals[0])
     model = mujoco.MjModel.from_xml_path(str(folder / "effective_model.xml"))
     model.vis.global_.offwidth, model.vis.global_.offheight = 840, 720
     model.vis.headlight.ambient[:] = [0.6, 0.6, 0.6]
@@ -53,7 +62,7 @@ def render_column(folder, output=None):
                 "-s",
                 "1280x720",
                 "-r",
-                "25",
+                str(frame_rate),
                 "-i",
                 "-",
                 "-an",
@@ -100,12 +109,15 @@ def render_column(folder, output=None):
                         f"Height: {np.max(xyz[i, :, 2] + radii) * 1000:.1f} mm",
                         f"R95: {np.quantile(np.linalg.norm(xyz[i, :, :2], axis=1), 0.95) * 1000:.1f} mm",
                         f"Speed p95: {np.quantile(np.linalg.norm(velocity[i], axis=1), 0.95):.4f} m/s",
-                        f"Kinetic energy: {energy[i]:.5f} J",
+                        f"Kinetic energy: {energy[i]:.2e} J",
                         "",
                         "FULL-RUN NUMERICAL SCREEN: PASS",
                         "Physical calibration: NOT VALIDATED",
-                        "Wall-free release; no locked grains",
-                        "No added joint velocity damping",
+                        "Wall-free; no locked grains",
+                        "Mass + envelope controlled"
+                        if result.get("preparation", {}).get("protocol")
+                        == "mass_normalized_expanded_lattice"
+                        else "Legacy lattice preparation",
                         "",
                         "FINAL SECTOR SURFACE FITS",
                     ]

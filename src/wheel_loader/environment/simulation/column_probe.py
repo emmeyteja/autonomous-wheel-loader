@@ -30,6 +30,9 @@ def run_column(config, material, output, *, seed=None, dt=None, radius=None):
         config["radius_m"] if radius is None else radius,
         config["seed"] if seed is None else seed,
         config["max_particles"],
+        None
+        if config.get("target_mass_kg") is None
+        else config["target_mass_kg"] / settings["particle_density_kg_m3"],
     )
     xyz, radii = column.generate()
     root = ET.Element("mujoco", model="material_column_diagnostic")
@@ -136,6 +139,29 @@ def run_column(config, material, output, *, seed=None, dt=None, radius=None):
             "runtime": f"native MuJoCo {mujoco.__version__}; CPU material diagnostic",
             "configuration": asdict(column),
             "contact_trial": settings,
+            "preparation": {
+                "protocol": "mass_normalized_expanded_lattice"
+                if column.solid_volume_m3 is not None
+                else "legacy_lattice",
+                "release": "instantaneous_unconfined",
+                "target_mass_kg": config.get("target_mass_kg"),
+                "initial_height_m": float(
+                    np.max(xyz[:, 2] + radii) - np.min(xyz[:, 2] - radii)
+                ),
+                "initial_outer_radius_m": float(
+                    np.max(np.linalg.norm(xyz[:, :2], axis=1) + radii)
+                ),
+                "initial_bulk_density_kg_m3": float(
+                    masses.sum() / (np.pi * column.radius**2 * column.height)
+                ),
+                "initial_speed_m_s": 0.0,
+                "nominal_element_radius_m": column.element_radius,
+                "actual_element_radius_range_m": [
+                    float(radii.min()),
+                    float(radii.max()),
+                ],
+                "settled_in_container": False,
+            },
             "dt_s": dt,
             "duration_s": times[-1],
             "element_count": len(radii),
@@ -158,6 +184,24 @@ def run_column(config, material, output, *, seed=None, dt=None, radius=None):
         }
     )
     result["checks"]["represented_mass"] = result["mass_error_kg"] < 1e-8
+    if column.solid_volume_m3 is not None:
+        result["checks"]["target_mass"] = bool(
+            abs(masses.sum() - config["target_mass_kg"]) < 1e-8
+        )
+        result["checks"]["initial_envelope"] = bool(
+            np.isclose(
+                result["preparation"]["initial_height_m"],
+                column.height,
+                atol=1e-10,
+                rtol=0,
+            )
+            and np.isclose(
+                result["preparation"]["initial_outer_radius_m"],
+                column.radius,
+                atol=1e-10,
+                rtol=0,
+            )
+        )
     np.savez_compressed(
         output / "motion.npz",
         time_s=times,
