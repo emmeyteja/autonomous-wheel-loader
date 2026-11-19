@@ -16,6 +16,11 @@ def convert(p, urdf: Path, output: Path, *, fixed=False):
     ]
     driven = ["articulation_joint", "boom_joint", "tilt_joint"]
     passive = ["bucket_joint", "rod_joint"]
+    passive += [
+        name + "_" + part + "_joint"
+        for name in p.get("cylinder_bodies", {})
+        for part in ("hinge", "slider")
+    ]
     target = (
         dict.fromkeys(wheel_names, "velocity")
         | dict.fromkeys(driven, "position")
@@ -134,6 +139,19 @@ def convert(p, urdf: Path, output: Path, *, fixed=False):
     UsdPhysics.FilteredPairsAPI.Apply(bodies["rod"]).CreateFilteredPairsRel().AddTarget(
         bodies["bucket"].GetPath()
     )
+    for spec in sidecar.get("cylinders", []):
+        joint = UsdPhysics.SphericalJoint.Define(
+            stage, model.GetPath().AppendChild(spec["joint"])
+        )
+        joint.CreateBody0Rel().SetTargets([bodies[spec["body0"]].GetPath()])
+        joint.CreateBody1Rel().SetTargets([bodies[spec["body1"]].GetPath()])
+        joint.CreateLocalPos0Attr(Gf.Vec3f(*spec["local_pos0"]))
+        joint.CreateLocalPos1Attr(Gf.Vec3f(*spec["local_pos1"]))
+        joint.CreateExcludeFromArticulationAttr(True)
+        joint.CreateCollisionEnabledAttr(False)
+        UsdPhysics.FilteredPairsAPI.Apply(
+            bodies[spec["body0"]]
+        ).CreateFilteredPairsRel().AddTarget(bodies[spec["body1"]].GetPath())
     # All passive joints must have no drive, including defaults authored by import.
     for prim in stage.Traverse():
         if prim.GetName() in passive:

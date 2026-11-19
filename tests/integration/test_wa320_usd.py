@@ -134,16 +134,34 @@ class NewtonProfileAssetTests(unittest.TestCase):
                     else []
                 )
             ]
-            self.assertEqual(len(constraints), 2)
+            self.assertEqual(len(constraints), 7)
             for index, prim in enumerate(
                 sorted(constraints, key=lambda p: str(p.GetPath()))
             ):
                 joint = UsdPhysics.SphericalJoint(prim)
                 self.assertTrue(joint.GetExcludeFromArticulationAttr().Get())
-                self.assertEqual(joint.GetBody0Rel().GetTargets()[0].name, "rod")
-                self.assertEqual(joint.GetBody1Rel().GetTargets()[0].name, "bucket")
-                self.assertAlmostEqual(joint.GetLocalPos0Attr().Get()[1], index * 0.1)
-                self.assertAlmostEqual(joint.GetLocalPos1Attr().Get()[1], index * 0.1)
+                if prim.GetName().startswith("newton_closure_"):
+                    offset = int(prim.GetName().rsplit("_", 1)[1]) * 0.1
+                    self.assertEqual(joint.GetBody0Rel().GetTargets()[0].name, "rod")
+                    self.assertEqual(joint.GetBody1Rel().GetTargets()[0].name, "bucket")
+                    self.assertAlmostEqual(joint.GetLocalPos0Attr().Get()[1], offset)
+                    self.assertAlmostEqual(joint.GetLocalPos1Attr().Get()[1], offset)
+                else:
+                    from wheel_loader.vehicle.parameters import load_parameters
+
+                    p = load_parameters(ROOT / "configs/vehicle/wa320.yaml")
+                    name = prim.GetName().removesuffix("_tip_closure")
+                    spec = p["cylinder_bodies"][name]
+                    self.assertEqual(
+                        joint.GetBody0Rel().GetTargets()[0].name, name + "_rod"
+                    )
+                    self.assertEqual(
+                        joint.GetBody1Rel().GetTargets()[0].name, spec["tip_body"]
+                    )
+                    for actual, expected in zip(
+                        joint.GetLocalPos1Attr().Get(), spec["tip"]
+                    ):
+                        self.assertAlmostEqual(actual, expected, places=6)
                 self.assertAlmostEqual(
                     prim.GetAttribute("mjc:solref").Get()[0],
                     settings.loop_time_constant,

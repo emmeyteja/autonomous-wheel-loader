@@ -171,7 +171,20 @@ def prepare_asset(source, output, profile, *, require_fixed_base=False):
             ]
         )
     for prim in prepared.Traverse():
-        if prim.IsA(UsdPhysics.RevoluteJoint) and prim.GetName() in BOUNDED_JOINTS:
+        if prim.IsA(UsdPhysics.SphericalJoint) and prim.GetName().endswith(
+            "_tip_closure"
+        ):
+            prim.AddAppliedSchema("MjcEqualityConnectAPI")
+            prim.CreateAttribute("mjc:solref", Sdf.ValueTypeNames.Float2).Set(
+                Gf.Vec2f(profile.loop_time_constant, 1.0)
+            )
+            prim.CreateAttribute("mjc:solimp", Sdf.ValueTypeNames.FloatArray).Set(
+                [profile.loop_impedance, profile.loop_impedance, 0.001, 0.5, 2.0]
+            )
+        if (
+            prim.IsA(UsdPhysics.PrismaticJoint)
+            and prim.GetName().endswith("_slider_joint")
+        ) or (prim.IsA(UsdPhysics.RevoluteJoint) and prim.GetName() in BOUNDED_JOINTS):
             prim.CreateAttribute("mjc:solreflimit", Sdf.ValueTypeNames.Float2).Set(
                 Gf.Vec2f(profile.stop_time_constant, 1.0)
             )
@@ -215,7 +228,7 @@ def audit_import(path, profile):
         for name in BOUNDED_JOINTS
     )
     equalities = root.findall("equality/connect")
-    loops = len(equalities) == 2 and all(
+    loops = len(equalities) in (2, 7) and all(
         close(node.get("solref"), [profile.loop_time_constant, 1.0])
         and close(
             node.get("solimp"),

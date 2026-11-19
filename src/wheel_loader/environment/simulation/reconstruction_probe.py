@@ -11,7 +11,6 @@ from pathlib import Path
 
 import numpy as np
 
-from wheel_loader.control.commands import wheel_rates
 from wheel_loader.vehicle.kinematics import passive_joint_positions
 
 CASES = (
@@ -22,10 +21,22 @@ CASES = (
     "bucket_curl",
     "carry_ballast",
     "transfer_ballast",
+    "drive_lift",
+    "rigid_terrain_contact",
+    "static_lowered",
+    "static_transport",
+    "static_raised",
+    "static_curled",
+    "static_payload",
+    "chassis_zero",
+    "chassis_pos20",
+    "chassis_neg20",
+    "chassis_poslimit",
+    "chassis_neglimit",
 )
 
 
-def run_probes(p, source, output):
+def run_probes(p, source, output, *, cases=None):
     import mujoco
 
     output = Path(output)
@@ -38,10 +49,10 @@ def run_probes(p, source, output):
     rear = next(n for n in body_names if n.endswith("_rear_frame"))
     bucket = next(n for n in body_names if n.endswith("_bucket"))
     all_reports = {}
-    for case in CASES:
+    for case in CASES if cases is None else cases:
         tree = ET.parse(source)
         root = tree.getroot()
-        has_payload = case.endswith("ballast")
+        has_payload = case.endswith("ballast") or case == "static_payload"
         mass = 2000.0 if has_payload else 0.0
         if has_payload:
             body = ET.SubElement(
@@ -55,6 +66,9 @@ def run_probes(p, source, output):
                 type="box",
                 size=".25 .35 .20",
                 mass=str(mass),
+                priority="1",
+                solref=".004 1",
+                solimp=".99 .999 .001",
                 rgba=".9 .3 .1 1",
                 contype="1",
                 conaffinity="2147483647",
@@ -80,6 +94,29 @@ def run_probes(p, source, output):
                     conaffinity="2147483647",
                     rgba=".3 .4 .5 1",
                 )
+        if case == "rigid_terrain_contact":
+            from wheel_loader.terrain.rigid_pile import load_terrain
+            from wheel_loader.vehicle.kinematics import solve_linkage
+
+            terrain = load_terrain("configs/terrain/rigid_pile.yaml")
+            toe = solve_linkage(p, *p["maneuver"]["lower_attack"]).lip[0] + 0.3
+            vertices = terrain.vertices() + [toe + terrain.length / 2, 0, 0]
+            ET.SubElement(
+                root.find("asset"),
+                "mesh",
+                name="mechanical_pile",
+                vertex=" ".join(map(str, vertices.ravel())),
+            )
+            ET.SubElement(
+                root.find("worldbody"),
+                "geom",
+                name="mechanical_pile",
+                type="mesh",
+                mesh="mechanical_pile",
+                rgba=".5 .4 .25 1",
+                contype="1",
+                conaffinity="2147483647",
+            )
         drives = root.find("actuator")
         if drives is None:
             drives = ET.SubElement(root, "actuator")
@@ -87,7 +124,9 @@ def run_probes(p, source, output):
                 j.attrib["name"]
                 for j in root.iter("joint")
                 if "_Physics_" in j.attrib.get("name", "")
-                and not j.attrib["name"].endswith(("bucket_joint", "rod_joint"))
+                and not j.attrib["name"].endswith(
+                    ("bucket_joint", "rod_joint", "_hinge_joint")
+                )
             ]
         else:
             driven_names = list(dict.fromkeys(node.attrib["joint"] for node in drives))
@@ -98,6 +137,7 @@ def run_probes(p, source, output):
         model.opt.timestep = p["solver"]["dt"] / 8
         model.opt.integrator = mujoco.mjtIntegrator.mjINT_IMPLICITFAST
         model.opt.iterations = 200
+        model.opt.enableflags |= mujoco.mjtEnableBit.mjENBL_ENERGY
         data = mujoco.MjData(model)
         names = {
             mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, j).split("_Physics_")[
@@ -130,7 +170,25 @@ def run_probes(p, source, output):
         current = np.array([0.15, -0.05])
         if case in ("bucket_curl", "carry_ballast"):
             current = np.array([0.45, 0.0])
-        for n, v in passive_joint_positions(p, *current).items():
+        pose_cases = {
+            "static_lowered": "lower_attack",
+            "static_transport": "settle",
+            "static_raised": "raise_dump",
+            "static_curled": "curl_lift",
+            "static_payload": "curl_lift",
+            "rigid_terrain_contact": "lower_attack",
+        }
+        if case in pose_cases:
+            current = np.array(p["maneuver"][pose_cases[case]])
+        art0 = {
+            "chassis_zero": 0.0,
+            "chassis_pos20": np.deg2rad(20),
+            "chassis_neg20": -np.deg2rad(20),
+            "chassis_poslimit": p["articulation"]["max_angle"],
+            "chassis_neglimit": p["articulation"]["min_angle"],
+        }.get(case, 0.0)
+        data.qpos[addresses["articulation_joint"]] = art0
+        for n, v in passive_joint_positions(p, *current, articulation=art0).items():
             data.qpos[addresses[n]] = v
         mujoco.mj_forward(model, data)
         if has_payload:
@@ -152,19 +210,32 @@ def run_probes(p, source, output):
         )
         from wheel_loader.control.cylinder_actuation import FirstOrderCylinders
 
-        actuator = FirstOrderCylinders(p, [0, *current])
+        actuator = FirstOrderCylinders(p, [art0, *current])
         frames = []
         qstates = []
         metrics = []
         payload_states = []
         released = False
         receiver_contact = False
+        telemetry = []
+        actuator_rows = []
+        work = 0.0
+        positive_work = 0.0
+        pile_contact = False
+        max_pile_penetration = 0.0
+        peak_pile_force = 0.0
+        maximum_payload_penetration = 0.0
+        maximum_self_penetration = 0.0
+        self_pairs = {}
+        cylinder_pin_gaps = []
+        frame_translation_errors = []
+        initial_energy = float(data.energy.sum())
         for step in range(round(duration / p["solver"]["dt"])):
             t = step * p["solver"]["dt"]
             speed = 0.0
-            art = 0.0
+            art = art0
             target = current.copy()
-            if case in ("acceleration", "braking", "carry_ballast"):
+            if case in ("acceleration", "braking", "carry_ballast", "drive_lift"):
                 vmax = 1.0 if case == "braking" else 0.6
                 speed = (
                     vmax * min(max((t - 2) / 2, 0), 1) * min(max((10 - t) / 2, 0), 1)
@@ -172,6 +243,10 @@ def run_probes(p, source, output):
             if case == "articulation":
                 speed = 0.4 if 2 < t < 10 else 0.0
                 art = 0.45 * np.sin(np.clip((t - 2) / 8, 0, 1) * 2 * np.pi)
+            if case == "rigid_terrain_contact":
+                speed = 0.12 if 2 < t < 10 else 0.0
+            if case == "drive_lift":
+                target = np.array([0.60, 0.0])
             if case == "boom_raise":
                 target = np.array([p["boom"]["max_angle"], 0.20])
             if case == "bucket_curl":
@@ -191,8 +266,6 @@ def run_probes(p, source, output):
                 -np.array([0.1, 0.22]) * p["solver"]["dt"],
                 np.array([0.1, 0.22]) * p["solver"]["dt"],
             )
-            passive_joint_positions(p, *current) | {"articulation_joint": art}
-            wheel_rates(p, speed, float(data.qpos[addresses["articulation_joint"]]))
             from wheel_loader.control.commands import LoaderCommand
             from wheel_loader.control.cylinder_actuation import (
                 joint_efforts,
@@ -210,7 +283,7 @@ def run_probes(p, source, output):
                 for n in ("articulation_joint", "boom_joint", "tilt_joint")
             ]
             u = normalized_reference(p, reference, angles)
-            efforts, _ = joint_efforts(
+            efforts, actuation = joint_efforts(
                 p, actuator, u, actual, actual_vel, control_names, p["solver"]["dt"]
             )
             for a in range(model.nu):
@@ -221,10 +294,42 @@ def run_probes(p, source, output):
                 data.ctrl[a] = efforts[control_names.index(name)]
             for _ in range(8):
                 mujoco.mj_step(model, data)
+            power = float(
+                efforts
+                @ np.array(
+                    [data.qvel[model.jnt_dofadr[names[n]]] for n in control_names]
+                )
+            )
+            work += power * p["solver"]["dt"]
+            positive_work += max(power, 0) * p["solver"]["dt"]
             if not np.isfinite(data.qpos).all() or np.max(np.abs(data.qvel)) > 1e4:
                 raise RuntimeError(f"{case}: unstable state")
             if step % 12:
                 continue
+            mujoco.mj_forward(model, data)
+            pin_gaps = []
+            for name, spec in p.get("cylinder_bodies", {}).items():
+                rod_body = next(
+                    i for n, i in body_names.items() if n.endswith("_" + name + "_rod")
+                )
+                tip_body = next(
+                    i
+                    for n, i in body_names.items()
+                    if n.endswith("_" + spec["tip_body"])
+                )
+                pin_gaps.append(
+                    float(
+                        np.linalg.norm(
+                            data.xpos[rod_body]
+                            - (
+                                data.xpos[tip_body]
+                                + data.xmat[tip_body].reshape(3, 3) @ spec["tip"]
+                            )
+                        )
+                    )
+                )
+            cylinder_pin_gaps.append(max(pin_gaps, default=0.0))
+            pile_force_sample = 0.0
             receiver_last_contact = False
             normal = np.zeros(4)
             slip = []
@@ -239,13 +344,41 @@ def run_probes(p, source, output):
                 if "receiver" in labels and "ballast_collision" in labels:
                     receiver_contact = True
                     receiver_last_contact = True
+                if "mechanical_pile" in labels:
+                    if bucket_id in bodies:
+                        pile_contact = True
+                        force = np.zeros(6)
+                        mujoco.mj_contactForce(model, data, contact_index, force)
+                        pile_force_sample += float(np.linalg.norm(force[:3]))
+                        peak_pile_force = max(peak_pile_force, pile_force_sample)
+                    max_pile_penetration = max(
+                        max_pile_penetration, -float(contact.dist)
+                    )
+                elif "ballast_collision" in labels:
+                    maximum_payload_penetration = max(
+                        maximum_payload_penetration, -float(contact.dist)
+                    )
+                elif 0 not in bodies:
+                    maximum_self_penetration = max(
+                        maximum_self_penetration, -float(contact.dist)
+                    )
+                    if contact.dist < -0.001:
+                        pair = " | ".join(
+                            mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, b)
+                            for b in bodies
+                        )
+                        self_pairs[pair] = max(
+                            self_pairs.get(pair, 0.0), -float(contact.dist)
+                        )
                 if 0 not in bodies:
                     continue
                 f6 = np.zeros(6)
                 mujoco.mj_contactForce(model, data, contact_index, f6)
                 for k, b in enumerate(wheel_bodies):
                     if b in bodies:
-                        normal[k] += abs((contact.frame.reshape(3, 3).T @ f6[:3])[2])
+                        normal[k] += (1 if bodies[1] == b else -1) * (
+                            contact.frame.reshape(3, 3).T @ f6[:3]
+                        )[2]
             for j, b in zip(wheel_ids, wheel_bodies):
                 velocity = np.empty(6)
                 mujoco.mj_objectVelocity(
@@ -275,6 +408,27 @@ def run_probes(p, source, output):
                     *slip,
                 ]
             )
+            body_velocity = np.empty(6)
+            mujoco.mj_objectVelocity(
+                model, data, mujoco.mjtObj.mjOBJ_BODY, rear_id, body_velocity, 0
+            )
+            frame_translation_errors.append(
+                float(np.linalg.norm(data.xpos[front_id] - data.xpos[rear_id]))
+            )
+            telemetry.append(
+                [
+                    *body_velocity[3:],
+                    data.qpos[addresses["boom_joint"]],
+                    data.qpos[addresses["bucket_joint"]],
+                    power,
+                    work,
+                    positive_work,
+                    float(data.energy.sum()),
+                    mass,
+                    pile_force_sample,
+                ]
+            )
+            actuator_rows.append(actuation)
             frames.append(t)
             qstates.append(data.qpos.copy())
             payload_states.append(
@@ -295,7 +449,7 @@ def run_probes(p, source, output):
             "positive_vehicle_mass": bool(
                 np.isclose(model.body_mass.sum(), 15175 + mass, atol=0.1)
             ),
-            "bounded_pitch": bool(np.max(abs(values[:, 1])) < 0.35),
+            "bounded_pitch": bool(np.max(abs(values[:, 1])) < 0.10),
             "bounded_articulation": bool(
                 np.max(abs(values[:, 3])) < np.deg2rad(38.5) + 0.01
             ),
@@ -318,13 +472,107 @@ def run_probes(p, source, output):
         moving_speed = np.gradient(np.array(qstates)[:, base], np.array(frames))
         checks["vehicle_response"] = (
             bool(np.ptp(np.array(qstates)[:, base]) > 0.5)
-            if case in ("acceleration", "braking", "carry_ballast")
+            if case in ("acceleration", "braking", "carry_ballast", "drive_lift")
             else True
         )
         checks["sustained_ground_support"] = bool(
             np.mean(values[values[:, 0] > 2, 4:8].sum(axis=1) > 1000) > 0.95
         )
+        if case.startswith(("static_", "chassis_")):
+            final = values[values[:, 0] > duration - 2]
+            means = final[:, 4:8].mean(axis=0)
+            support_error = abs(means.sum() - (15175 + mass) * 9.81) / (
+                (15175 + mass) * 9.81
+            )
+            checks.update(
+                static_weight_balance=bool(support_error < 0.03),
+                four_positive_wheel_loads=bool((means > 0).all()),
+                stable_equilibrium=bool(
+                    np.max(np.abs(np.array(telemetry)[values[:, 0] > duration - 2, :3]))
+                    < 0.01
+                ),
+            )
+        if has_payload:
+            checks["payload_contact_depth"] = maximum_payload_penetration < 0.005
+        if case.startswith("chassis_"):
+            checks["requested_articulation"] = bool(abs(values[-1, 3] - art0) < 0.005)
+        checks["self_collision"] = bool(maximum_self_penetration < 0.005)
+        if case == "rigid_terrain_contact":
+            checks.update(
+                bucket_contacts_rigid_terrain=pile_contact,
+                rigid_contact_depth=bool(max_pile_penetration < 0.02),
+            )
+        from wheel_loader.evaluation.actuation import check_actuation
+
+        actuator_check = check_actuation(
+            p,
+            {k: np.array([row[k] for row in actuator_rows]) for k in actuator_rows[0]},
+        )
+        checks.update(actuator_check["checks"])
+        stroke_overruns = {}
+        for name, spec in p.get("cylinder_bodies", {}).items():
+            x = (
+                np.array(qstates)[:, addresses[name + "_slider_joint"]]
+                + spec["reference_length"]
+                - p["cylinders"][spec["kind"]]["pin_distance_min"]
+            )
+            stroke = p["cylinders"][spec["kind"]]["stroke"]
+            stroke_overruns[name] = float(
+                np.maximum(np.maximum(-x, x - stroke), 0).max()
+            )
+        checks["all_physical_slider_strokes"] = all(
+            x < 0.001 for x in stroke_overruns.values()
+        )
+        checks["no_chassis_translation"] = max(frame_translation_errors) < 1e-5
+        checks["cylinder_pin_closure"] = max(cylinder_pin_gaps) < 0.001
+
+        static_prediction = None
+        if case.startswith("static_"):
+            from wheel_loader.vehicle.mass_properties import mass_report
+
+            prediction = mass_report(
+                p,
+                *current,
+                payload_kg=mass,
+                payload_local_m=[0.55, 0, 0.30] if mass else None,
+            )
+            measured_front = float(
+                values[values[:, 0] > duration - 2, 4:8][:, front_mask]
+                .sum(axis=1)
+                .mean()
+            )
+            error = abs(measured_front - prediction["front_axle_load_N"]) / (
+                (15175 + mass) * 9.81
+            )
+            checks["static_front_axle_prediction"] = bool(error < 0.03)
+            static_prediction = {
+                "front_N": prediction["front_axle_load_N"],
+                "rear_N": prediction["rear_axle_load_N"],
+                "total_COM_m": prediction["total_vehicle_COM_m"],
+                "front_fraction_error": error,
+            }
         record = {
+            "maximum_rigid_pile_overlap_m": max_pile_penetration,
+            "peak_bucket_rigid_pile_force_N": peak_pile_force,
+            "maximum_payload_contact_penetration_m": maximum_payload_penetration,
+            "static_prediction": static_prediction,
+            "actuation": actuator_check,
+            "maximum_cylinder_pin_gap_m": max(cylinder_pin_gaps),
+            "maximum_slider_stroke_overrun_m": stroke_overruns,
+            "maximum_front_rear_hinge_translation_m": max(frame_translation_errors),
+            "maximum_self_penetration_m": maximum_self_penetration,
+            "self_pairs": self_pairs,
+            "requested_articulation_rad": float(art0),
+            "final_wheel_normal_N": values[values[:, 0] > duration - 2, 4:8]
+            .mean(axis=0)
+            .tolist(),
+            "net_actuator_work_J": work,
+            "positive_actuator_work_J": positive_work,
+            "mechanical_energy_change_J": float(data.energy.sum()) - initial_energy,
+            "energy_balance_interpretation": "Actuator work and mechanical energy only; contact/friction losses and valve/pump efficiency not identified.",
+            "deformable_terrain_penetration": "NOT IMPLEMENTED: this case tests reaction against an immovable rigid pile"
+            if case == "rigid_terrain_contact"
+            else None,
             "front_axle_force_range_after_settle_N": [
                 float(front_force[values[:, 0] > 2].min()),
                 float(front_force[values[:, 0] > 2].max()),
@@ -365,6 +613,25 @@ def run_probes(p, source, output):
             qpos=qstates,
             metrics=values,
             payload_xyz=payload_states,
+            state_columns=np.array(
+                [
+                    "vx_m_s",
+                    "vy_m_s",
+                    "vz_m_s",
+                    "boom_rad",
+                    "bucket_rad",
+                    "power_W",
+                    "work_J",
+                    "positive_work_J",
+                    "mechanical_energy_J",
+                    "payload_kg",
+                    "bucket_rigid_contact_N",
+                ]
+            ),
+            state=np.array(telemetry),
+            **{
+                k: np.array([row[k] for row in actuator_rows]) for k in actuator_rows[0]
+            },
         )
         all_reports[case] = record
     (output / "suite.json").write_text(json.dumps(all_reports, indent=2) + "\n")
@@ -399,7 +666,7 @@ def run_v_cycle_probe(p, source, output):
         if "_Physics_" in j.attrib.get("name", "")
     ]
     for name in joint_names:
-        if not name.endswith(("bucket_joint", "rod_joint")):
+        if not name.endswith(("bucket_joint", "rod_joint", "_hinge_joint")):
             ET.SubElement(motors, "motor", joint=name)
     model = mujoco.MjModel.from_xml_string(ET.tostring(xml, encoding="unicode"))
     model.opt.timestep = p["solver"]["dt"] / 8
@@ -501,7 +768,32 @@ def run_v_cycle_probe(p, source, output):
             0,
             bz,
         ]
-        gaps.append(float(np.linalg.norm(rod_tip - bucket_tip)))
+        frame_gaps = [float(np.linalg.norm(rod_tip - bucket_tip))]
+        for name, spec in p.get("cylinder_bodies", {}).items():
+            rid = next(
+                i
+                for i in range(model.nbody)
+                if (
+                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, i) or ""
+                ).endswith("_" + name + "_rod")
+            )
+            tid = next(
+                i
+                for i in range(model.nbody)
+                if (
+                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, i) or ""
+                ).endswith("_" + spec["tip_body"])
+            )
+            frame_gaps.append(
+                float(
+                    np.linalg.norm(
+                        data.xpos[rid]
+                        - data.xpos[tid]
+                        - data.xmat[tid].reshape(3, 3) @ spec["tip"]
+                    )
+                )
+            )
+        gaps.append(max(frame_gaps))
         positions.append(data.qpos[addresses].copy())
         quat = data.qpos[base + 3 : base + 7]
         roots.append(np.r_[data.qpos[base : base + 3], quat[[1, 2, 3, 0]]])

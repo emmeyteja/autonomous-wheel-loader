@@ -39,6 +39,36 @@ def articulation_config(p, usd):
                 stiffness=0.0,
                 damping=0.0 if "actuators" in p else p["solver"]["wheel_damping"],
             ),
+            **(
+                {
+                    "cylinder_hinges": ImplicitActuatorCfg(
+                        joint_names_expr=[".*_hinge_joint"],
+                        joint_effort_limit=float("inf"),
+                        stiffness=0.0,
+                        damping=0.0,
+                    ),
+                    **{
+                        kind + "_cylinders": ImplicitActuatorCfg(
+                            joint_names_expr=[
+                                (
+                                    "lift_.*"
+                                    if kind == "lift"
+                                    else "steering_.*"
+                                    if kind == "steering"
+                                    else "bucket"
+                                )
+                                + "_slider_joint"
+                            ],
+                            joint_effort_limit=p["actuators"][kind]["fmax"],
+                            stiffness=0.0,
+                            damping=0.0,
+                        )
+                        for kind in ("steering", "lift", "bucket")
+                    },
+                }
+                if "cylinder_bodies" in p
+                else {}
+            ),
             "steering": drive(["articulation_joint"], "articulation"),
             "boom": drive(["boom_joint"], "boom"),
             "tilt": drive(["tilt_joint"], "linkage"),

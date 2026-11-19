@@ -56,6 +56,8 @@ class ReplayState:
         if len(free) != 1:
             raise ValueError("Replay requires exactly one floating root")
         self.base = model.jnt_qposadr[free[0]]
+        from wheel_loader.vehicle.mass_properties import body_path_suffix
+
         self.bodies = {}
         for suffix in (
             "rear_frame",
@@ -72,6 +74,14 @@ class ReplayState:
                     mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, i) or ""
                 ).endswith("_" + suffix)
             ]
+            if len(matches) > 1:
+                matches = [
+                    i
+                    for i in matches
+                    if (
+                        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, i) or ""
+                    ).endswith(body_path_suffix(parameters, suffix))
+                ]
             if len(matches) != 1:
                 raise ValueError(f"Cannot resolve body {suffix}")
             self.bodies[suffix] = matches[0]

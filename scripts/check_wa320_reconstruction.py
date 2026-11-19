@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 
+from wheel_loader.environment.simulation.reconstruction_probe import CASES
 from wheel_loader.evaluation.foundation import check_geometry
 from wheel_loader.vehicle.kinematics import rotate, solve_linkage
 from wheel_loader.vehicle.mass_properties import mass_report
@@ -26,12 +27,12 @@ def main():
     parser.add_argument(
         "--cycle",
         type=Path,
-        default=Path("outputs/wa320/reconstructed_v1/release_nominal"),
+        default=Path("outputs/wa320/mechanical_correction/release_nominal"),
     )
     parser.add_argument(
         "--dynamics",
         type=Path,
-        default=Path("outputs/wa320/reconstructed_v1/release_dynamics"),
+        default=Path("outputs/wa320/mechanical_correction/release_dynamics"),
     )
     args = parser.parse_args()
     p = load_parameters(args.config)
@@ -92,6 +93,16 @@ def main():
         report["newton_cycle"] = json.loads(cycle_file.read_text())
         with np.load(cycle_dir / "actuation.npz") as n:
             report["actuation"] = check_actuation(p, n)
+        if "cylinder_bodies" in p:
+            from wheel_loader.environment.simulation.fixture_checks import (
+                recorded_cylinder_checks,
+            )
+
+            with np.load(cycle_dir / "motion.npz") as recording:
+                report["physical_cylinders"] = recorded_cylinder_checks(
+                    cycle_dir / "effective_model.xml", p, recording
+                )
+            report["checks"].update(report["physical_cylinders"]["checks"])
         report["checks"]["cycle_parameters_match"] = (
             report["newton_cycle"].get("parameter_sha256") == digest
         )
@@ -108,16 +119,24 @@ def main():
         report["checks"]["newton_v_cycle"] = False
     if dynamics_file.exists():
         report["dynamic_sanity"] = json.loads(dynamics_file.read_text())
-        report["checks"]["seven_dynamic_cases"] = len(
+        report["checks"]["expanded_mechanical_cases"] = len(
             report["dynamic_sanity"]
-        ) == 7 and all(
+        ) == len(CASES) and all(
             all(r["checks"].values()) and r.get("parameter_sha256") == digest
             for r in report["dynamic_sanity"].values()
         )
     else:
-        report["checks"]["seven_dynamic_cases"] = False
-    report["v1_complete"] = bool(all(report["checks"].values()))
+        report["checks"]["expanded_mechanical_cases"] = False
+    report["rigid_mechanics_passed"] = bool(all(report["checks"].values()))
+    report["v1_complete"] = (
+        False  # Deformable penetration acceptance is not implemented.
+    )
     report["physical_accuracy_established"] = False
+    report["deformable_terrain_penetration_verified"] = False
+    report["all_requested_validation_complete"] = False
+    report["unsupported_validation"] = [
+        "Bucket penetration into deformable terrain: only the rigid-pile reaction test is implemented; do not interpret it as excavation."
+    ]
     report["remaining_unknowns"] = [
         "true pin/COM/inertia errors and installed equipment masses",
         "calibrated cylinder lag, speed, force, friction and power sharing",

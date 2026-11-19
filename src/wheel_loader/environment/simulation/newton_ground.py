@@ -518,6 +518,15 @@ def run_ground(
                     },
                 )
                 checks.update(result["workspace"]["checks"])
+            if "cylinder_bodies" in p:
+                from .fixture_checks import recorded_cylinder_checks
+
+                result["physical_cylinders"] = recorded_cylinder_checks(
+                    output / "effective_model.xml",
+                    p,
+                    {"joint_names": np.asarray(names), "positions": positions},
+                )
+                checks.update(result["physical_cylinders"]["checks"])
             (output / "validation.json").write_text(json.dumps(result, indent=2) + "\n")
             print(json.dumps(result, indent=2), flush=True)
             if not all(checks.values()):

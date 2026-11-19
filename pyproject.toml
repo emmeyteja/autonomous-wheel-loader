@@ -18,7 +18,7 @@ geometry-audit = ["matplotlib>=3.8,<4", "Pillow>=10,<13"]
 material-audit = ["mujoco==3.12.0", "Pillow>=10,<13"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests/unit", "tests/test_wa320_mass_budget.py", "tests/test_wa320_static_load.py", "tests/test_wa320_actuators.py", "tests/test_wa320_reconstruction.py"]
+testpaths = ["tests/unit", "tests/test_wa320_mass_budget.py", "tests/test_wa320_static_load.py", "tests/test_wa320_actuators.py", "tests/test_wa320_reconstruction.py", "tests/test_wa320_mechanical_structure.py"]
 pythonpath = ["src"]
 
 [tool.setuptools.packages.find]

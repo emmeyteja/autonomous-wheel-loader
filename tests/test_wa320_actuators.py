@@ -74,3 +74,38 @@ def test_integral_hold_force_is_bounded_and_reset_per_environment():
     a.reset([True, False])
     assert (a.integral_force[0] == 0).all()
     np.testing.assert_array_equal(a.integral_force[1], retained)
+
+
+def test_physical_actuation_applies_only_linear_cylinder_and_wheel_efforts():
+    from wheel_loader.control.cylinder_actuation import joint_efforts
+    from wheel_loader.vehicle.kinematics import passive_joint_positions
+
+    p = load_parameters(ROOT / "configs/vehicle/wa320.yaml")
+    state = passive_joint_positions(p, 0.15, -0.05) | {
+        "articulation_joint": 0.0,
+        **{
+            f"{a}_{s}_wheel_joint": 0.0
+            for a in ("front", "rear")
+            for s in ("left", "right")
+        },
+    }
+    names = list(state)
+    q = np.array(list(state.values()))
+    qd = np.zeros_like(q)
+    actuator = FirstOrderCylinders(p, [0, 0.15, -0.05])
+    effort, meta = joint_efforts(p, actuator, [0, 0.2, 0.3, 0.4], q, qd, names, 0.03)
+    for name in (
+        "articulation_joint",
+        "boom_joint",
+        "tilt_joint",
+        "rod_joint",
+        "bucket_joint",
+    ):
+        assert effort[names.index(name)] == 0
+    for name, spec in p["cylinder_bodies"].items():
+        assert effort[names.index(name + "_hinge_joint")] == 0
+        assert (
+            abs(effort[names.index(name + "_slider_joint")])
+            <= p["actuators"][spec["kind"]]["fmax"]
+        )
+    assert meta["force_N"][1] != 0

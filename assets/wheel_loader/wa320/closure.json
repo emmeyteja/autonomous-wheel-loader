@@ -15,5 +15,82 @@
   ],
   "axis": "Y",
   "exclude_from_articulation": true,
-  "warning": "Required loop joint. Bare URDF omits it; passive rod/bucket must NOT be driven."
+  "warning": "Required loop joint. Bare URDF omits it; passive rod/bucket must NOT be driven.",
+  "cylinders": [
+    {
+      "joint": "lift_left_tip_closure",
+      "body0": "lift_left_rod",
+      "body1": "boom",
+      "local_pos0": [
+        0,
+        0,
+        0
+      ],
+      "local_pos1": [
+        1.2,
+        0.24,
+        -0.1
+      ]
+    },
+    {
+      "joint": "lift_right_tip_closure",
+      "body0": "lift_right_rod",
+      "body1": "boom",
+      "local_pos0": [
+        0,
+        0,
+        0
+      ],
+      "local_pos1": [
+        1.2,
+        -0.24,
+        -0.1
+      ]
+    },
+    {
+      "joint": "bucket_tip_closure",
+      "body0": "bucket_rod",
+      "body1": "bellcrank",
+      "local_pos0": [
+        0,
+        0,
+        0
+      ],
+      "local_pos1": [
+        0.7187040431891034,
+        0,
+        0
+      ]
+    },
+    {
+      "joint": "steering_left_tip_closure",
+      "body0": "steering_left_rod",
+      "body1": "front_frame",
+      "local_pos0": [
+        0,
+        0,
+        0
+      ],
+      "local_pos1": [
+        0.9394126260413399,
+        0.5,
+        -0.08
+      ]
+    },
+    {
+      "joint": "steering_right_tip_closure",
+      "body0": "steering_right_rod",
+      "body1": "front_frame",
+      "local_pos0": [
+        0,
+        0,
+        0
+      ],
+      "local_pos1": [
+        0.9394126260413399,
+        -0.5,
+        -0.08
+      ]
+    }
+  ]
 }

@@ -96,7 +96,7 @@ def solve_linkage(parameters: dict, boom_angle=0.0, tilt_angle=0.0) -> LinkagePo
 
 
 def passive_joint_positions(
-    parameters, boom_angle=0.0, tilt_angle=0.0
+    parameters, boom_angle=0.0, tilt_angle=0.0, articulation=0.0
 ) -> dict[str, float]:
     pose, neutral = (
         solve_linkage(parameters, boom_angle, tilt_angle),
@@ -109,10 +109,41 @@ def passive_joint_positions(
         <= parameters["bucket"]["max_angle"]
     ):
         raise ValueError("Linkage violates passive bucket joint envelope")
-    return {
+    result = {
         "boom_joint": boom_angle,
         "tilt_joint": tilt_angle,
         "bucket_joint": beta,
         "rod_joint": (pose.rod_angle - pose.bellcrank_angle)
         - (neutral.rod_angle - neutral.bellcrank_angle),
     }
+
+    if "cylinder_bodies" in parameters:
+        from .mass_properties import body_transforms
+
+        frames = body_transforms(parameters, boom_angle, tilt_angle, articulation)
+        for name, spec in parameters["cylinder_bodies"].items():
+            b, r = frames[spec["parent"]]
+            tip, rt = frames[spec["tip_body"]]
+            d = r.T @ (tip + rt @ spec["tip"] - b) - spec["base"]
+            current = (
+                math.atan2(d[0], d[2])
+                if spec["axis"] == "Y"
+                else math.atan2(d[1], d[0])
+            )
+            # URDF zero hinge orientation is the nominal empty attachment pose.
+            neutral_frames = body_transforms(parameters, 0, 0, 0)
+            b0, r0 = neutral_frames[spec["parent"]]
+            t0, rt0 = neutral_frames[spec["tip_body"]]
+            d0 = r0.T @ (t0 + rt0 @ spec["tip"] - b0) - spec["base"]
+            initial = (
+                math.atan2(d0[0], d0[2])
+                if spec["axis"] == "Y"
+                else math.atan2(d0[1], d0[0])
+            )
+            result[name + "_hinge_joint"] = math.atan2(
+                math.sin(current - initial), math.cos(current - initial)
+            )
+            result[name + "_slider_joint"] = float(
+                np.linalg.norm(d) - spec["reference_length"]
+            )
+    return result

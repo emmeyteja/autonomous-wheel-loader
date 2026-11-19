@@ -24,13 +24,20 @@ def linkage_gap(robot, p, env_index=0):
     )
     bx, bz = p["linkage"]["bucket_anchor"]
     bucket = transform_point(poses[robot.body_names.index("bucket")], [bx, 0, bz])
-    return float(np.linalg.norm(rod - bucket))
+    gaps = [float(np.linalg.norm(rod - bucket))]
+    for name, spec in p.get("cylinder_bodies", {}).items():
+        tip = transform_point(
+            poses[robot.body_names.index(spec["tip_body"])], spec["tip"]
+        )
+        endpoint = poses[robot.body_names.index(name + "_rod"), :3]
+        gaps.append(float(np.linalg.norm(tip - endpoint)))
+    return max(gaps)
 
 
 def set_pose(robot, sim, p, *, boom=0.6, tilt=0.0, articulation=0.0):
     import torch
 
-    positions = passive_joint_positions(p, boom, tilt) | {
+    positions = passive_joint_positions(p, boom, tilt, articulation=articulation) | {
         "articulation_joint": articulation
     }
     target = torch.zeros((1, len(robot.joint_names)), device=sim.device)
@@ -281,4 +288,69 @@ def ground_reset_check(robot, scene, sim, p, dt):
             and error < 1e-4
             and gap < 0.005
         ),
+    }
+
+
+def recorded_cylinder_checks(path, p, recording):
+    """Independent FK audit of recorded states; no physics stepping or correction."""
+    import mujoco
+
+    model = mujoco.MjModel.from_xml_path(str(path))
+    data = mujoco.MjData(model)
+    names = recording["joint_names"].tolist()
+    q = np.asarray(recording["positions"])
+    joints = {
+        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, j).split("_Physics_")[-1]: j
+        for j in range(model.njnt)
+    }
+    addresses = [model.jnt_qposadr[joints[n]] for n in names]
+    body_names = {
+        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, i): i
+        for i in range(model.nbody)
+    }
+    from wheel_loader.vehicle.mass_properties import body_path_suffix
+
+    ids = {
+        n: next(
+            i for full, i in body_names.items() if full.endswith(body_path_suffix(p, n))
+        )
+        for n in p["bodies"]
+    }
+    maximum = {n: 0.0 for n in p.get("cylinder_bodies", {})}
+    stroke_overruns = {}
+    for row in q:
+        data.qpos[addresses] = row
+        mujoco.mj_kinematics(model, data)
+        for name, spec in p.get("cylinder_bodies", {}).items():
+            tip = ids[spec["tip_body"]]
+            end = ids[name + "_rod"]
+            gap = float(
+                np.linalg.norm(
+                    data.xpos[end]
+                    - data.xpos[tip]
+                    - data.xmat[tip].reshape(3, 3) @ spec["tip"]
+                )
+            )
+            maximum[name] = max(maximum[name], gap)
+    for name, spec in p.get("cylinder_bodies", {}).items():
+        c = p["cylinders"][spec["kind"]]
+        x = (
+            q[:, names.index(name + "_slider_joint")]
+            + spec["reference_length"]
+            - c["pin_distance_min"]
+        )
+        stroke_overruns[name] = float(
+            np.maximum(np.maximum(-x, x - c["stroke"]), 0).max()
+        )
+    return {
+        "checks": {
+            "physical_cylinder_pin_closure": all(g < 0.001 for g in maximum.values()),
+            "all_physical_cylinder_strokes": all(
+                g < 0.001 for g in stroke_overruns.values()
+            ),
+        },
+        "samples": len(q),
+        "maximum_pin_gap_m": maximum,
+        "maximum_stroke_overrun_m": stroke_overruns,
+        "method": "FK of every recorded state, not physics replay or state correction",
     }

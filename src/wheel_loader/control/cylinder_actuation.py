@@ -157,15 +157,39 @@ def joint_efforts(p, actuator, normalized, q, qd, names, dt):
     angles = np.asarray(q)[ids]
     vel = np.asarray(qd)[ids]
     lengths, jac, transmission = cylinder_geometry(p, angles)
+    rate = jac @ vel
+    if "cylinder_bodies" in p:
+        measured_names = [
+            "steering_left_slider_joint",
+            "lift_left_slider_joint",
+            "bucket_slider_joint",
+        ]
+        lengths = np.array(
+            [
+                p["cylinder_bodies"][n]["reference_length"]
+                for n in ("steering_left", "lift_left", "bucket")
+            ]
+        ) + np.array([q[names.index(n)] for n in measured_names])
+        rate = np.array([qd[names.index(n)] for n in measured_names])
     forces, drive = actuator.step(
-        np.asarray(normalized)[None, :], dt, lengths[None, :], (jac @ vel)[None, :]
+        np.asarray(normalized)[None, :], dt, lengths[None, :], rate[None, :]
     )
     effort = np.zeros(len(names))
-    torque = transmission.T @ forces[0]
-    for i, section in zip(ids, ("articulation", "boom", "linkage")):
-        effort[i] = np.clip(
-            torque[ids.index(i)], -p[section]["max_torque"], p[section]["max_torque"]
-        )
+    if "cylinder_bodies" in p:
+        # Physical linear forces, not equivalent joint torques. Passive cylinder
+        # hinges and tip constraints transmit the reaction through the mechanism.
+        for name, spec in p["cylinder_bodies"].items():
+            channel = NAMES.index(spec["kind"])
+            sign = -1 if name == "steering_right" else 1
+            effort[names.index(name + "_slider_joint")] = sign * forces[0, channel]
+    else:
+        torque = transmission.T @ forces[0]
+        for i, section in zip(ids, ("articulation", "boom", "linkage")):
+            effort[i] = np.clip(
+                torque[ids.index(i)],
+                -p[section]["max_torque"],
+                p[section]["max_torque"],
+            )
     # Normalized drive reaches a first-order motor speed reference, never a state write.
     art = float(
         np.clip(

@@ -1,43 +1,55 @@
-# WA320 reconstructed v1 linkage
+# WA320 reconstructed v1 linkage and articulated structure
 
-- Source topology: PZ boom/front-frame, boom/bucket, boom/bellcrank, bellcrank/link, link/bucket, bucket cylinder/bellcrank, and paired lift cylinders/boom/frame. The URDF is a tree; `closure.json` and the supported USD conversion add the passive loop. Neither bucket nor link receives an independent drive.
-- Original digitization and source checksums remain in `configs/geometry/`; reference methods remain in `docs/models/WA320_BROCHURE_GEOMETRY.md` and `WA320_BUCKET_GEOMETRY.md`.
-- Active dimensions are centralized in `configs/vehicle/wa320.yaml`. The old v0 straight crank and zero-offset pivot remain reproducible from the archived v0 configuration and assets; they were not retuned.
+## Service-manual topology audit
 
-## Estimated geometry and identifiability
+- SEN06202-03 10-128 shows upper/lower center hinge pins and bearings. The front frame rotates relative to the rear around their common vertical axis; steering cylinders connect the two frames.
+- Work-equipment disassembly 50-214–216 verifies the following relationships. Coordinates remain estimates; topology verification does not establish manufacturer pin-center dimensions.
 
-- Boom length ≈2.710 m; front-frame pivot ≈[0.810, 0.892] m X/Z relative to the hinge. Crank pivot has an estimated nonzero transverse offset ≈[1.701, 0.587] m in boom coordinates.
-- The earlier visible-D interpretation is rejected. V1 selects an explicitly estimated D on the two-pose equal-link-length locus, using the registered ground and raised rollback anchors. The remaining free coordinate is chosen to permit dump travel within the manual cylinder-length envelope and a continuous assembly branch. It is not a uniquely identified pin.
-- D ≈[-0.823, 0.180] m relative to the upper-pin-oriented crank frame; connecting link ≈0.744 m. These large changes from the rejected D interpretation are assumptions, not manufacturer dimensions.
-- Known visible boom/crank fit residuals are up to 8.4 mm; the partially occluded boom-base pick differs by 30.9 mm. Bucket-anchor registration residuals are about 22 mm in fitting and 17 mm in the held-out same drawing. These do not establish true pin errors.
-- V1 stores assumed 30 mm sensitivity for selected digitized pivots and 200 mm for the unidentified D. A 10–30 mm true-geometry claim is **not established** for all pins. Unknown real errors are never reported as zero.
-- Bucket lip and upper-mouth shape are constrained to the frozen dump reach/clearance and maximum-height targets. These checks are fitted workspace consistency, not independent validation of the brochure or bucket profile. The remaining outline is approximate, with open mouth, side walls and cutting-edge/floor plates. Heaped capacity is metadata, not a proven watertight 3.0 m³ volume.
-- Some attachment proxies protrude into the empty bucket interior in the replay. Effective scoop volume and material/attachment collision clearance require checking in M2; the unloaded v1 tests do not validate filling.
+| Manual pin | Physical connection | Model joint / constraint |
+|---|---|---|
+| 3 | Bucket link ↔ bucket | `zbar_closure` |
+| 5 | Boom ↔ bucket | `bucket_joint` (passive) |
+| 8 | Bucket-cylinder rod ↔ bell crank | `bucket_tip_closure` |
+| 11 | Paired lift-cylinder rods ↔ boom | `lift_left_tip_closure`, `lift_right_tip_closure` |
+| 17 | Boom ↔ front frame | `boom_joint` |
+| 20 | Bell crank ↔ bucket link | `rod_joint` (passive) |
+| 23 | Boom ↔ bell crank | `tilt_joint` (historical name) |
 
-## Cylinders and limits
+- The existing boom/crank/link/bucket graph was a valid closed four-bar topology, not four independent angle drives. It is retained. The old lumped-cylinder representation is replaced with explicit pinned barrels, physical prismatic rods and constrained tips.
+- Cylinder and Z-bar loops are mandatory USD constraints in `closure.json`; bare URDF omits their final pins and is not a complete dynamics model. Barrel hinges, crank, boom, bucket and link receive no commanded rotary effort. Only cylinder sliders and wheel motors receive external efforts.
 
-- Verified against service-manual data, SEN06202-03 printed 01-11 / 01-16, serial 80001+: lift bore/rod/stroke 120/75/729 mm, pin lengths 1327–2056 mm; bucket 150/110/558 mm, lengths 1354–1912 mm; steering 70/40/453 mm, lengths 818–1271 mm.
-- These nominal dimensions are accepted as v1 references for the selected 3.0 m³ configuration. Exact installed-option applicability remains an uncertainty; alternative bucket listings do not stop the approximation.
-- Lift mounts are estimated from the two boom-end poses and the documented length envelopes. Steering mounts are an estimated symmetric arrangement constrained by end lengths at ±38.5°. Neither set of coordinates is manufacturer CAD.
-- The full rectangular joint envelope is not a collision-free/cylinder-valid workspace. Scripted poses and the entire recorded path are checked for cylinder travel. Articulation and estimated assembly-branch joint envelopes remain explicit mechanical/numerical limits.
+## Articulated-frame correction
 
-## First-order force actuation
+- `rear_frame → articulation_joint → front_frame` remains one rotational DOF about +Z at the original hinge origin; ±38.5° is unchanged. Axles remain fixed to their corresponding frames, with independently rotating wheels. Rear-axle oscillation is not modeled.
+- Estimated rear rails, crossmembers and upper/lower clevis supports connect to a separate rear hinge-housing body. Separate front sleeve/neck, low crossmembers, side members and boom-pivot towers provide actual contact geometry and load paths.
+- Two estimated pin stubs and hollow bearing rings represent the manual's two-level hinge. Each ring exports as separate convex sectors so USD convex-hull conversion cannot fill the entire bore. Bearing clearances, casting thickness and exact pin dimensions are unmeasured estimates.
+- Housing inertia and mass come from explicit subdivisions of the existing frame budget (rear 160 kg, front 110 kg); they are not decorative massless boxes or added residual mass. Compound tensors are recomputed from the configured primitives.
+- Steering mounts are an estimated asymmetric longitudinal arrangement constrained by both manual end lengths and housing-clearance checks: rear X/Y ≈−0.1025/±0.3500 m; front X/Y ≈0.9394/±0.5000 m; Z≈−0.08 m relative to the hinge. These replace the earlier symmetric mounts, which collided with the housing near full articulation.
+- Lift mounts retain their estimated planar positions and move inboard to Y=±0.24 m, with an explicit boom lift-pin crossmember. Towers and steering crossmembers leave actual cylinder corridors. These transverse dimensions and shapes are ESTIMATED, not brochure measurements.
 
-- Existing control and simulation boundaries are retained. The waypoint reference generator feeds normalized `[drive, steering, lift, bucket]` commands through the actuator controller. The environment applies efforts; after reset it never writes body poses, velocities or joint positions to follow the path.
-- Cylinder reference motion follows `dv/dt = (v_cmd - v)/tau`, `dx/dt = v`, integrated analytically per control step; normalized input sets bounded `v_cmd`. Here `x` is pin length and `x − minimum_length` is stroke. Saturation bounds reference stroke and outward velocity.
-- Estimated tau [steer/lift/bucket]: 0.15/0.15/0.12 s; velocity limits 0.08/0.14/0.16 m/s; force limits 75/300/400 kN **per cylinder**. Lift uses two cylinders; steering uses equal/opposite left/right forces. These values are estimated, not identified from valve data.
-- Actual length/rate comes from rigid linkage geometry. A bounded PI-D force servo transmits the reference into the mechanism, using estimated 3 MN/m stiffness and 0.6 MN·s/m damping, plus 2 MN/(m·s) integral gain with anti-windup. The integral term supports static loads inside the same force cap; it is not additional gravity compensation. Actual motion can lag or stall under load; no velocity clamp or teleport is applied to bodies.
-- Forces map to articulation/boom/crank efforts through the cylinder-length Jacobian (virtual work), including bucket-cylinder reaction on the boom. Joint effort caps are conservative bounds derived from those force limits and maximum moment arms; legacy rotary-motor caps are retained only in v0. Passive bucket/link joints receive no drive or hidden corrective effort.
-- Normalized drive uses a first-order estimated motor-speed reference and bounded wheel torque. This is a low-speed diagnostic drive model, not a calibrated HST powertrain. Cylinder bores do not imply valve dynamics, pressure traces or shared engine power.
-- Numerical joint-stop/loop compliance is in the existing Newton profile. Active loop impedance is 0.9999: the older soft 0.9/0.95 closure could cross the estimated dump toggle gap (about 0.85 mm) and switch assembly branch. This is rigid-pin numerical enforcement, not a passive-joint drive. Force damping is part of the documented actuator approximation, not an undisclosed stabilization force. First-order state and masked resets are tested independently.
+## Geometry and identifiability
 
-## Validation interpretation
+- Boom length ≈2.710 m; front-frame boom pivot ≈[0.810, 0.892] m in X/Z. Crank pivot ≈[1.701, 0.587] m in boom coordinates. Estimated crank lower pin ≈[−0.823, 0.180] m in the upper-pin-oriented crank frame; bucket link ≈0.744 m.
+- The lower-pin estimate lies on a two-pose equal-link-length locus with a remaining free coordinate chosen for cylinder travel and closure. It is not uniquely identified. The rejected visible-D interpretation remains historical evidence, not an active manufacturer dimension.
+- Visible boom/crank drawing fit residual: up to 8.4 mm; partly occluded boom-base residual: 30.9 mm. Bucket-anchor fit/held-out residuals: about 22/17 mm in the same drawing. These are drawing residuals, not true machine errors.
+- Assumed sensitivity scales are 30 mm for selected digitized pivots and 200 mm for the unidentified lower pin. A universal 10–30 mm reconstruction-accuracy claim is not established.
+- Bucket lip/upper-mouth outline is fitted to brochure workspace poses. Its maximum transient envelope differs from the brochure raised-rollback height; full CAD geometry, usable capacity and clean material cavity remain unverified.
 
-- Algebraic closure is near floating-point precision; recorded dynamics use solver constraints and therefore have a separate nonzero loop gap.
-- The current release Newton run reaches the V-cycle endpoints, curls/lifts, reverses raised, dumps, recurls at height before lowering, and returns to origin. The earlier PD-only run had a 0.086 mm gap but under-reached the raised hinge, so it does not complete the revised gates. This is numerical closure, not physical reconstruction accuracy.
-- Recorded cylinder lengths stay inside manual ranges. Force and normalized-command limits are checked separately. The rigid ballast transfer is a separate native MuJoCo diagnostic of the exported geometry; no granular acquisition is claimed.
+## Cylinder coordinates and reduced hydraulics
 
-- Workspace checks use measured joint states at the documented raised-rollback and dump poses; targets alone do not count. The approximate bucket can have a larger transient top envelope between those poses. All-cycle maximum height is reported separately from the brochure pose comparison.
-- Raise/dump sequencing aligns the bucket before raising and recurls to raised rollback before lowering. Conservative bellcrank slew is 0.04 rad/s; attachment feedback gates phase completion. These settings are diagnostic estimates, not an optimized loading policy.
+- Service-manual reference dimensions: lift bore/rod/stroke 120/75/729 mm, pin lengths 1327–2056 mm; bucket 150/110/558 mm, 1354–1912 mm; steering 70/40/453 mm, 818–1271 mm. Installed-option applicability remains an uncertainty.
+- Normalized commands specify bounded cylinder velocity references. `dv/dt = (v_cmd − v)/tau`, `dx/dt = v`; exact integration per control tick, reference stroke and outward-velocity saturation. Estimated tau S/L/B: 0.15/0.15/0.12 s; vmax: 0.08/0.14/0.16 m/s; Fmax per cylinder: 75/300/400 kN.
+- A bounded PI-D force servo uses estimated 3 MN/m stiffness, 0.6 MN·s/m damping and 2 MN/(m·s) integral gain with anti-windup. The integral term stays inside the same force cap. This is not a pressure, valve, leakage, efficiency or engine-power-sharing model.
+- Each barrel pivots at its configured frame attachment. Each rod slides along the cylinder axis and is constrained at its mechanical tip. Actual force is applied to the prismatic joint, with physical reactions through the barrel hinge and tip. No bucket-angle drive or hidden corrective joint torque is used.
+- Prismatic coordinate zero is the **closed neutral assembly**, not full retraction. Physical extension = `q_slider + reference_length − manual_minimum`. This keeps the imported rest assembly closed and prevents the importer from deriving an incorrect second pin anchor. Neutral closure is checked before import.
+- The bucket-cylinder base vector in the historical `linkage` section is relative to the boom-pivot origin; the explicit barrel mount includes that origin when expressed in the front frame. Mixing those frames is rejected by geometry/signature tests.
+- The full rectangular boom/crank angle range is not a cylinder-valid, collision-free workspace. Tests use valid paths and check all five actual slider strokes and pin gaps.
 
-- Final nominal Newton result: maximum loop gap 0.009 mm, return error 0.310 m; cylinder reference/force/travel and measured workspace screens pass. The maximum transient bucket-top envelope is 5.678 m, distinct from the brochure raised-rollback pose comparison (5.581 m).
+## Deterministic signature and numerical validation
+
+- `scripts/check_wa320_signature.py` writes `signature.csv` and `signature.png` locally: 51 lower-to-raised-rollback poses, boom/crank/bucket angles, tip position, absolute cylinder lengths, physical extensions and closure errors. It checks manual travel and rejects impossible geometry. This is an estimated-model signature, not machine validation.
+- Independent URDF forward kinematics checks actual exported transforms and pin connections at 0°, ±20° and ±38.5°, plus fixed wheelbase/track/radius and one chassis yaw joint. An offset neutral cylinder length fails explicitly.
+- Newton numerical profile uses explicit stop/closure time constants and impedance, with eight solver substeps. These enforce rigid mechanical pins; they do not impose a desired bucket pose. No body pose or velocity is overwritten after initialization/reset.
+- The nominal Newton cycle and 19 native rigid-body cases pass. Recorded-state FK additionally audits every cylinder tip and stroke. Replay uses actual cylinder/link geometry; it no longer substitutes disconnected cylinder decorations or hides the physical bucket link.
+- A separate 2000 kg ballast release uses explicitly stiff rigid contact (4 ms reference, priority 1) and checks ≤5 mm ballast overlap. Expected load/bucket contact is distinguished from vehicle self-collision.
+- Rigid-pile reaction is tested; deformable penetration/material acquisition is not implemented. It must not be inferred from a contact-force or V-cycle pass.

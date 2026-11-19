@@ -56,6 +56,14 @@ def compound_properties(mass, primitives):
             diagonal = m * np.array(
                 [(3 * radius**2 + length**2) / 12] * 2 + [radius**2 / 2]
             )
+        elif p["shape"] == "annulus" and size.shape == (3,):
+            outer, inner, length = size
+            if inner >= outer:
+                raise ValueError("Annulus bore must be smaller than outer radius")
+            diagonal = m * np.array(
+                [(3 * (outer**2 + inner**2) + length**2) / 12] * 2
+                + [(outer**2 + inner**2) / 2]
+            )
         else:
             raise ValueError("Unsupported inertia primitive")
         r = rotation3(p["rpy"])
@@ -128,6 +136,24 @@ def body_transforms(p, boom=0.15, tilt=-0.05, articulation=0.0):
             offset = np.array([p["boom"]["length"], 0, 0])
             r = rotation3([0, -pose.bucket_angle, 0])
         xyz, rp = frames[parent]
+        for cylinder, spec in p.get("cylinder_bodies", {}).items():
+            if name == cylinder + "_barrel":
+                tip_xyz, tip_r = frames[spec["tip_body"]]
+                direction = rp.T @ (tip_xyz + tip_r @ spec["tip"] - xyz) - np.asarray(
+                    spec["base"]
+                )
+                angle = (
+                    math.atan2(direction[0], direction[2])
+                    if spec["axis"] == "Y"
+                    else math.atan2(direction[1], direction[0])
+                )
+                r = rotation3([0, angle, 0] if spec["axis"] == "Y" else [0, 0, angle])
+            elif name == cylinder + "_rod":
+                tip_xyz, tip_r = frames[spec["tip_body"]]
+                length = np.linalg.norm(tip_xyz + tip_r @ spec["tip"] - xyz)
+                offset = np.array(
+                    [0, 0, length] if spec["axis"] == "Y" else [length, 0, 0]
+                )
         frames[name] = (xyz + rp @ offset, rp @ r)
     return frames
 
@@ -193,3 +219,16 @@ def mass_report(p, boom=0.15, tilt=-0.05, payload_kg=0.0, payload_local_m=None):
         "manufacturer_axle_loads": False,
         "inertias_estimated": True,
     }
+
+
+def body_path_suffix(p, name):
+    """Unambiguous exported body path, including parents (several rods now exist)."""
+    if "bodies" not in p:
+        return "_" + name
+    chain = []
+    while name != "world":
+        if name in chain:
+            raise ValueError("Cyclic body graph")
+        chain.append(name)
+        name = p["bodies"][name]["parent"]
+    return "_" + "_".join(reversed(chain))

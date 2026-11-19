@@ -600,8 +600,9 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated from circle intersection satisfying manual length endpoints at
-      brochure boom elevations; not measured mounting coordinates.
+    notes: Estimated paired inboard lift mount at +/-0.24 m. Planar mount coordinates
+      unchanged; transverse placement clears the boom side members and uses an explicit
+      lift-pin crossmember.
     true_vehicle_error: null
   geometry.lift_cylinder_rod_pin:
     status: engineering_estimate
@@ -610,7 +611,9 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated paired inboard lift mount at +/-0.24 m. Planar mount coordinates
+      unchanged; transverse placement clears the boom side members and uses an explicit
+      lift-pin crossmember.
     true_vehicle_error: null
   geometry.cab_size:
     status: engineering_estimate
@@ -637,8 +640,9 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated symmetric pin arrangement constrained by manual end lengths;
-      not digitized.
+    notes: Estimated asymmetric longitudinal mounts chosen from the two manual end-length
+      constraints and five-angle housing-clearance checks. Transverse offsets 0.35/0.50
+      m and mid-hinge height -0.08 m are assumptions, not CAD.
     true_vehicle_error: null
   geometry.steering_front_pin:
     status: engineering_estimate
@@ -647,7 +651,9 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated symmetric pin arrangement; right side mirrors Y.
+    notes: Estimated asymmetric longitudinal mounts chosen from the two manual end-length
+      constraints and five-angle housing-clearance checks. Transverse offsets 0.35/0.50
+      m and mid-hinge height -0.08 m are assumptions, not CAD.
     true_vehicle_error: null
   masses.rear_frame:
     status: engineering_estimate
@@ -761,8 +767,8 @@ active_parameters:
     - project_assumption
     source_tag: DERIVED
     confidence: documented_reference
-    notes: Two 111 kg manual cylinders; fixed barrel/rod mass proxies split 60/40,
-      not a full cylinder dynamic mechanism.
+    notes: Two 111 kg service-manual cylinder masses; explicit moving barrel/rod bodies
+      with estimated 60/40 mass allocation.
     true_vehicle_error: null
   masses.bucket_cylinder:
     status: manual_reference
@@ -780,7 +786,8 @@ active_parameters:
     - project_assumption
     source_tag: DERIVED
     confidence: documented_reference
-    notes: Two 21 kg manual cylinders; split between rear/front fixed proxies.
+    notes: Two 21 kg service-manual cylinder masses; explicit moving barrel/rod bodies
+      with estimated 60/40 mass allocation.
     true_vehicle_error: null
   masses.wheel:
     status: manual_reference
@@ -1044,22 +1051,14 @@ active_parameters:
     notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   bodies.rear_frame.mass_fraction:
-    status: derived_reference
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
-    true_vehicle_error: null
-  bodies.rear_frame.primitives.0.fraction:
-    status: derived_reference
-    unit: '1'
-    sources:
-    - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: 3271 kg rear-frame group minus 160 kg estimated hinge assembly; original
+      group mass unchanged.
     true_vehicle_error: null
   bodies.rear_frame.primitives.0.center:
     status: engineering_estimate
@@ -1068,7 +1067,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   bodies.rear_frame.primitives.0.size:
     status: engineering_estimate
@@ -1077,7 +1077,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   bodies.rear_frame.primitives.0.rpy:
     status: engineering_estimate
@@ -1086,16 +1087,18 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.rear_frame.primitives.1.fraction:
-    status: derived_reference
+  bodies.rear_frame.primitives.0.fraction:
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
     true_vehicle_error: null
   bodies.rear_frame.primitives.1.center:
     status: engineering_estimate
@@ -1104,8 +1107,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated counterweight location constrained by nominal overall length;
-      no mass correction.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   bodies.rear_frame.primitives.1.size:
     status: engineering_estimate
@@ -1114,7 +1117,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   bodies.rear_frame.primitives.1.rpy:
     status: engineering_estimate
@@ -1123,16 +1127,18 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.rear_frame.primitives.2.fraction:
-    status: derived_reference
+  bodies.rear_frame.primitives.1.fraction:
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
     true_vehicle_error: null
   bodies.rear_frame.primitives.2.center:
     status: engineering_estimate
@@ -1141,7 +1147,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   bodies.rear_frame.primitives.2.size:
     status: engineering_estimate
@@ -1150,7 +1157,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   bodies.rear_frame.primitives.2.rpy:
     status: engineering_estimate
@@ -1159,7 +1167,98 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.2.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.3.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.3.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.3.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.3.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.4.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.4.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.4.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.4.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
     true_vehicle_error: null
   bodies.engine_powertrain.origin:
     status: engineering_estimate
@@ -1459,22 +1558,14 @@ active_parameters:
     notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   bodies.front_frame.mass_fraction:
-    status: derived_reference
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
-    true_vehicle_error: null
-  bodies.front_frame.primitives.0.fraction:
-    status: derived_reference
-    unit: '1'
-    sources:
-    - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Manual 1226 kg front-frame group minus 110 kg estimated front hinge sleeve/neck
+      allocation.
     true_vehicle_error: null
   bodies.front_frame.primitives.0.center:
     status: engineering_estimate
@@ -1483,7 +1574,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   bodies.front_frame.primitives.0.size:
     status: engineering_estimate
@@ -1492,7 +1584,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   bodies.front_frame.primitives.0.rpy:
     status: engineering_estimate
@@ -1501,16 +1594,18 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.front_frame.primitives.1.fraction:
-    status: derived_reference
+  bodies.front_frame.primitives.0.fraction:
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
     true_vehicle_error: null
   bodies.front_frame.primitives.1.center:
     status: engineering_estimate
@@ -1519,7 +1614,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   bodies.front_frame.primitives.1.size:
     status: engineering_estimate
@@ -1528,7 +1624,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   bodies.front_frame.primitives.1.rpy:
     status: engineering_estimate
@@ -1537,7 +1634,218 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.1.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.2.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated low crossmember provides a clear mid-height steering-cylinder
+      corridor; not a dimensioned Komatsu frame drawing.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.2.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.2.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.2.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.3.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated low crossmember provides a clear mid-height steering-cylinder
+      corridor; not a dimensioned Komatsu frame drawing.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.3.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.3.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.3.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.4.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.4.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.4.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.4.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.5.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.5.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.5.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.5.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.6.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.6.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.6.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.6.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
     true_vehicle_error: null
   bodies.front_axle.origin:
     status: engineering_estimate
@@ -1747,6 +2055,42 @@ active_parameters:
     notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   bodies.boom.primitives.3.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.4.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.boom.primitives.4.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.4.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.4.rpy:
     status: engineering_estimate
     unit: rad
     sources:
@@ -2277,221 +2621,683 @@ active_parameters:
     confidence: low
     notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
-  bodies.lift_barrel_left.origin:
+  bodies.rear_hinge_housing.origin:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_barrel_left.mass_fraction:
-    status: derived_reference
+  bodies.rear_hinge_housing.mass_fraction:
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated subdivision of existing frame mass; not an added mass correction.
     true_vehicle_error: null
-  bodies.lift_barrel_left.primitives.0.fraction:
-    status: derived_reference
-    unit: '1'
-    sources:
-    - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
-    true_vehicle_error: null
-  bodies.lift_barrel_left.primitives.0.center:
+  bodies.rear_hinge_housing.primitives.0.center:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_barrel_left.primitives.0.size:
+  bodies.rear_hinge_housing.primitives.0.size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_barrel_left.primitives.0.rpy:
+  bodies.rear_hinge_housing.primitives.0.rpy:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_rod_left.origin:
+  bodies.rear_hinge_housing.primitives.0.fraction:
     status: engineering_estimate
-    unit: m
-    sources:
-    - project_assumption
-    source_tag: ESTIMATED
-    confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
-    true_vehicle_error: null
-  bodies.lift_rod_left.mass_fraction:
-    status: derived_reference
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
     true_vehicle_error: null
-  bodies.lift_rod_left.primitives.0.fraction:
-    status: derived_reference
-    unit: '1'
-    sources:
-    - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
-    true_vehicle_error: null
-  bodies.lift_rod_left.primitives.0.center:
+  bodies.rear_hinge_housing.primitives.1.center:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_rod_left.primitives.0.size:
+  bodies.rear_hinge_housing.primitives.1.size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_rod_left.primitives.0.rpy:
+  bodies.rear_hinge_housing.primitives.1.rpy:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_barrel_right.origin:
+  bodies.rear_hinge_housing.primitives.1.fraction:
     status: engineering_estimate
-    unit: m
-    sources:
-    - project_assumption
-    source_tag: ESTIMATED
-    confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
-    true_vehicle_error: null
-  bodies.lift_barrel_right.mass_fraction:
-    status: derived_reference
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
     true_vehicle_error: null
-  bodies.lift_barrel_right.primitives.0.fraction:
-    status: derived_reference
-    unit: '1'
-    sources:
-    - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
-    true_vehicle_error: null
-  bodies.lift_barrel_right.primitives.0.center:
+  bodies.rear_hinge_housing.primitives.2.center:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_barrel_right.primitives.0.size:
+  bodies.rear_hinge_housing.primitives.2.size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_barrel_right.primitives.0.rpy:
+  bodies.rear_hinge_housing.primitives.2.rpy:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_rod_right.origin:
+  bodies.rear_hinge_housing.primitives.2.fraction:
     status: engineering_estimate
-    unit: m
-    sources:
-    - project_assumption
-    source_tag: ESTIMATED
-    confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
-    true_vehicle_error: null
-  bodies.lift_rod_right.mass_fraction:
-    status: derived_reference
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
     true_vehicle_error: null
-  bodies.lift_rod_right.primitives.0.fraction:
-    status: derived_reference
-    unit: '1'
-    sources:
-    - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
-    true_vehicle_error: null
-  bodies.lift_rod_right.primitives.0.center:
+  bodies.rear_hinge_housing.primitives.3.center:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_rod_right.primitives.0.size:
+  bodies.rear_hinge_housing.primitives.3.size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
-  bodies.lift_rod_right.primitives.0.rpy:
+  bodies.rear_hinge_housing.primitives.3.rpy:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.3.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.4.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.4.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.4.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.4.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.5.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.5.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.5.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.5.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.6.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.6.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.6.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.6.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.7.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.7.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.7.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.rear_hinge_housing.primitives.7.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.front_hinge_housing.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_hinge_housing.mass_fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated subdivision of existing frame mass; not an added mass correction.
+    true_vehicle_error: null
+  bodies.front_hinge_housing.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_hinge_housing.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_hinge_housing.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_hinge_housing.primitives.0.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.front_hinge_housing.primitives.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_hinge_housing.primitives.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_hinge_housing.primitives.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  bodies.front_hinge_housing.primitives.1.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated allocation within the existing component mass; no added residual
+      mass.
+    true_vehicle_error: null
+  bodies.lift_left_barrel.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_left_barrel.mass_fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated barrel/rod mass split of the unchanged service-manual cylinder
+      mass.
+    true_vehicle_error: null
+  bodies.lift_left_barrel.primitives.0.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_left_barrel.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_left_barrel.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_left_barrel.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_left_rod.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_left_rod.mass_fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated barrel/rod mass split of the unchanged service-manual cylinder
+      mass.
+    true_vehicle_error: null
+  bodies.lift_left_rod.primitives.0.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_left_rod.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_left_rod.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_left_rod.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_right_barrel.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_right_barrel.mass_fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated barrel/rod mass split of the unchanged service-manual cylinder
+      mass.
+    true_vehicle_error: null
+  bodies.lift_right_barrel.primitives.0.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_right_barrel.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_right_barrel.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_right_barrel.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_right_rod.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_right_rod.mass_fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated barrel/rod mass split of the unchanged service-manual cylinder
+      mass.
+    true_vehicle_error: null
+  bodies.lift_right_rod.primitives.0.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_right_rod.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_right_rod.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.lift_right_rod.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
   bodies.bucket_barrel.origin:
     status: engineering_estimate
@@ -2500,25 +3306,28 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
   bodies.bucket_barrel.mass_fraction:
-    status: derived_reference
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated barrel/rod mass split of the unchanged service-manual cylinder
+      mass.
     true_vehicle_error: null
   bodies.bucket_barrel.primitives.0.fraction:
-    status: derived_reference
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
   bodies.bucket_barrel.primitives.0.center:
     status: engineering_estimate
@@ -2527,7 +3336,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
   bodies.bucket_barrel.primitives.0.size:
     status: engineering_estimate
@@ -2536,7 +3346,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
   bodies.bucket_barrel.primitives.0.rpy:
     status: engineering_estimate
@@ -2545,169 +3356,308 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.bucket_piston.origin:
+  bodies.bucket_rod.origin:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.bucket_piston.mass_fraction:
-    status: derived_reference
+  bodies.bucket_rod.mass_fraction:
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated barrel/rod mass split of the unchanged service-manual cylinder
+      mass.
     true_vehicle_error: null
-  bodies.bucket_piston.primitives.0.fraction:
-    status: derived_reference
+  bodies.bucket_rod.primitives.0.fraction:
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.bucket_piston.primitives.0.center:
+  bodies.bucket_rod.primitives.0.center:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.bucket_piston.primitives.0.size:
+  bodies.bucket_rod.primitives.0.size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.bucket_piston.primitives.0.rpy:
+  bodies.bucket_rod.primitives.0.rpy:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.steering_rear.origin:
+  bodies.steering_left_barrel.origin:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.steering_rear.mass_fraction:
-    status: derived_reference
+  bodies.steering_left_barrel.mass_fraction:
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated barrel/rod mass split of the unchanged service-manual cylinder
+      mass.
     true_vehicle_error: null
-  bodies.steering_rear.primitives.0.fraction:
-    status: derived_reference
+  bodies.steering_left_barrel.primitives.0.fraction:
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.steering_rear.primitives.0.center:
+  bodies.steering_left_barrel.primitives.0.center:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.steering_rear.primitives.0.size:
+  bodies.steering_left_barrel.primitives.0.size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.steering_rear.primitives.0.rpy:
+  bodies.steering_left_barrel.primitives.0.rpy:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.steering_front.origin:
+  bodies.steering_left_rod.origin:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.steering_front.mass_fraction:
-    status: derived_reference
+  bodies.steering_left_rod.mass_fraction:
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated barrel/rod mass split of the unchanged service-manual cylinder
+      mass.
     true_vehicle_error: null
-  bodies.steering_front.primitives.0.fraction:
-    status: derived_reference
+  bodies.steering_left_rod.primitives.0.fraction:
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
-    source_tag: DERIVED
-    confidence: derived
-    notes: See reference provenance ledger.
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.steering_front.primitives.0.center:
+  bodies.steering_left_rod.primitives.0.center:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.steering_front.primitives.0.size:
+  bodies.steering_left_rod.primitives.0.size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
-  bodies.steering_front.primitives.0.rpy:
+  bodies.steering_left_rod.primitives.0.rpy:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated geometry/COM/inertia primitive.
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.steering_right_barrel.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.steering_right_barrel.mass_fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated barrel/rod mass split of the unchanged service-manual cylinder
+      mass.
+    true_vehicle_error: null
+  bodies.steering_right_barrel.primitives.0.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.steering_right_barrel.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.steering_right_barrel.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.steering_right_barrel.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.steering_right_rod.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.steering_right_rod.mass_fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated barrel/rod mass split of the unchanged service-manual cylinder
+      mass.
+    true_vehicle_error: null
+  bodies.steering_right_rod.primitives.0.fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.steering_right_rod.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.steering_right_rod.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  bodies.steering_right_rod.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
     true_vehicle_error: null
   maneuver.settle:
     status: engineering_estimate
@@ -3025,8 +3975,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.rear_frame.0.size:
     status: engineering_estimate
@@ -3035,8 +3985,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.rear_frame.0.rpy:
     status: engineering_estimate
@@ -3045,8 +3995,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.rear_frame.1.center:
     status: engineering_estimate
@@ -3055,8 +4005,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.rear_frame.1.size:
     status: engineering_estimate
@@ -3065,8 +4015,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.rear_frame.1.rpy:
     status: engineering_estimate
@@ -3075,8 +4025,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.rear_frame.2.center:
     status: engineering_estimate
@@ -3085,8 +4035,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.rear_frame.2.size:
     status: engineering_estimate
@@ -3095,8 +4045,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.rear_frame.2.rpy:
     status: engineering_estimate
@@ -3105,8 +4055,68 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.3.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.3.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.3.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.4.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.4.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.4.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.engine_powertrain.0.center:
     status: engineering_estimate
@@ -3295,8 +4305,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.front_frame.0.size:
     status: engineering_estimate
@@ -3305,8 +4315,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.front_frame.0.rpy:
     status: engineering_estimate
@@ -3315,8 +4325,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.front_frame.1.center:
     status: engineering_estimate
@@ -3325,8 +4335,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.front_frame.1.size:
     status: engineering_estimate
@@ -3335,8 +4345,8 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.front_frame.1.rpy:
     status: engineering_estimate
@@ -3345,8 +4355,158 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.2.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated low crossmember provides a clear mid-height steering-cylinder
+      corridor; not a dimensioned Komatsu frame drawing.
+    true_vehicle_error: null
+  collision_geometry.front_frame.2.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.2.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.3.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated low crossmember provides a clear mid-height steering-cylinder
+      corridor; not a dimensioned Komatsu frame drawing.
+    true_vehicle_error: null
+  collision_geometry.front_frame.3.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.3.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.4.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.4.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.4.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.5.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.5.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.5.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.6.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.6.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_frame.6.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
     true_vehicle_error: null
   collision_geometry.front_axle.0.center:
     status: engineering_estimate
@@ -3385,8 +4545,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.0.size:
     status: engineering_estimate
@@ -3395,8 +4554,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.0.rpy:
     status: engineering_estimate
@@ -3405,8 +4563,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.1.center:
     status: engineering_estimate
@@ -3415,8 +4572,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.1.size:
     status: engineering_estimate
@@ -3425,8 +4581,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.1.rpy:
     status: engineering_estimate
@@ -3435,8 +4590,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.2.center:
     status: engineering_estimate
@@ -3445,8 +4599,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.2.size:
     status: engineering_estimate
@@ -3455,8 +4608,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.2.rpy:
     status: engineering_estimate
@@ -3465,8 +4617,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.3.center:
     status: engineering_estimate
@@ -3475,8 +4626,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.3.size:
     status: engineering_estimate
@@ -3485,8 +4635,7 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.boom.3.rpy:
     status: engineering_estimate
@@ -3495,8 +4644,34 @@ active_parameters:
     - project_assumption
     source_tag: ESTIMATED
     confidence: low
-    notes: Estimated exterior/contact geometry, configurable independently of inertia
-      primitives.
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  collision_geometry.boom.4.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  collision_geometry.boom.4.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  collision_geometry.boom.4.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   collision_geometry.bellcrank.0.center:
     status: engineering_estimate
@@ -3557,6 +4732,1016 @@ active_parameters:
     confidence: low
     notes: Estimated exterior/contact geometry, configurable independently of inertia
       primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.2.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.2.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.2.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.3.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.3.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.3.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.4.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.4.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.4.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.5.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.5.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.5.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.6.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.6.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.6.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.7.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.7.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.rear_hinge_housing.7.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_hinge_housing.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_hinge_housing.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_hinge_housing.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_hinge_housing.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_hinge_housing.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.front_hinge_housing.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated research frame geometry, informed by service-manual 10-128 topology;
+      not dimensioned CAD.
+    true_vehicle_error: null
+  collision_geometry.annulus_segments:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated polygon resolution per hinge ring; every sector is convex, preserving
+      the bearing bore in USD collision geometry.
+    true_vehicle_error: null
+  collision_geometry.lift_left_barrel.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_left_barrel.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_left_barrel.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_left_rod.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_left_rod.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_left_rod.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_right_barrel.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_right_barrel.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_right_barrel.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_right_rod.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_right_rod.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.lift_right_rod.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.bucket_barrel.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.bucket_barrel.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.bucket_barrel.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.bucket_rod.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.bucket_rod.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.bucket_rod.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_left_barrel.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_left_barrel.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_left_barrel.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_left_rod.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_left_rod.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_left_rod.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_right_barrel.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_right_barrel.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_right_barrel.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_right_rod.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_right_rod.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  collision_geometry.steering_right_rod.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_left.base:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_left.tip:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_left.barrel_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_left.rod_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_left.outer_radius:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_left.rod_radius:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Half of the service-manual rod diameter.
+    true_vehicle_error: null
+  cylinder_bodies.lift_left.hinge_speed:
+    status: engineering_estimate
+    unit: rad/s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_left.reference_length:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Pin length at nominal boom/bellcrank/articulation zero. Prismatic coordinate
+      zero is this closed assembly pose; extension = q + reference_length - manual
+      minimum.
+    true_vehicle_error: null
+  cylinder_bodies.lift_right.base:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_right.tip:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_right.barrel_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_right.rod_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_right.outer_radius:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_right.rod_radius:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Half of the service-manual rod diameter.
+    true_vehicle_error: null
+  cylinder_bodies.lift_right.hinge_speed:
+    status: engineering_estimate
+    unit: rad/s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.lift_right.reference_length:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Pin length at nominal boom/bellcrank/articulation zero. Prismatic coordinate
+      zero is this closed assembly pose; extension = q + reference_length - manual
+      minimum.
+    true_vehicle_error: null
+  cylinder_bodies.bucket.base:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: low
+    notes: Front-frame mount = estimated boom-pivot origin + estimated tilt_cylinder_base
+      vector (which is expressed relative to the boom pivot, not front-frame origin).
+    true_vehicle_error: null
+  cylinder_bodies.bucket.tip:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.bucket.barrel_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.bucket.rod_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.bucket.outer_radius:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.bucket.rod_radius:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Half of the service-manual rod diameter.
+    true_vehicle_error: null
+  cylinder_bodies.bucket.hinge_speed:
+    status: engineering_estimate
+    unit: rad/s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.bucket.reference_length:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Pin length at nominal boom/bellcrank/articulation zero. Prismatic coordinate
+      zero is this closed assembly pose; extension = q + reference_length - manual
+      minimum.
+    true_vehicle_error: null
+  cylinder_bodies.steering_left.base:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_left.tip:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_left.barrel_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_left.rod_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_left.outer_radius:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_left.rod_radius:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Half of the service-manual rod diameter.
+    true_vehicle_error: null
+  cylinder_bodies.steering_left.hinge_speed:
+    status: engineering_estimate
+    unit: rad/s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_left.reference_length:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Pin length at nominal boom/bellcrank/articulation zero. Prismatic coordinate
+      zero is this closed assembly pose; extension = q + reference_length - manual
+      minimum.
+    true_vehicle_error: null
+  cylinder_bodies.steering_right.base:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_right.tip:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_right.barrel_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_right.rod_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_right.outer_radius:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_right.rod_radius:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Half of the service-manual rod diameter.
+    true_vehicle_error: null
+  cylinder_bodies.steering_right.hinge_speed:
+    status: engineering_estimate
+    unit: rad/s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated explicit cylinder mount/shape; service-manual dimensions constrain
+      travel, not the mount coordinates.
+    true_vehicle_error: null
+  cylinder_bodies.steering_right.reference_length:
+    status: derived_reference
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Pin length at nominal boom/bellcrank/articulation zero. Prismatic coordinate
+      zero is this closed assembly pose; extension = q + reference_length - manual
+      minimum.
     true_vehicle_error: null
 published_additional:
   overall_length:

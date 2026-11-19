@@ -3,7 +3,7 @@
 - Machine-measured values: **none supplied** for this project. A plausible picture or successful simulation is not a measurement.
 - Published nominal values: manufacturer dimensions, operating mass, capacity and performance figures. These depend on the brochure configuration; rounding is not a tolerance. The published innermost-wheel turning radius is **3.060 m**, not 3060 m.
 - Derived published values: wheel radius from nominal diameter and articulation limits from published steering angle. Tire deformation and actual steering stops are unmeasured.
-- Diagram estimates: candidate boom, crank and bucket geometry reconstructed from brochure views. These remain separate from the active approximate vehicle.
+- Diagram estimates: boom, crank and bucket geometry reconstructed from brochure views. V1 promotes selected fits with explicit unresolved coordinates; rejected hypotheses remain historical evidence. See [the active reconstruction](WA320_LINKAGE_RECONSTRUCTION.md).
 - Engineering estimates: active unverified link geometry, mass distribution, inertia, contact and drive settings. Numerical solver settings are classified separately.
 - Every active numeric parameter has units, source classification and an unknown real-vehicle error in [the ledger](../../configs/measurements/wa320_7.yaml). The generated report includes its current value. Coverage fails if parameters are added without classification.
 
@@ -22,7 +22,7 @@
 PYTHONPATH=src .venv/bin/python scripts/audit_wa320_measurements.py
 ```
 
-- Output: ignored `outputs/wa320/measurements.json`; 72 active parameters at introduction; v1 extends coverage to component, geometry and actuator records.
-- The [shop-manual reference](../models/WA320_SHOP_MANUAL.md) now supplies cylinder bore/rod/stroke/length envelopes and component weights for serial 80001+, with configuration differences. These are separate reference values, not active overrides.
+- Output: ignored `outputs/wa320/measurements.json`; the corrected v1 classifies 595 active numeric parameters, including component, geometry and actuator records.
+- The [shop-manual reference](../models/WA320_SHOP_MANUAL.md) now supplies cylinder bore/rod/stroke/length envelopes and component weights for serial 80001+, with configuration differences. V1 uses selected values explicitly, with option and assembly uncertainties documented in the active mass/linkage reports.
 - Missing evidence: matching full linkage and cylinder mounts, component COM/inertia, configuration confirmation, hydraulic chamber/valve data, tire and material calibration, sensor mount survey and synchronized real measurements.
 - Preserve published, estimated and measured values separately when new evidence arrives. Re-run geometry, dynamics and maneuver checks before promoting candidate dimensions.

@@ -291,6 +291,8 @@ def build_asset(p: dict, output: Path):
     )
     if "bodies" in p:
         apply_reconstructed_bodies(root, p, output)
+    if "cylinder_bodies" in p:
+        apply_cylinder_joints(root, p)
     ET.indent(root, space="  ")
     ET.ElementTree(root).write(
         output / "wa320.urdf", encoding="unicode", xml_declaration=True
@@ -312,6 +314,17 @@ def build_asset(p: dict, output: Path):
         "exclude_from_articulation": True,
         "warning": "Required loop joint. Bare URDF omits it; passive rod/bucket must NOT be driven.",
     }
+    if "cylinder_bodies" in p:
+        closure["cylinders"] = [
+            {
+                "joint": name + "_tip_closure",
+                "body0": name + "_rod",
+                "body1": spec["tip_body"],
+                "local_pos0": [0, 0, 0],
+                "local_pos1": spec["tip"],
+            }
+            for name, spec in p["cylinder_bodies"].items()
+        ]
     (output / "closure.json").write_text(json.dumps(closure, indent=2) + "\n")
     return output / "wa320.urdf"
 
@@ -361,37 +374,84 @@ def apply_reconstructed_bodies(root, p, output):
         )
         # Only rear/axle/cab proxies need new external shapes. Cylinder groups carry
         # inertia but remain non-colliding mass proxies, with replay decorations.
-        if name in (
-            "rear_frame",
-            "engine_powertrain",
-            "cab",
-            "hydraulic_system",
-            "rear_axle",
-            "front_axle",
-            "front_frame",
-            "boom",
-            "bellcrank",
-        ):
+        if name in p["collision_geometry"]:
             for kind in ("visual", "collision"):
                 for child in list(link.findall(kind)):
                     link.remove(child)
-            for primitive in p["collision_geometry"][name]:
-                for kind in ("visual", "collision"):
-                    child = ET.SubElement(link, kind)
-                    ET.SubElement(
-                        child,
-                        "origin",
-                        xyz=vector(primitive["center"]),
-                        rpy=vector(primitive["rpy"]),
-                    )
-                    geo = ET.SubElement(child, "geometry")
-                    ET.SubElement(geo, "box", size=vector(primitive["size"]))
-                    if kind == "visual":
+            for index, primitive in enumerate(p["collision_geometry"][name]):
+                shape = primitive["shape"]
+                parts = [None]
+                if shape == "annulus":
+                    # Individual convex sectors retain the bearing hole; one convex
+                    # hull of the whole ring would silently fill it in USD import.
+                    outer, inner, length = primitive["size"]
+                    parts = []
+                    for sector in range(p["collision_geometry"]["annulus_segments"]):
+                        angles = [
+                            2
+                            * math.pi
+                            * (sector + k)
+                            / p["collision_geometry"]["annulus_segments"]
+                            for k in (0, 1)
+                        ]
+                        vertices = [
+                            [r * math.cos(a), r * math.sin(a), z]
+                            for z in (-length / 2, length / 2)
+                            for r, a in [
+                                (inner, angles[0]),
+                                (outer, angles[0]),
+                                (outer, angles[1]),
+                                (inner, angles[1]),
+                            ]
+                        ]
+                        mesh = output / "meshes" / f"{name}_{index}_{sector}.obj"
+                        faces = [
+                            (1, 4, 3, 2),
+                            (5, 6, 7, 8),
+                            (1, 2, 6, 5),
+                            (2, 3, 7, 6),
+                            (3, 4, 8, 7),
+                            (4, 1, 5, 8),
+                        ]
+                        mesh.write_text(
+                            "# Original convex hinge-ring sector\n"
+                            + "".join("v " + vector(v) + "\n" for v in vertices)
+                            + "".join(
+                                "f " + " ".join(map(str, f)) + "\n" for f in faces
+                            )
+                        )
+                        parts.append(mesh)
+                for part in parts:
+                    for kind in ("visual", "collision"):
+                        child = ET.SubElement(link, kind)
                         ET.SubElement(
                             child,
-                            "material",
-                            name="glass" if name == "cab" else "yellow",
+                            "origin",
+                            xyz=vector(primitive["center"]),
+                            rpy=vector(primitive["rpy"]),
                         )
+                        geo = ET.SubElement(child, "geometry")
+                        if part is not None:
+                            ET.SubElement(geo, "mesh", filename="meshes/" + part.name)
+                        elif shape == "cylinder":
+                            ET.SubElement(
+                                geo,
+                                "cylinder",
+                                radius=str(primitive["size"][0]),
+                                length=str(primitive["size"][1]),
+                            )
+                        else:
+                            ET.SubElement(geo, "box", size=vector(primitive["size"]))
+                        if kind == "visual":
+                            ET.SubElement(
+                                child,
+                                "material",
+                                name="glass"
+                                if name == "cab"
+                                else "steel"
+                                if "hinge" in name or name.endswith("_rod")
+                                else "yellow",
+                            )
     joints = {node.attrib["name"]: node for node in root.findall("joint")}
     for axle in ("front", "rear"):
         for side, sign in (("left", 1), ("right", -1)):
@@ -447,3 +507,65 @@ def apply_reconstructed_bodies(root, p, output):
             )
             if kind == "visual":
                 ET.SubElement(child, "material", name="steel")
+
+
+def apply_cylinder_joints(root, p):
+    """Pinned barrel -> physical prismatic rod; tip closure is authored in USD."""
+    from .mass_properties import body_transforms
+
+    frames = body_transforms(p, 0, 0, 0)
+    for name, spec in p["cylinder_bodies"].items():
+        for part in ("barrel", "rod"):
+            old = root.find(f"joint[@name='{name}_{part}_fixed']")
+            root.remove(old)
+        _, parent_r = frames[spec["parent"]]
+        _, barrel_r = frames[name + "_barrel"]
+        r = parent_r.T @ barrel_r
+        alongZ = spec["axis"] == "Y"
+        angle = math.atan2(r[0, 2], r[2, 2]) if alongZ else math.atan2(r[1, 0], r[0, 0])
+        c = p["cylinders"][spec["kind"]]
+        for suffix, parent, child, kind, xyz, rpy, axis, lo, hi, effort, speed in [
+            (
+                "hinge",
+                spec["parent"],
+                name + "_barrel",
+                "revolute",
+                spec["base"],
+                [0, angle, 0] if alongZ else [0, 0, angle],
+                [0, 1, 0] if alongZ else [0, 0, 1],
+                -math.pi,
+                math.pi,
+                p["actuators"][spec["kind"]]["fmax"],
+                spec["hinge_speed"],
+            ),
+            (
+                "slider",
+                name + "_barrel",
+                name + "_rod",
+                "prismatic",
+                [0, 0, spec["reference_length"]]
+                if alongZ
+                else [spec["reference_length"], 0, 0],
+                [0, 0, 0],
+                [0, 0, 1] if alongZ else [1, 0, 0],
+                c["pin_distance_min"] - spec["reference_length"],
+                c["pin_distance_max"] - spec["reference_length"],
+                p["actuators"][spec["kind"]]["fmax"],
+                p["actuators"][spec["kind"]]["vmax"],
+            ),
+        ]:
+            j = ET.SubElement(
+                root, "joint", name=name + "_" + suffix + "_joint", type=kind
+            )
+            ET.SubElement(j, "parent", link=parent)
+            ET.SubElement(j, "child", link=child)
+            ET.SubElement(j, "origin", xyz=vector(xyz), rpy=vector(rpy))
+            ET.SubElement(j, "axis", xyz=vector(axis))
+            ET.SubElement(
+                j,
+                "limit",
+                lower=str(lo),
+                upper=str(hi),
+                effort=str(effort),
+                velocity=str(speed),
+            )

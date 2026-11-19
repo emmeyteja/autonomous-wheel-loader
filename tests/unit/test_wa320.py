@@ -122,7 +122,9 @@ def test_generated_asset_is_repeatable_and_includes_passive_closure(p, tmp_path)
     )
     tree = ET.parse(asset)
     joints = {j.attrib["name"]: j for j in tree.findall("joint")}
-    assert sum(j.attrib["type"] != "fixed" for j in joints.values()) == 9
+    assert sum(j.attrib["type"] != "fixed" for j in joints.values()) == 9 + 2 * len(
+        p.get("cylinder_bodies", {})
+    )
     assert len(tree.findall("link")) == len(p["bodies"])
     assert joints["articulation_joint"].find("axis").attrib["xyz"] == "0 0 1"
     assert joints["boom_joint"].find("axis").attrib["xyz"] == "0 -1 0"

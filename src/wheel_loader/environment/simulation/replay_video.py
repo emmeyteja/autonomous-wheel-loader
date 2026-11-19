@@ -92,16 +92,18 @@ def render_replay(
             model.geom_rgba[i] = [0.45, 0.47, 0.50, 1]
         else:
             model.geom_rgba[i] = [0.95, 0.58, 0.08, 1]
-    actuation=None
-    if (folder/"actuation.npz").exists():
-        with np.load(folder/"actuation.npz") as recorded:
-            actuation=recorded["force_N"].copy()
-        if actuation.shape!=(len(times),3):raise ValueError("Actuation recording does not match motion")
+    actuation = None
+    if (folder / "actuation.npz").exists():
+        with np.load(folder / "actuation.npz") as recorded:
+            actuation = recorded["force_N"].copy()
+        if actuation.shape != (len(times), 3):
+            raise ValueError("Actuation recording does not match motion")
     telemetry = ReplayState(model, names, positions, roots, times, parameters)
     data = telemetry.data
     # The original box remains in the recorded physics model, but the replay
     # displays its rounded connecting-rod replacement and separate cylinders.
-    model.geom_rgba[model.geom_bodyid == telemetry.bodies["rod"], 3] = 0
+    if "cylinder_bodies" not in parameters:
+        model.geom_rgba[model.geom_bodyid == telemetry.bodies["rod"], 3] = 0
     peak_bucket_force = (
         np.maximum.accumulate(
             np.linalg.norm(bucket_forces.reshape(len(times), -1, 3).sum(axis=1), axis=1)
@@ -184,7 +186,8 @@ def render_replay(
                 for index in indices:
                     root = roots[index]
                     state = telemetry.sample(index)
-                    if actuation is not None:state["estimated_cylinder_force_N"]=actuation[index]
+                    if actuation is not None:
+                        state["estimated_cylinder_force_N"] = actuation[index]
                     if peak_bucket_force is not None:
                         state["bucket_contact_force_w_N"] = (
                             bucket_forces[index].reshape(-1, 3).sum(axis=0)
@@ -210,14 +213,15 @@ def render_replay(
                         else root[:3] + np.array([0.5, 0, 0.7])
                     )
                     renderer.update_scene(data, camera)
-                    draw_cylinders(
-                        renderer.scene,
-                        state,
-                        telemetry.initial_lengths,
-                        data,
-                        telemetry.bodies["rod"],
-                        parameters["linkage"]["rod_length"],
-                    )
+                    if "cylinder_bodies" not in parameters:
+                        draw_cylinders(
+                            renderer.scene,
+                            state,
+                            telemetry.initial_lengths,
+                            data,
+                            telemetry.bodies["rod"],
+                            parameters["linkage"]["rod_length"],
+                        )
                     frame = Image.new("RGB", (1920, 1080))
                     frame.paste(Image.fromarray(renderer.render()), (0, 0))
                     draw_state_panel(frame, state, names, positions[index])

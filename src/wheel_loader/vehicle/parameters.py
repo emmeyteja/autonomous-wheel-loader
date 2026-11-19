@@ -55,6 +55,7 @@ def load_parameters(path: str | Path) -> dict:
             "maneuver",
             "actuators",
             "collision_geometry",
+            "cylinder_bodies",
         }
     ):
         raise ValueError("Vehicle parameter sections differ from the WA320 schema")
@@ -130,4 +131,21 @@ def load_parameters(path: str | Path) -> dict:
         from .mass_properties import body_properties
 
         body_properties(parameters)  # Reject invalid allocations/inertia before export.
+        if "cylinder_bodies" in parameters:
+            import numpy as np
+
+            from .mass_properties import body_transforms
+
+            frames = body_transforms(parameters, 0, 0, 0)
+            for name, spec in parameters["cylinder_bodies"].items():
+                base, r = frames[spec["parent"]]
+                tip, rt = frames[spec["tip_body"]]
+                length = np.linalg.norm(
+                    tip + rt @ spec["tip"] - base - r @ spec["base"]
+                )
+                if not np.isclose(length, spec["reference_length"], atol=1e-9, rtol=0):
+                    raise ValueError(
+                        f"{name}: neutral cylinder pin length must close before import"
+                    )
+
     return parameters
