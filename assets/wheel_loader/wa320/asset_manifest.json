@@ -4,7 +4,7 @@
   "importer": "isaacsim-asset-isolated 6.2.0.0; usd-exchange 3.0.1; usd-optimize 1.3.1",
   "physics": "PhysX diagnostic paths and profiled Newton fixture/ground diagnostics pass; dynamics and tire compliance uncalibrated",
   "sha256": {
-    "configs/vehicle/wa320.yaml": "34a27ba1d15263a6e26f9b298dc6eefc3cb292b0e3eeb39f52b1c956358f00b6",
+    "configs/vehicle/wa320.yaml": "4f1bdb7564f5409f6f51102c5703f8d063d75953d01829698ba55dbfa17e7f04",
     "assets/wheel_loader/wa320/wa320.urdf": "4bbf025715a91dccc6f2713d0e64b63cc9b20df708a8836c61fe7b4eb3405cb3",
     "assets/wheel_loader/wa320/closure.json": "bf797fb79d8edcc007afd44339daca4edaa8b0c526ef5d75c1ab4564b35ea939",
     "assets/wheel_loader/wa320/usd/wa320.usda": "e20d6ab1af2eaf8f2cb7d733929bb4e1c0fcdfa4e8921305c17c41ebc2d0264e",

@@ -1,0 +1,25 @@
+# Contact-law diagnostic, not a calibrated material or reproduction of a field test.
+default_material: gravel
+column_radius_m: 0.12
+column_height_m: 0.25
+radius_m: 0.0125  # Coarse simulation elements; not the natural grain-size distribution.
+duration_s: 12.0
+dt_s: 0.001
+sample_hz: 25
+seed: 42
+max_particles: 2500
+materials:
+  gravel:
+    particle_density_kg_m3: 2590.0  # Aoshima/Servin sec. 5.3; solid, not bulk density.
+    sliding_friction: 0.65  # Trial value for this contact law, not copied AGX calibration.
+    rolling_friction_m: 0.003  # MuJoCo length-valued coefficient; NOT AGX's dimensionless 0.02.
+    torsional_friction_m: 0.001  # Trial contact coefficient.
+    reference_bulk_density_kg_m3: 1727.0  # Aoshima/Servin field gravel, sec. 4.2.
+    reference_repose_deg: 32.0  # Aoshima/Servin sec. 5.3; apparatus differs from this diagnostic.
+  dry_sand:
+    particle_density_kg_m3: 2600.0  # Quartz-like trial; not a measured project sample.
+    sliding_friction: 0.50  # Trial; independently calibrate for dry sand.
+    rolling_friction_m: 0.001
+    torsional_friction_m: 0.001
+    reference_bulk_density_kg_m3: null
+    reference_repose_deg: null  # Select a specific physical sand sample and test protocol.

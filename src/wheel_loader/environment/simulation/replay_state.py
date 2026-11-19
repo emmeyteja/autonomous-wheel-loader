@@ -102,10 +102,11 @@ class ReplayState:
         # Visual-only estimates: no manufacturer mounting drawings available.
         pins = {}
         for label, sign in (("Lift L", 1), ("Lift R", -1)):
-            pins[label] = (
-                point("front_frame", [-0.10, sign * 0.57, -0.05]),
-                point("boom", [1.20, sign * b["rail_spacing"] / 2, -0.10]),
-            )
+            base = np.array(self.p["geometry"]["lift_cylinder_base"], dtype=float)
+            rod = np.array(self.p["geometry"]["lift_cylinder_rod_pin"], dtype=float)
+            base[1] *= sign
+            rod[1] *= sign
+            pins[label] = (point("front_frame", base), point("boom", rod))
         pins["Tilt"] = (
             point(
                 "front_frame",

@@ -78,3 +78,5 @@ The Newton fixture passes closure, six driven-joint stop challenges, sampled sel
 - [Current validation evidence and real-machine comparison method](experiments/VALIDATION_BASIS.md).
 
 - [Newton rigid-pile V-cycle and off-road/asphalt replay surfaces](experiments/RIGID_PILE_CYCLE.md).
+
+- [Independent material-column diagnostics](experiments/MATERIAL_COLUMN.md) and [benchmark applicability across materials/vehicles](benchmarks/MATERIALS.md).
