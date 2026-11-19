@@ -8,9 +8,11 @@ from pathlib import Path
 import numpy as np
 
 
-def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
+def render_replay(
+    folder, output=None, *, fps=20, speedup=1.0, parameters=None, surface="offroad"
+):
     import mujoco
-    from PIL import Image, ImageDraw
+    from PIL import Image, ImageDraw, ImageFont
 
     folder = Path(folder)
     output = Path(output) if output else folder / "replay.mp4"
@@ -35,6 +37,11 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
             recording["phase_names"].tolist() if "phase_names" in recording else []
         )
         commands = recording["commands"] if "commands" in recording else np.array([])
+        bucket_forces = (
+            recording["bucket_contact_forces_w"]
+            if "bucket_contact_forces_w" in recording
+            else np.array([])
+        )
     if (
         len(times) < 2
         or not np.all(np.diff(times) > 0)
@@ -48,6 +55,7 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
 
     from .replay_overlay import draw_cylinders, draw_state_panel
     from .replay_state import ReplayState
+    from .surface_visual import apply_surface_texture, surface_xml
     from .tire_visual import replay_xml_with_tires
 
     if parameters is None:
@@ -56,8 +64,9 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
         )
 
     model = mujoco.MjModel.from_xml_string(
-        replay_xml_with_tires(folder / "effective_model.xml")
+        surface_xml(replay_xml_with_tires(folder / "effective_model.xml"), surface)
     )
+    apply_surface_texture(model, surface)
     model.vis.global_.offwidth, model.vis.global_.offheight = 1280, 1080
     model.vis.headlight.active = 1
     model.vis.headlight.ambient[:] = [0.5, 0.5, 0.5]
@@ -71,7 +80,10 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
             or ""
         )
         if model.geom_bodyid[i] == 0:
-            model.geom_rgba[i] = [0.35, 0.39, 0.42, 1]
+            geom_name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, i) or ""
+            model.geom_rgba[i] = (
+                [0.58, 0.43, 0.24, 1] if "Pile" in geom_name else [1, 1, 1, 1]
+            )
             if model.geom_type[i] == mujoco.mjtGeom.mjGEOM_PLANE:
                 model.geom_size[i, :2] = [50, 50]
         elif "wheel" in body:
@@ -85,8 +97,27 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
     # The original box remains in the recorded physics model, but the replay
     # displays its rounded connecting-rod replacement and separate cylinders.
     model.geom_rgba[model.geom_bodyid == telemetry.bodies["rod"], 3] = 0
+    peak_bucket_force = (
+        np.maximum.accumulate(
+            np.linalg.norm(bucket_forces.reshape(len(times), -1, 3).sum(axis=1), axis=1)
+        )
+        if len(bucket_forces) == len(times)
+        else None
+    )
+    try:
+        contact_font = ImageFont.truetype("DejaVuSansMono.ttf", 18)
+    except OSError:
+        contact_font = ImageFont.load_default()
+    has_pile = any(
+        "Pile" in (mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, i) or "")
+        for i in range(model.ngeom)
+    )
     camera = mujoco.MjvCamera()
-    camera.distance, camera.azimuth, camera.elevation = 13, 135, -22
+    camera.distance, camera.azimuth, camera.elevation = (
+        (17 if has_pile else 13),
+        135,
+        -22,
+    )
     output.parent.mkdir(parents=True, exist_ok=True)
     renderer = mujoco.Renderer(model, height=1080, width=1280)
     try:
@@ -126,6 +157,8 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
                 json.dumps(
                     {
                         "world_frame": "X forward at start, Y left, Z up",
+                        "surface_appearance": surface,
+                        "ground_physics": "unchanged rigid plane; no deformable or rough terrain",
                         "joint_names": names,
                         "units": {
                             "position": "m",
@@ -146,6 +179,13 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
                 for index in indices:
                     root = roots[index]
                     state = telemetry.sample(index)
+                    if peak_bucket_force is not None:
+                        state["bucket_contact_force_w_N"] = (
+                            bucket_forces[index].reshape(-1, 3).sum(axis=0)
+                        )
+                        state["peak_bucket_contact_force_so_far_N"] = float(
+                            peak_bucket_force[index]
+                        )
                     telemetry_file.write(
                         json.dumps(
                             {
@@ -157,7 +197,12 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
                         )
                         + "\n"
                     )
-                    camera.lookat[:] = root[:3] + np.array([0.5, 0, 0.7])
+                    ahead = state["frames"]["HEAD (front hinge)"][1][:, 0]
+                    camera.lookat[:] = (
+                        root[:3] + 2.6 * ahead + np.array([0, 0, 0.7])
+                        if has_pile
+                        else root[:3] + np.array([0.5, 0, 0.7])
+                    )
                     renderer.update_scene(data, camera)
                     draw_cylinders(
                         renderer.scene,
@@ -170,6 +215,17 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
                     frame = Image.new("RGB", (1920, 1080))
                     frame.paste(Image.fromarray(renderer.render()), (0, 0))
                     draw_state_panel(frame, state, names, positions[index])
+                    if peak_bucket_force is not None:
+                        contact_draw = ImageDraw.Draw(frame)
+                        contact_draw.rectangle(
+                            (12, 1030, 1268, 1070), fill=(15, 20, 25)
+                        )
+                        contact_draw.text(
+                            (24, 1040),
+                            f"Bucket contact: {np.linalg.norm(state['bucket_contact_force_w_N']):.0f} N | peak: {peak_bucket_force[index]:.0f} N | not hydraulic force",
+                            font=contact_font,
+                            fill=(255, 205, 90),
+                        )
                     if len(phase_ids) == len(times):
                         draw = ImageDraw.Draw(frame)
                         draw.rectangle((12, 12, 780, 70), fill=(15, 20, 25))
@@ -192,7 +248,9 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
                         )
                         draw.text(
                             (24, 45),
-                            "Unladen motion rehearsal - no sand acquisition or payload transfer",
+                            f"{surface.upper()} rigid ground | solid-pile contact test | no material transfer"
+                            if has_pile
+                            else f"{surface.upper()} appearance | unladen rehearsal - no material transfer",
                             fill=(255, 205, 90),
                         )
                         draw.rectangle((1020, 12, 1268, 256), fill=(15, 20, 25))

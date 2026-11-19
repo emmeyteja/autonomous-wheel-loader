@@ -19,6 +19,11 @@ def main():
         "--case", choices=["all", "nominal", "slow", "wide"], default="all"
     )
     parser.add_argument("--output", type=Path, default=Path("outputs/wa320/v_cycle"))
+    parser.add_argument(
+        "--pile",
+        action="store_true",
+        help="Add an immovable contact-test pile; no material loading",
+    )
     args = parser.parse_args()
     if args.case == "all":
         results = {}
@@ -32,6 +37,7 @@ def main():
                     name,
                     "--output",
                     str(directory),
+                    *(["--pile"] if args.pile else []),
                 ],
                 check=False,
             )
@@ -54,6 +60,7 @@ def main():
         profile=load_profile("configs/simulation/newton.yaml"),
         contact_profile=load_ground_profile("configs/simulation/newton_ground.yaml"),
         scenario=VCycleScenario.named(args.case),
+        pile=args.pile,
     )
 
 

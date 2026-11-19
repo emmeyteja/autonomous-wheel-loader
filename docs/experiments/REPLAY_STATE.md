@@ -17,3 +17,5 @@
 - L is current pin-to-pin distance. dL is change since the first saved sample, not extension from a measured retracted stop. Length rate is derived from those distances. Both endpoints are shown in W; their vector defines the cylinder axis.
 - Absolute stroke, retracted/extended stops, pressure, flow and hydraulic force are unknown. The physical model still uses equivalent rotary drives. The cylinder rendering and right panel currently belong to recorded replay, not a live Isaac viewer or hydraulic simulation.
 - Improved appearance does not establish correct cylinder placement, collision-free packaging or real-machine fidelity. See [validation basis](VALIDATION_BASIS.md).
+
+- Floor appearance defaults to procedural off-road ground; select `--surface asphalt` for asphalt. Physical ground properties are unchanged; see [surface and rigid-pile checks](RIGID_PILE_CYCLE.md).

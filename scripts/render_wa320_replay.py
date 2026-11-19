@@ -17,6 +17,7 @@ def main():
     parser.add_argument(
         "--config", type=Path, default=Path("configs/vehicle/wa320.yaml")
     )
+    parser.add_argument("--surface", choices=["offroad", "asphalt"], default="offroad")
     args = parser.parse_args()
     from wheel_loader.vehicle.parameters import load_parameters
 
@@ -27,6 +28,7 @@ def main():
             fps=args.fps,
             speedup=args.speedup,
             parameters=load_parameters(args.config),
+            surface=args.surface,
         )
     )
 

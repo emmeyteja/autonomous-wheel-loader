@@ -7,10 +7,21 @@ from pathlib import Path
 import numpy as np
 
 
-def contact_sweep(path, positions, roots, names):
+def contact_sweep(path, positions, roots, names, bucket_forces=None):
     """Re-evaluate recorded floating poses using the exported collision model."""
     import mujoco
 
+    if bucket_forces is not None:
+        bucket_forces = np.asarray(bucket_forces)
+        if (
+            len(bucket_forces) != len(positions)
+            or bucket_forces.ndim not in (2, 3)
+            or bucket_forces.shape[-1] != 3
+            or not np.isfinite(bucket_forces).all()
+        ):
+            raise ValueError(
+                "Bucket forces must be finite XYZ samples aligned with recorded positions"
+            )
     model = mujoco.MjModel.from_xml_path(str(path))
     data = mujoco.MjData(model)
     joint_ids = {
@@ -27,7 +38,8 @@ def contact_sweep(path, positions, roots, names):
     pairs = {}
     wheel_contacts = set()
     supported_samples = 0
-    for q, pose in zip(positions, roots):
+    bucket_pile_indices = set()
+    for sample, (q, pose) in enumerate(zip(positions, roots)):
         data.qpos[addresses] = q
         data.qpos[base : base + 3] = pose[:3]
         data.qpos[base + 3 : base + 7] = pose[[6, 3, 4, 5]]  # XYZW -> WXYZ
@@ -45,11 +57,31 @@ def contact_sweep(path, positions, roots, names):
             record["minimum_separation_m"] = min(
                 record["minimum_separation_m"], float(contact.dist)
             )
-            if 0 in bodies and contact.dist <= 0:
+            geom_names = [
+                mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, int(geom)) or ""
+                for geom in contact.geom
+            ]
+            is_pile = any("Pile" in name for name in geom_names)
+            if (
+                is_pile
+                and contact.dist <= 0
+                and any("bucket" in name for name in labels)
+            ):
+                bucket_pile_indices.add(sample)
+            if 0 in bodies and not is_pile and contact.dist <= 0:
                 sample_wheels.update(name for name in labels if "wheel" in name)
         wheel_contacts.update(sample_wheels)
         supported_samples += len(sample_wheels) == 4
     return {
+        "bucket_pile_contact_samples": len(bucket_pile_indices),
+        "peak_bucket_force_at_pile_contact_N": float(
+            max(
+                (np.linalg.norm(bucket_forces[i]) for i in bucket_pile_indices),
+                default=0.0,
+            )
+        )
+        if bucket_forces is not None
+        else None,
         "pairs": pairs,
         "wheel_bodies_contacting_ground": sorted(wheel_contacts),
         "four_wheels_contact_ground": len(wheel_contacts) == 4,
@@ -67,7 +99,9 @@ def contact_sweep(path, positions, roots, names):
     }
 
 
-def run_ground(p, usd, output, *, profile, contact_profile=None, scenario=None):
+def run_ground(
+    p, usd, output, *, profile, contact_profile=None, scenario=None, pile=False
+):
     import isaaclab.sim as sim_utils
     import torch
     from isaaclab.app import launch_simulation
@@ -94,6 +128,8 @@ def run_ground(p, usd, output, *, profile, contact_profile=None, scenario=None):
         author_tire_contacts,
     )
 
+    if pile and scenario is None:
+        raise ValueError("Rigid pile requires a complete V-cycle scenario")
     contact_profile = contact_profile or GroundContactProfile()
     from .isaaclab_probe import articulation_config
     from .newton_profile import audit_import, prepare_asset
@@ -132,6 +168,11 @@ def run_ground(p, usd, output, *, profile, contact_profile=None, scenario=None):
     UsdShade.MaterialBindingAPI.Apply(plane.GetPrim()).Bind(
         material, materialPurpose="physics"
     )
+    obstacle = None
+    if pile:
+        from .rigid_obstacle import author_pile
+
+        obstacle = author_pile(floor_stage, scenario, material, contact_profile)
     floor_stage.GetRootLayer().Save()
 
     loader = articulation_config(p, usd)
@@ -152,6 +193,11 @@ def run_ground(p, usd, output, *, profile, contact_profile=None, scenario=None):
         prim_path="{ENV_REGEX_NS}/Loader/Geometry/rear_frame/.*wheel",
         update_period=0.0,
     )
+    if pile:
+        scene_cfg.bucket_contacts = ContactSensorCfg(
+            prim_path="{ENV_REGEX_NS}/Loader/Geometry/rear_frame/front_frame/boom/bucket",
+            update_period=0.0,
+        )
     cfg = sim_utils.SimulationCfg(
         dt=dt,
         device="cuda:0",
@@ -170,7 +216,7 @@ def run_ground(p, usd, output, *, profile, contact_profile=None, scenario=None):
         ),
     )
     samples, roots, gaps, forces = [], [], [], []
-    phase_ids, commands = [], []
+    phase_ids, commands, bucket_forces = [], [], []
     cycle = VCycleController(p, scenario) if scenario else None
     with launch_simulation(cfg):
         sim = sim_utils.SimulationContext(cfg)
@@ -275,6 +321,14 @@ def run_ground(p, usd, output, *, profile, contact_profile=None, scenario=None):
                     .numpy()
                     .copy()
                 )
+                if pile:
+                    bucket_forces.append(
+                        scene["bucket_contacts"]
+                        .data.net_forces_w.torch[0]
+                        .cpu()
+                        .numpy()
+                        .copy()
+                    )
                 if cycle and cycle.done:
                     break
             positions, roots = np.asarray(samples), np.asarray(roots)
@@ -294,7 +348,11 @@ def run_ground(p, usd, output, *, profile, contact_profile=None, scenario=None):
                 else evaluate_ground(p, times, positions, roots, gaps, names)
             )
             contacts = contact_sweep(
-                output / "effective_model.xml", positions, roots, names
+                output / "effective_model.xml",
+                positions,
+                roots,
+                names,
+                np.asarray(bucket_forces) if pile else None,
             )
             forces = np.asarray(forces)
             support = evaluate_wheel_support(times, forces)
@@ -312,11 +370,19 @@ def run_ground(p, usd, output, *, profile, contact_profile=None, scenario=None):
                     "self_collision": contacts["self_penetration"],
                 }
             )
+            if pile:
+                checks["bucket_contacts_rigid_pile"] = (
+                    contacts["bucket_pile_contact_samples"] > 0
+                )
+                checks["bucket_pile_measured_force"] = (
+                    contacts["peak_bucket_force_at_pile_contact_N"] > 1.0
+                )
             reset_check = ground_reset_check(robot, scene, sim, p, dt)
             checks["floating_reset_repeatability"] = reset_check["passed"]
             result = {
                 "runtime": "Isaac Lab 3 / Newton / MuJoCo Warp",
                 "fixture": False,
+                "rigid_pile": obstacle,
                 "scenario": asdict(scenario) if scenario else None,
                 "initial_joint_error_rad": initial_error,
                 "floating_reset": reset_check,
@@ -346,6 +412,7 @@ def run_ground(p, usd, output, *, profile, contact_profile=None, scenario=None):
                 loop_gap_m=gaps,
                 time_s=times,
                 wheel_contact_forces_w=forces,
+                bucket_contact_forces_w=np.asarray(bucket_forces),
                 phase_ids=np.asarray(phase_ids),
                 phase_names=np.asarray(PHASES if cycle else []),
                 commands=np.asarray(commands),

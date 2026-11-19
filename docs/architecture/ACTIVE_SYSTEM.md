@@ -5,7 +5,7 @@
 - Vehicle geometry and parameters live in `vehicle/`; SI commands and wheel references in `control/`; terrain geometry/selection in `terrain/`.
 - Simulator-specific conversion, scene setup, stepping and state extraction live in `environment/simulation/`. No Isaac/ROS imports in domain logic.
 - `evaluation/` owns repeatable checks. `training/` selects the vehicle and enforces prerequisites; foundation mode currently performs geometry validation, not learning.
-- A diagnostic contact sensor and unladen V-cycle motion rehearsal are implemented. Policy observations, rewards, material scooping tasks and learned policies remain deferred until their milestone. Do not create substitute implementations that imply these work already.
+- Diagnostic wheel/bucket contact sensors and full V-cycle motion rehearsals, with an optional immovable rigid-pile contact test, are implemented. Policy observations, rewards, material scooping tasks and learned policies remain deferred until their milestone. Do not create substitute implementations that imply these work already.
 - Default: WA320 plus rigid pile. Registry exposes Komodo reference metadata only with explicit opt-in, never importing its implementation.
 - Optional Autoware adapters remain outside the core. Match units, frames and semantics; an articulation angle is not an Ackermann tire angle. Lift/curl need loader-specific contracts.
 

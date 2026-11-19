@@ -91,7 +91,7 @@ def audit_ground_model(path, profile):
         if profile.tire_geometry == "cylinder"
         else mujoco.mjtGeom.mjGEOM_MESH
     )
-    floor = [i for i in range(model.ngeom) if model.geom_bodyid[i] == 0]
+    static_contacts = [i for i in range(model.ngeom) if model.geom_bodyid[i] == 0]
     return {
         "ground_solver_consumed": int(model.opt.solver)
         == int(
@@ -108,10 +108,10 @@ def audit_ground_model(path, profile):
         "tire_geometry_consumed": len(tires) == 4
         and all(model.geom_type[i] == expected_type for i in tires),
         "contact_reference_consumed": bool(
-            len(floor) == 1
+            len(static_contacts) >= 1
             and len(tires) == 4
             and np.allclose(
-                model.geom_solref[tires + floor],
+                model.geom_solref[tires + static_contacts],
                 [profile.contact_time_constant, profile.damping_ratio],
                 rtol=1e-5,
             )

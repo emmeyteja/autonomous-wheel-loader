@@ -76,3 +76,5 @@ The Newton fixture passes closure, six driven-joint stop challenges, sampled sel
 
 - [World-frame replay panel and visual cylinder assumptions](experiments/REPLAY_STATE.md).
 - [Current validation evidence and real-machine comparison method](experiments/VALIDATION_BASIS.md).
+
+- [Newton rigid-pile V-cycle and off-road/asphalt replay surfaces](experiments/RIGID_PILE_CYCLE.md).
