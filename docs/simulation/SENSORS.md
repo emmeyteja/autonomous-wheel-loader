@@ -13,7 +13,7 @@
 - Joint states: ideal recorded relative angles in radians at 60 Hz. IMU: rear-frame specific force and angular rate from finite differences; endpoint samples invalid. No calibrated encoder quantization or IMU bias/noise model.
 - Bucket contact force: original recorded Newton net contact vector in world axes, newtons. It is neither a load cell nor payload weight.
 - Hydraulic pressure, absolute cylinder stroke and payload mass: **unavailable**, with a reason and unit in the report; no fabricated numeric zeros. Rotary drive torque cannot substitute for chamber pressure, and contact force divided by gravity cannot weigh a dynamically contacting bucket.
-- `gross_cylinder_force_N` supports known cap/rod pressures and bore/rod diameters: `p_cap A_bore − p_rod (A_bore − A_rod)`. This helper is not activated for this vehicle and excludes friction, leverage and power sharing.
+- `gross_cylinder_force_N` supports known cap/rod pressures and bore/rod diameters: `p_cap A_bore − p_rod (A_bore − A_rod)`. The [shop manual](../models/WA320_SHOP_MANUAL.md) supplies reference cylinder dimensions and a lift-bottom sensor transfer curve, subject to configuration confirmation. This helper is not activated for this vehicle and excludes friction, leverage and power sharing.
 
 ## Frames, timing and map limits
 

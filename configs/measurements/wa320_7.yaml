@@ -17,10 +17,17 @@ sources:
     kind: manual_diagram_digitization
     reference: configs/geometry/wa320_7_brochure.yaml and wa320_7_bucket.yaml
     precision: Fit residuals and assumed-pick sensitivity are not real-machine accuracy.
+  shop_06202:
+    kind: manufacturer_shop_manual
+    reference: Komatsu SEN06202-03, WA320-7, serial numbers 80001 and up
+    sha256: 884e78ca948eeadd273df383fd30c29665632d3e1dfe2e16ee7e7af213008448
+    precision: Published reference specifications; applicability to the selected Japanese
+      bucket/machine configuration is not established.
+    distribution: User-supplied reference; PDF and artwork are not redistributed.
 real_machine_measurements:
   available: false
-  note: No raw, calibrated, synchronized measurements of the selected machine have
-    been supplied. All true vehicle errors are unknown.
+  note: No raw, calibrated, synchronized measurements of the selected machine have been supplied.
+    All true vehicle errors are unknown.
 active_parameters:
   vehicle.mass:
     status: published_nominal
@@ -465,8 +472,7 @@ published_additional:
     value: 7.72
     unit: m
     source: komatsu_7
-    note: Specification table; drawing also distinguishes 7.630 m and a 90 mm edge
-      extension.
+    note: Specification table; drawing also distinguishes 7.630 m and a 90 mm edge extension.
   overall_height:
     value: 3.2
     unit: m
@@ -506,19 +512,20 @@ published_additional:
     unit: W
     source: komatsu_7
 unavailable:
-- verified complete PZ pivot/link and cylinder mounting table
-- lift/tilt/steering cylinder bores, rod diameters, retracted lengths and stroke limits
-  for this configuration
-- hydraulic chamber pressures, flow/valve characteristics and power sharing
-- component mass, centre of mass and inertia measurements
+- verified complete PZ pivot/link and cylinder mounting table for the selected configuration
+- confirmation that SEN06202-03 cylinder specifications apply to the selected machine and
+  bucket option
+- hydraulic chamber time series, valve/flow dynamics, friction and power sharing
+- component centres of mass and inertia tensors; allocation of published component weights
+  to model bodies
 - calibrated tire, slip, friction and material parameters
 - calibrated sensor models, mounting survey and timestamp/latency measurements
 error_semantics:
   'null': Unknown, never zero or perfect accuracy.
-  diagram_residual: Distance to manually picked features or a published dimension
-    in the same brochure.
-  pick_sensitivity: Conditional variation under assumed pixel/angle perturbations,
-    not confidence in true geometry.
+  diagram_residual: Distance to manually picked features or a published dimension in the same
+    brochure.
+  pick_sensitivity: Conditional variation under assumed pixel/angle perturbations, not confidence
+    in true geometry.
   rejected_hypothesis: Retained for audit; not approved as active physical geometry.
 candidate_parameters:
   boom.length:
@@ -530,8 +537,7 @@ candidate_parameters:
     pick_sensitivity_p05_p95_m:
     - 2.6694600936348367
     - 2.7558783188565097
-    note: Assumed visible picks +/-3 px, axle/ground +/-1 px; not a physical confidence
-      interval.
+    note: Assumed visible picks +/-3 px, axle/ground +/-1 px; not a physical confidence interval.
   boom.base_front_axle_XZ:
     value:
     - -0.7053402201918828
@@ -559,8 +565,8 @@ candidate_parameters:
     source: diagram_fit
     true_vehicle_error: null
     rod_length_spread_m: 0.12143296458709307
-    note: Inconsistent with registered bucket poses and the assumed one-rod state
-      correspondence; not promoted.
+    note: Inconsistent with registered bucket poses and the assumed one-rod state correspondence;
+      not promoted.
   bucket.lip_local_XZ:
     value:
     - 1.4453439695413022
@@ -587,5 +593,137 @@ drawing_cross_checks:
   bucket_dump_reach_error_m: 0.09604020093690346
   active_boom_base_difference_from_drawing_m: 0.4704545444064463
   active_lowered_hinge_difference_from_drawing_m: 0.81296228290976
-  note: All are same-drawing discrepancies, not true real-machine estimation errors.
-    Candidate data are not active vehicle dimensions.
+  note: All are same-drawing discrepancies, not true real-machine estimation errors. Candidate
+    data are not active vehicle dimensions.
+shop_manual_reference:
+  source: shop_06202
+  status: published_reference_not_promoted
+  true_vehicle_error: null
+  applicability: Serial 80001 and up; non-EU and EU specifications differ from selected paper/brochure
+    configuration. No active parameter overrides.
+  cylinders:
+    printed_pages:
+    - 01-11
+    - 01-16
+    pdf_pages:
+    - 81
+    - 86
+    unit: m
+    steering:
+      bore_m: 0.07
+      rod_diameter_m: 0.04
+      stroke_m: 0.453
+      pin_distance_min_m: 0.818
+      pin_distance_max_m: 1.271
+    lift:
+      bore_m: 0.12
+      rod_diameter_m: 0.075
+      stroke_m: 0.729
+      pin_distance_min_m: 1.327
+      pin_distance_max_m: 2.056
+    bucket:
+      bore_m: 0.15
+      rod_diameter_m: 0.11
+      stroke_m: 0.558
+      pin_distance_min_m: 1.354
+      pin_distance_max_m: 1.912
+  configurations:
+    non_EU:
+      printed_pages:
+      - 01-7
+      - 01-8
+      pdf_pages:
+      - 77
+      - 78
+      machine_mass_kg: 15220.0
+      bucket_heaped_volume_m3: 2.8
+      bucket_width_with_BOC_m: 2.74
+      overall_length_with_BOC_m: 7.635
+      dump_clearance_BOC_m: 2.88
+      dump_reach_BOC_m: 1.0
+    EU:
+      printed_pages:
+      - 01-12
+      - 01-13
+      pdf_pages:
+      - 82
+      - 83
+      machine_mass_kg: 15445.0
+      bucket_heaped_volume_m3: 2.9
+      bucket_width_with_BOC_m: 2.75
+      overall_length_with_BOC_m: 7.7
+      dump_clearance_BOC_m: 2.835
+      dump_reach_BOC_m: 1.02
+    dump_conditions: 45 degree bucket dump; BOC means bolt-on cutting edge. Do not mix cutting-edge
+      and BOC-tip definitions.
+  component_weights:
+    printed_pages:
+    - 01-17
+    - 01-18
+    - 01-19
+    - 01-20
+    pdf_pages:
+    - 87
+    - 88
+    - 89
+    - 90
+    unit: kg
+    note: Handling/transport reference weights, not identified simulation body masses or inertia.
+      Listed assemblies overlap with lumped model bodies.
+    tire_and_rim_each: 341.0
+    lift_cylinder_each: 111.0
+    bucket_cylinder: 196.0
+    steering_cylinder_each: 21.0
+    boom_including_bushings: 1313.0
+    bucket_link: 68.0
+    bellcrank: 300.0
+    bare_front_frame: 1226.0
+    bare_rear_frame: 1206.0
+    counterweight: 1815.0
+    bucket_2_8_m3_with_BOC_and_hinge_pin: 1328.0
+    bucket_2_9_m3_with_BOC_and_hinge_pin: 1326.0
+  hydraulic_reference:
+    printed_page: 01-10
+    pdf_page: 80
+    work_equipment_set_pressure_Pa: 30400000.0
+    steering_set_pressure_Pa: 20600000.0
+    pump_displacement_m3_per_rev: 9.0e-05
+    note: Relief/set values and displacement do not supply operating chamber pressures or
+      actual flow.
+  service_acceptance:
+    printed_page: 20-13
+    pdf_page: 427
+    work_relief_new_machine_Pa:
+      nominal: 30400000.0
+      plus_minus: 1570000.0
+    monitor_pressure_accuracy_approx_Pa: 500000.0
+    boom_raise_no_load_s:
+      nominal: 5.6
+      plus_minus: 0.5
+    note: Oil 45-55 C; high idle. Approximate monitor accuracy is not raw sensor calibration
+      or a model error bound. Raise posture per manual F/G; not interchangeable with brochure
+      6.3 s.
+  lift_bottom_pressure_sensor:
+    printed_page: 10-315
+    pdf_page: 407
+    pressure_endpoints_Pa:
+    - 0.0
+    - 50000000.0
+    voltage_endpoints_V:
+    - 0.5
+    - 4.5
+    status: published_transfer_curve_not_instrument_calibration
+    note: Bottom-line pressure sensor shown at piping block. No complete uncertainty, bandwidth
+      or dynamic data supplied.
+  sensor_inventory:
+    printed_page: 10-284
+    pdf_page: 376
+    signals:
+    - lift bottom pressure
+    - lift head pressure
+    - boom potentiometer
+    - speed sensor
+    - PPC pilot pressures
+    note: Signal listing establishes documented inputs, not calibration, continuous bucket
+      angle/stroke sensing or middleware interfaces. Pilot pressure differs from cylinder
+      chamber pressure.

@@ -23,5 +23,6 @@ PYTHONPATH=src .venv/bin/python scripts/audit_wa320_measurements.py
 ```
 
 - Output: ignored `outputs/wa320/measurements.json`; 72 active parameters at introduction.
-- Missing evidence: full linkage and cylinder dimensions, component mass properties, hydraulic chamber/valve data, tire and material calibration, sensor mount survey and synchronized real measurements.
+- The [shop-manual reference](../models/WA320_SHOP_MANUAL.md) now supplies cylinder bore/rod/stroke/length envelopes and component weights for serial 80001+, with configuration differences. These are separate reference values, not active overrides.
+- Missing evidence: matching full linkage and cylinder mounts, component COM/inertia, configuration confirmation, hydraulic chamber/valve data, tire and material calibration, sensor mount survey and synchronized real measurements.
 - Preserve published, estimated and measured values separately when new evidence arrives. Re-run geometry, dynamics and maneuver checks before promoting candidate dimensions.
