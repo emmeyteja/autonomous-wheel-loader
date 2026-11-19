@@ -14,6 +14,7 @@ dependencies = ["numpy>=1.26,<3", "PyYAML>=6,<7"]
 model-audit = ["xacro==2.1.1"]
 sim = ["isaaclab==3.0.0"]
 dev = ["pytest>=8,<10"]
+geometry-audit = ["matplotlib>=3.8,<4", "Pillow>=10,<13"]
 material-audit = ["mujoco==3.12.0", "Pillow>=10,<13"]
 
 [tool.pytest.ini_options]

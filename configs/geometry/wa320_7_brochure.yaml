@@ -1,0 +1,41 @@
+# Manual digitization of publicly visible drawing centres, not manufacturer CAD.
+source:
+  url: https://kcsj.komatsu/-/media/kcsj/contact/download/pdf/construction_machine/wa320-7.pdf?hash=6FE96FE4CD51A0BC96B247F7157CA646&rev=b7bbb016972c43218296faf183be8782
+  document: Komatsu WA320-7, Form CJA00622-06
+  sha256: 4d94c7390fa8e40bca64ad7e1b64590ccd5da22db18954e46dc86cdf53c7d9f8
+  page: 16
+  raster_size_px: [4240, 6000]  # pdftoppm -f 16 -l 16 -scale-to 6000 -singlefile -png
+frame: X forward (image left), Z up, origin at front axle projected onto ground
+calibration:
+  front_axle_px: [2275, 2141]
+  rear_axle_px: [2694, 2141]
+  ground_y_px: 2237
+  wheelbase_m: 3.03
+picks:
+  boom_base_px: [2376, 1964]  # B, partially occluded; independent fit check
+  tilt_base_px: [2343, 1957]  # T, provisional orange fixed pin; cylinder assignment unconfirmed
+  lowered:
+    bucket_pin_px: [2092, 2211]  # P
+    crank_pivot_px: [2143, 2056]  # C
+    tilt_pin_px: [2120, 1959]  # E
+  raised:
+    bucket_pin_px: [2123, 1683]
+    crank_pivot_px: [2275, 1732]
+    tilt_pin_px: [2374, 1728]
+    rod_pin_px: [2343, 1805]  # D; provisional triangular crank interpretation
+    bucket_anchor_hypotheses_px: [[2169, 1661], [2186, 1679]]  # F, overlapping bucket outlines
+uncertainty:
+  visible_pin_pick_bound_px: 3.0  # Assumed sensitivity bound, not measurement confidence
+  occluded_pin_pick_bound_px: 6.0
+  monte_carlo_samples: 300
+  seed: 42
+published:
+  wheel_radius_m: 0.695  # Drawing axle height; undeformed nominal context only
+  raised_bucket_pin_height_m: 4.005
+  dump_clearance_m: 2.835
+  dump_reach_m: 1.165
+  track_m: 2.05
+  outside_tires_width_m: 2.59
+  articulation_deg: 38.5
+  outer_wheel_centre_radius_m: 5.38
+  inner_tire_envelope_radius_m: 3.06  # Interpretation of R3060 arrow, not wheel centre

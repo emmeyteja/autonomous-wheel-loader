@@ -57,3 +57,7 @@ The former rail-constrained model and its kinematics are archived in `extras/leg
 - Newton ground contact optionally uses analytical tire cylinders with the original nominal radius/width, selected by the ground profile. Tire body inertia and wheel hinges remain unchanged; this is rigid contact geometry, not a deformable tire model.
 
 - Recorded replay now displays estimated twin lift cylinders and a tilt cylinder, with pin geometry and world-frame state. They are visual overlays, not physical actuators; see [replay state](../experiments/REPLAY_STATE.md).
+
+## Brochure-derived candidate
+
+- [WA320-7 drawing reconstruction](WA320_BROCHURE_GEOMETRY.md) identifies a nonzero crank-pivot offset and a provisional triangular bellcrank. The opt-in reconstruction records explicit picks, residuals and ambiguity; it does not replace the active straight-bar closed loop or validate its forces.
