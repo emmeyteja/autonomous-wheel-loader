@@ -27,5 +27,5 @@ The first integrated physical foundation combines M0–M2 in Isaac Sim/Isaac Lab
 - `LoaderCommand`: rear-axle speed [m/s], front-relative-to-rear yaw [rad], boom displacement [rad], bellcrank displacement [rad]. These are diagnostic simulator commands, not a learned action space or hydraulic interface.
 - Bucket and rod angles are passive outputs. Do not add independent position drives to close the loop artificially.
 - Future batched task state/action tensors stay on the simulator device. ROS transport must not sit in the training loop. Isolate reset state, seeds and persistent dump-bed occupancy by environment.
-- Independent CPU material-column diagnostics exist for contact-law investigation; they do not enable the production granular backend or establish Newton vehicle/material coupling.
+- Independent CPU material-column and instrumented blade-force diagnostics exist for contact-law investigation; they do not enable the production granular backend or establish Newton vehicle/material coupling.
 - Reserved terrain backends fail explicitly until implemented and calibrated. Missing material values are unknown, not zero.

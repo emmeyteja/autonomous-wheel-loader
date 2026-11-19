@@ -1,0 +1,34 @@
+# Implementation diagnostic. Unknown paper inputs are explicit trial assumptions.
+material: gravel
+bed_size_m: [0.25, 0.28, 0.12]
+initial_mass_kg: 10.0
+radius_m: 0.0125
+max_particles: 2500
+seed: 42
+dt_s: 0.001
+sample_hz: 25
+settle_s: 3.0
+insert_s: 1.0
+hold_s: 2.0
+relax_s: 2.0
+travel_m: 0.08
+speed_m_s: 0.01
+fit_window_m: [0.02, 0.07]  # Diagnostic choice; source fitting interval unavailable.
+blade_start_x_m: 0.025
+blade_height_m: 0.18
+blade_thickness_m: 0.004
+blade_mass_kg: 10.0  # Provisional driven-body mass, not a machine actuator.
+blade_widths_m: [0.05, 0.10, 0.20]
+cutting_depths_m: [0.02, 0.04, 0.06]
+# Friction vectors: [sliding dimensionless, torsional metres, rolling metres].
+materials:
+  gravel:
+    density_kg_m3: 2590.0  # Trial; not identified for Obermayr's sample.
+    grain_friction: [0.65, 0.001, 0.003]
+    wall_friction: [0.5, 0.001, 0.001]
+    blade_friction: [0.3, 0.001, 0.001]
+  dry_sand:
+    density_kg_m3: 2600.0
+    grain_friction: [0.5, 0.001, 0.001]
+    wall_friction: [0.4, 0.001, 0.001]
+    blade_friction: [0.25, 0.001, 0.001]
