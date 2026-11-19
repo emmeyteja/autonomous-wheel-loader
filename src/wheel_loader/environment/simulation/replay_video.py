@@ -1,5 +1,6 @@
 """Render recorded ground motion; never advances or changes simulation physics."""
 
+import json
 import shutil
 import subprocess
 from pathlib import Path
@@ -7,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 
-def render_replay(folder, output=None, *, fps=20, speedup=1.0):
+def render_replay(folder, output=None, *, fps=20, speedup=1.0, parameters=None):
     import mujoco
     from PIL import Image, ImageDraw
 
@@ -43,12 +44,21 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0):
         or not np.allclose(np.linalg.norm(roots[:, 3:], axis=1), 1, atol=1e-4)
     ):
         raise ValueError("Invalid recorded trajectory")
+    from wheel_loader.vehicle.parameters import load_parameters
+
+    from .replay_overlay import draw_cylinders, draw_state_panel
+    from .replay_state import ReplayState
     from .tire_visual import replay_xml_with_tires
+
+    if parameters is None:
+        parameters = load_parameters(
+            Path(__file__).resolve().parents[4] / "configs/vehicle/wa320.yaml"
+        )
 
     model = mujoco.MjModel.from_xml_string(
         replay_xml_with_tires(folder / "effective_model.xml")
     )
-    model.vis.global_.offwidth, model.vis.global_.offheight = 1280, 720
+    model.vis.global_.offwidth, model.vis.global_.offheight = 1280, 1080
     model.vis.headlight.active = 1
     model.vis.headlight.ambient[:] = [0.5, 0.5, 0.5]
     model.vis.headlight.diffuse[:] = [0.8, 0.8, 0.8]
@@ -70,65 +80,96 @@ def render_replay(folder, output=None, *, fps=20, speedup=1.0):
             model.geom_rgba[i] = [0.45, 0.47, 0.50, 1]
         else:
             model.geom_rgba[i] = [0.95, 0.58, 0.08, 1]
-    ids = {
-        (mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, i) or "").split(
-            "_Physics_"
-        )[-1]: i
-        for i in range(model.njnt)
-    }
-    addresses = [model.jnt_qposadr[ids[name]] for name in names]
-    free = np.flatnonzero(model.jnt_type == mujoco.mjtJoint.mjJNT_FREE)
-    if len(free) != 1:
-        raise ValueError("Replay requires exactly one floating root")
-    base = model.jnt_qposadr[free[0]]
-    data = mujoco.MjData(model)
+    telemetry = ReplayState(model, names, positions, roots, times, parameters)
+    data = telemetry.data
+    # The original box remains in the recorded physics model, but the replay
+    # displays its rounded connecting-rod replacement and separate cylinders.
+    model.geom_rgba[model.geom_bodyid == telemetry.bodies["rod"], 3] = 0
     camera = mujoco.MjvCamera()
     camera.distance, camera.azimuth, camera.elevation = 13, 135, -22
     output.parent.mkdir(parents=True, exist_ok=True)
-    renderer = mujoco.Renderer(model, height=720, width=1280)
+    renderer = mujoco.Renderer(model, height=1080, width=1280)
     try:
-        with subprocess.Popen(
-            [
-                ffmpeg,
-                "-y",
-                "-loglevel",
-                "error",
-                "-f",
-                "rawvideo",
-                "-pix_fmt",
-                "rgb24",
-                "-s",
-                "1280x720",
-                "-r",
-                str(fps),
-                "-i",
-                "-",
-                "-an",
-                "-c:v",
-                "libx264",
-                "-crf",
-                "20",
-                "-pix_fmt",
-                "yuv420p",
-                "-movflags",
-                "+faststart",
-                str(output),
-            ],
-            stdin=subprocess.PIPE,
-        ) as encoder:
+        with (
+            subprocess.Popen(
+                [
+                    ffmpeg,
+                    "-y",
+                    "-loglevel",
+                    "error",
+                    "-f",
+                    "rawvideo",
+                    "-pix_fmt",
+                    "rgb24",
+                    "-s",
+                    "1920x1080",
+                    "-r",
+                    str(fps),
+                    "-i",
+                    "-",
+                    "-an",
+                    "-c:v",
+                    "libx264",
+                    "-crf",
+                    "20",
+                    "-pix_fmt",
+                    "yuv420p",
+                    "-movflags",
+                    "+faststart",
+                    str(output),
+                ],
+                stdin=subprocess.PIPE,
+            ) as encoder,
+            output.with_suffix(".telemetry.jsonl").open("w") as telemetry_file,
+        ):
+            telemetry_file.write(
+                json.dumps(
+                    {
+                        "world_frame": "X forward at start, Y left, Z up",
+                        "joint_names": names,
+                        "units": {
+                            "position": "m",
+                            "joint_angle": "rad",
+                            "linear_velocity": "m/s",
+                            "angular_velocity": "rad/s",
+                        },
+                        "provenance": "reconstructed recorded configurations; finite differences in simulation time",
+                        "hydraulics": "estimated visual mounting geometry only; pressure/flow/force/absolute stroke unknown",
+                    }
+                )
+                + "\n"
+            )
             try:
                 indices = np.searchsorted(
                     times, np.arange(times[0], times[-1], speedup / fps)
                 )
                 for index in indices:
                     root = roots[index]
-                    data.qpos[addresses] = positions[index]
-                    data.qpos[base : base + 3] = root[:3]
-                    data.qpos[base + 3 : base + 7] = root[[6, 3, 4, 5]]
-                    mujoco.mj_forward(model, data)
+                    state = telemetry.sample(index)
+                    telemetry_file.write(
+                        json.dumps(
+                            {
+                                "time_s": float(times[index]),
+                                "joint_angles_rad": positions[index],
+                                **state,
+                            },
+                            default=lambda value: value.tolist(),
+                        )
+                        + "\n"
+                    )
                     camera.lookat[:] = root[:3] + np.array([0.5, 0, 0.7])
                     renderer.update_scene(data, camera)
-                    frame = Image.fromarray(renderer.render())
+                    draw_cylinders(
+                        renderer.scene,
+                        state,
+                        telemetry.initial_lengths,
+                        data,
+                        telemetry.bodies["rod"],
+                        parameters["linkage"]["rod_length"],
+                    )
+                    frame = Image.new("RGB", (1920, 1080))
+                    frame.paste(Image.fromarray(renderer.render()), (0, 0))
+                    draw_state_panel(frame, state, names, positions[index])
                     if len(phase_ids) == len(times):
                         draw = ImageDraw.Draw(frame)
                         draw.rectangle((12, 12, 780, 70), fill=(15, 20, 25))

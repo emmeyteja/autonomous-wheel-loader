@@ -55,3 +55,5 @@ The former rail-constrained model and its kinematics are archived in `extras/leg
 - The exported MuJoCo model is checked to ensure those settings reached the solver. See the [validation record](../experiments/WA320_FOUNDATION.md) for tested paths and remaining gaps.
 
 - Newton ground contact optionally uses analytical tire cylinders with the original nominal radius/width, selected by the ground profile. Tire body inertia and wheel hinges remain unchanged; this is rigid contact geometry, not a deformable tire model.
+
+- Recorded replay now displays estimated twin lift cylinders and a tilt cylinder, with pin geometry and world-frame state. They are visual overlays, not physical actuators; see [replay state](../experiments/REPLAY_STATE.md).

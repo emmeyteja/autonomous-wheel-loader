@@ -14,8 +14,21 @@ def main():
     parser.add_argument("--output", type=Path)
     parser.add_argument("--fps", type=int, default=20)
     parser.add_argument("--speedup", type=float, default=1.0)
+    parser.add_argument(
+        "--config", type=Path, default=Path("configs/vehicle/wa320.yaml")
+    )
     args = parser.parse_args()
-    print(render_replay(args.input, args.output, fps=args.fps, speedup=args.speedup))
+    from wheel_loader.vehicle.parameters import load_parameters
+
+    print(
+        render_replay(
+            args.input,
+            args.output,
+            fps=args.fps,
+            speedup=args.speedup,
+            parameters=load_parameters(args.config),
+        )
+    )
 
 
 if __name__ == "__main__":

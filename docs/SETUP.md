@@ -73,3 +73,6 @@ The Newton fixture passes closure, six driven-joint stop challenges, sampled sel
 
 - [Scenario definitions, commands and acceptance checks](experiments/V_CYCLE.md).
 - Run the V-cycle script with --case all for nominal, slow and wide cases. Each case tests the entire maneuver; these are unladen motion tests, without sand acquisition or payload transfer.
+
+- [World-frame replay panel and visual cylinder assumptions](experiments/REPLAY_STATE.md).
+- [Current validation evidence and real-machine comparison method](experiments/VALIDATION_BASIS.md).
