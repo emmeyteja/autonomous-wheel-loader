@@ -1,0 +1,591 @@
+sources:
+  komatsu_7:
+    kind: manufacturer_brochure
+    reference: Komatsu WA320-7 CJA00622-06, page 16
+    url: https://kcsj.komatsu/-/media/kcsj/contact/download/pdf/construction_machine/wa320-7.pdf?hash=6FE96FE4CD51A0BC96B247F7157CA646&rev=b7bbb016972c43218296faf183be8782
+    precision: Published rounding is not physical tolerance.
+  aoshima_gap:
+    kind: research_report
+    reference: Aoshima and Servin, sections 4.1-4.3, Tables 1-2
+    url: https://doi.org/10.1007/s11044-024-10005-5
+    precision: Quoted nominal machine values are not our own measurements.
+  project_assumption:
+    kind: unverified_project_input
+    reference: configs/vehicle/wa320.yaml
+    precision: No measured real-machine error bound.
+  diagram_fit:
+    kind: manual_diagram_digitization
+    reference: configs/geometry/wa320_7_brochure.yaml and wa320_7_bucket.yaml
+    precision: Fit residuals and assumed-pick sensitivity are not real-machine accuracy.
+real_machine_measurements:
+  available: false
+  note: No raw, calibrated, synchronized measurements of the selected machine have
+    been supplied. All true vehicle errors are unknown.
+active_parameters:
+  vehicle.mass:
+    status: published_nominal
+    unit: kg
+    sources:
+    - komatsu_7
+    - aoshima_gap
+    true_vehicle_error: null
+  vehicle.wheelbase:
+    status: published_dimension
+    unit: m
+    sources:
+    - komatsu_7
+    - aoshima_gap
+    true_vehicle_error: null
+  vehicle.track_width:
+    status: published_dimension
+    unit: m
+    sources:
+    - komatsu_7
+    - aoshima_gap
+    true_vehicle_error: null
+  vehicle.wheel_radius:
+    status: derived_published_nominal
+    unit: m
+    sources:
+    - komatsu_7
+    - aoshima_gap
+    true_vehicle_error: null
+  vehicle.bucket_width:
+    status: published_nominal
+    unit: m
+    sources:
+    - komatsu_7
+    - aoshima_gap
+    true_vehicle_error: null
+  vehicle.bucket_volume:
+    status: published_capacity_metadata
+    unit: m^3
+    sources:
+    - komatsu_7
+    - aoshima_gap
+    true_vehicle_error: null
+  vehicle.wheel_width:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  vehicle.articulation_height:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  articulation.min_angle:
+    status: derived_published_nominal
+    unit: rad
+    sources:
+    - komatsu_7
+    true_vehicle_error: null
+  articulation.max_angle:
+    status: derived_published_nominal
+    unit: rad
+    sources:
+    - komatsu_7
+    true_vehicle_error: null
+  articulation.max_velocity:
+    status: engineering_estimate
+    unit: rad/s
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  articulation.max_torque:
+    status: engineering_estimate
+    unit: N*m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  boom.pivot:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  boom.length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  boom.initial_elevation:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  boom.min_angle:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  boom.max_angle:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  boom.max_velocity:
+    status: engineering_estimate
+    unit: rad/s
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  boom.max_torque:
+    status: engineering_estimate
+    unit: N*m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  boom.rail_spacing:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  boom.rail_thickness:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.bellcrank_pivot_fraction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.bellcrank_upper_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.bellcrank_lower_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.initial_bellcrank_angle:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.rod_length:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.bucket_anchor:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.tilt_cylinder_base:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.min_angle:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.max_angle:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.max_velocity:
+    status: engineering_estimate
+    unit: rad/s
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.max_torque:
+    status: engineering_estimate
+    unit: N*m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.rod_min_angle:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.rod_max_angle:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.passive_max_velocity:
+    status: engineering_estimate
+    unit: rad/s
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  linkage.bar_thickness:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  bucket.lip:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  bucket.back_bottom:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  bucket.back_top:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  bucket.plate_thickness:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  bucket.min_angle:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  bucket.max_angle:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.rear_box_size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.rear_box_center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.front_box_size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.front_rail_spacing:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.front_rail_width:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.front_axle_box_size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.front_box_center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.lift_cylinder_base:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.lift_cylinder_rod_pin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.cab_size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  geometry.cab_center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  masses.rear_frame:
+    status: engineering_estimate
+    unit: kg
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  masses.front_frame:
+    status: engineering_estimate
+    unit: kg
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  masses.wheel:
+    status: engineering_estimate
+    unit: kg
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  masses.boom:
+    status: engineering_estimate
+    unit: kg
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  masses.bucket:
+    status: engineering_estimate
+    unit: kg
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  masses.bellcrank:
+    status: engineering_estimate
+    unit: kg
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  masses.rod:
+    status: engineering_estimate
+    unit: kg
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  contact.static_friction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  contact.dynamic_friction:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  contact.restitution:
+    status: engineering_estimate
+    unit: '1'
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  wheels.collision_sides:
+    status: numerical_setting
+    unit: '1'
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  wheels.max_velocity:
+    status: engineering_estimate
+    unit: rad/s
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  wheels.max_torque:
+    status: engineering_estimate
+    unit: N*m
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  solver.dt:
+    status: numerical_setting
+    unit: s
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  solver.position_iterations:
+    status: numerical_setting
+    unit: '1'
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  solver.velocity_iterations:
+    status: numerical_setting
+    unit: '1'
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  solver.wheel_damping:
+    status: numerical_setting
+    unit: N*m*s/rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  solver.joint_stiffness:
+    status: numerical_setting
+    unit: N*m/rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+  solver.joint_damping:
+    status: numerical_setting
+    unit: N*m*s/rad
+    sources:
+    - project_assumption
+    true_vehicle_error: null
+published_additional:
+  overall_length:
+    value: 7.72
+    unit: m
+    source: komatsu_7
+    note: Specification table; drawing also distinguishes 7.630 m and a 90 mm edge
+      extension.
+  overall_height:
+    value: 3.2
+    unit: m
+    source: komatsu_7
+  rated_load:
+    value: 4480.0
+    unit: kg
+    source: komatsu_7
+  breakout_force:
+    value: 149000.0
+    unit: N
+    source: komatsu_7
+    note: Bucket breakout metric; not cylinder thrust or a rotary torque.
+  raise_time:
+    value: 6.3
+    unit: s
+    source: komatsu_7
+    note: Published cycle figure, not a full response curve.
+  lower_time:
+    value: 3.5
+    unit: s
+    source: komatsu_7
+  dump_time:
+    value: 1.9
+    unit: s
+    source: komatsu_7
+  dump_clearance:
+    value: 2.835
+    unit: m
+    source: komatsu_7
+  dump_reach:
+    value: 1.165
+    unit: m
+    source: komatsu_7
+  engine_net_power:
+    value: 123000.0
+    unit: W
+    source: komatsu_7
+unavailable:
+- verified complete PZ pivot/link and cylinder mounting table
+- lift/tilt/steering cylinder bores, rod diameters, retracted lengths and stroke limits
+  for this configuration
+- hydraulic chamber pressures, flow/valve characteristics and power sharing
+- component mass, centre of mass and inertia measurements
+- calibrated tire, slip, friction and material parameters
+- calibrated sensor models, mounting survey and timestamp/latency measurements
+error_semantics:
+  'null': Unknown, never zero or perfect accuracy.
+  diagram_residual: Distance to manually picked features or a published dimension
+    in the same brochure.
+  pick_sensitivity: Conditional variation under assumed pixel/angle perturbations,
+    not confidence in true geometry.
+  rejected_hypothesis: Retained for audit; not approved as active physical geometry.
+candidate_parameters:
+  boom.length:
+    value: 2.709550175780557
+    unit: m
+    status: diagram_estimate
+    source: diagram_fit
+    true_vehicle_error: null
+    pick_sensitivity_p05_p95_m:
+    - 2.6694600936348367
+    - 2.7558783188565097
+    note: Assumed visible picks +/-3 px, axle/ground +/-1 px; not a physical confidence
+      interval.
+  boom.base_front_axle_XZ:
+    value:
+    - -0.7053402201918828
+    - 1.9923063561843948
+    unit: m
+    status: diagram_estimate
+    source: diagram_fit
+    true_vehicle_error: null
+    visible_base_pick_discrepancy_m: 0.030901563914620796
+  crank.pivot_boom_XZ:
+    value:
+    - 1.6999190771012467
+    - 0.5893060462793769
+    unit: m
+    status: diagram_estimate
+    source: diagram_fit
+    true_vehicle_error: null
+    offset_pick_sensitivity_p05_p95_m:
+    - 0.5722590671610198
+    - 0.6086718645962721
+  crank.D_included_angle:
+    value: 49.34463673467734
+    unit: deg
+    status: rejected_hypothesis
+    source: diagram_fit
+    true_vehicle_error: null
+    rod_length_spread_m: 0.12143296458709307
+    note: Inconsistent with registered bucket poses and the assumed one-rod state
+      correspondence; not promoted.
+  bucket.lip_local_XZ:
+    value:
+    - 1.4453439695413022
+    - -0.2335727355752884
+    unit: m
+    status: diagram_estimate
+    source: diagram_fit
+    true_vehicle_error: null
+    fit_residual_m: 0.05419126271898
+    held_out_same_drawing_dump_residual_m: 0.042672919479779726
+  bucket.anchor_local_XZ:
+    value:
+    - 0.012250581019750371
+    - 0.39039741111415094
+    unit: m
+    status: diagram_estimate
+    source: diagram_fit
+    true_vehicle_error: null
+    fit_residual_m: 0.021910280798293623
+    held_out_same_drawing_dump_residual_m: 0.01739255478106851
+drawing_cross_checks:
+  raised_hinge_height_error_m: 0.00317882116933621
+  bucket_dump_clearance_error_m: -0.01592040394176042
+  bucket_dump_reach_error_m: 0.09604020093690346
+  active_boom_base_difference_from_drawing_m: 0.4704545444064463
+  active_lowered_hinge_difference_from_drawing_m: 0.81296228290976
+  note: All are same-drawing discrepancies, not true real-machine estimation errors.
+    Candidate data are not active vehicle dimensions.

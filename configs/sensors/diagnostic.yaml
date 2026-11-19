@@ -1,0 +1,22 @@
+# Offline replay diagnostic, not a calibrated commercial sensor or training backend.
+seed: 42
+encoder_hz: 60  # Divides the accepted 240 Hz source; paper field logging was 100 Hz.
+lidar_hz: 5
+lidar:
+  mount_body: rear_frame
+  translation_m: [-0.2, 0.0, 2.2]  # Estimated roof mount in rear-frame coordinates.
+  rpy_deg: [0.0, 25.0, 0.0]  # +Y pitch directs +X downward in Z-up coordinates.
+  azimuth_deg: [-80.0, 80.0]
+  elevation_deg: [-15.0, 15.0]
+  columns: 81
+  channels: 16
+  min_range_m: 0.3
+  max_range_m: 25.0
+  range_noise_std_m: 0.02  # Trial, not manufacturer/calibration data.
+  dropout_probability: 0.01
+  latency_s: 0.02  # Timestamp is capture time; arrival timestamp is separate.
+map:
+  cell_size_m: 0.2
+  x_bounds_m: [-5.0, 25.0]
+  y_bounds_m: [-15.0, 15.0]
+  max_points_for_plot: 25000

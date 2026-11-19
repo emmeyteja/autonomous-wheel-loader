@@ -29,3 +29,8 @@ The first integrated physical foundation combines M0–M2 in Isaac Sim/Isaac Lab
 - Future batched task state/action tensors stay on the simulator device. ROS transport must not sit in the training loop. Isolate reset state, seeds and persistent dump-bed occupancy by environment.
 - Independent CPU material-column and instrumented blade-force diagnostics exist for contact-law investigation; they do not enable the production granular backend or establish Newton vehicle/material coupling.
 - Reserved terrain backends fail explicitly until implemented and calibrated. Missing material values are unknown, not zero.
+
+## Measurement and sensor diagnostics
+
+- [Parameter provenance and uncertainty](../calibration/MEASUREMENT_PROVENANCE.md) covers active values and separate brochure candidates.
+- [Offline sensor replay](../simulation/SENSORS.md) adds range scans, encoder odometry and IMU diagnostics; hydraulic pressure, cylinder stroke and payload remain unavailable. No production training sensor backend is claimed.
