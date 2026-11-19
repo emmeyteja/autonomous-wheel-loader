@@ -1,0 +1,44 @@
+# Reference specification only; not an executable simulator/material preset.
+reference_only: true
+paper_doi: 10.1016/j.jterra.2011.08.003
+source_sections: ['2.3', '2.4', '3.3']
+frame: 'X travel, Y blade width, Z up'
+apparatus:
+  blade_rake_from_horizontal_rad: 1.5707963267948966
+  blade_widths_m: [0.05, 0.10, 0.20]
+  cutting_depths_m: [0.02, 0.04, 0.06]
+  travel_speed_m_s: 0.01
+  box_plan_size_m: [0.30, 0.30]
+  box_height_m: null
+  fill_height_m: null
+  blade_thickness_m: null
+materials:
+  round_washed_gravel:
+    experimental_grain_radius_range_m: [0.002, 0.004]
+    bulk_density_kg_m3: 1500
+    internal_friction_angle_deg: 30
+    grain_density_kg_m3: null
+    measured_tool_friction: null
+  steel_balls:
+    experimental_grain_radius_m: 0.00175
+    grain_density_kg_m3: 7850
+    bulk_density_kg_m3: null
+    corrected_internal_friction_angle_deg: 18.3
+measurement:
+  component: horizontal_draft
+  load_cell_range_N: 200
+  stated_accuracy_N: 0.2
+  sample_hz: 1
+  comparison_metric: linear_fit_force_intercept_at_zero_travel
+  fit_travel_window_m: null
+  experimental_force_samples: null
+  digitization_uncertainty_N: null
+simulation_in_original:
+  particle_rotation: locked
+  calibration: triaxial_at_matched_relative_density_and_relevant_stress
+  gravel_radius_range_reported_in_section_2_4_m: [0.0015, 0.003]
+  radius_discrepancy_resolved: false
+validation:
+  apparatus_complete: false
+  material_calibrated_here: false
+  matched_force_validation_passed: false

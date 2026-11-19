@@ -9,6 +9,7 @@
 
 - [Selected gravel heap protocol, open scans and geometric measurement check](GRAVEL_HEAP_PROTOCOL.md).
 - [Zhang gravel calibration: stationary slope, rotating drum and independent cylinder test](ZHANG_GRAVEL.md).
+- [Obermayr blade-force protocol, assumptions and reproduction gaps](OBERMAYR_BLADE.md).
 
 ## References and suitable uses
 
