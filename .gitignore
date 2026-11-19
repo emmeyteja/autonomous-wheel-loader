@@ -48,3 +48,5 @@ wandb/
 
 # Original portable WA320 assets, reviewed for external references and private paths
 !assets/wheel_loader/wa320/usd/*.usda
+
+!assets/wheel_loader/wa320_estimated_v0/usd/*.usda

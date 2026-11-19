@@ -65,9 +65,11 @@ class VCycleController:
         self.speed = 0.0
         self.steer = 0.0
         self.boom = 0.15
-        self.tilt = -0.3
+        self.tilt = parameters.get("maneuver", {}).get("settle", [0.15, -0.3])[1]
         self.events = []
         self.timeout = False
+        self.raise_aligned = False
+        self.recurl_aligned = False
 
     @property
     def phase_name(self):
@@ -116,7 +118,7 @@ class VCycleController:
         cost += (goal[0] - x) ** 2 + (goal[1] - y) ** 2 + 0.01 * candidates**2
         return float(candidates[np.argmin(cost)])
 
-    def command(self, t, dt, xy, yaw, articulation=None):
+    def command(self, t, dt, xy, yaw, articulation=None, attachment=None):
         if (
             not all(math.isfinite(v) for v in (t, dt, *xy, yaw))
             or dt <= 0
@@ -150,6 +152,25 @@ class VCycleController:
             "lower_finish": (0.15, -0.3),
             "stop": (0.15, -0.3),
         }[phase]
+        if "maneuver" in self.p:
+            boom, tilt = self.p["maneuver"][phase]
+        if "actuators" in self.p and phase == "raise_dump" and attachment is not None:
+            self.raise_aligned = self.raise_aligned or abs(attachment[1] - tilt) < 0.002
+            if not self.raise_aligned:
+                boom = self.p["maneuver"]["forward_left"][0]
+        if "actuators" in self.p and phase == "rack_back":
+            transport_tilt = self.p["maneuver"]["raise_dump"][1]
+            self.recurl_aligned = self.recurl_aligned or (
+                abs(
+                    (self.tilt if attachment is None else attachment[1])
+                    - transport_tilt
+                )
+                < 0.002
+            )
+            if not self.recurl_aligned:
+                # Close the bucket to raised rollback before lowering the arm.
+                boom = self.p["maneuver"]["raise_dump"][0]
+                tilt = transport_tilt
         if phase == "push":
             speed = 0.15
         reached = False
@@ -189,12 +210,21 @@ class VCycleController:
         self.speed = slew(self.speed, 0.0 if reached or self.done else speed, 0.2)
         self.steer = slew(self.steer, steer, 0.15)
         self.boom = slew(self.boom, boom, 0.10)
-        self.tilt = slew(self.tilt, tilt, 0.22)
+        self.tilt = slew(self.tilt, tilt, 0.04 if "actuators" in self.p else 0.22)
         result = LoaderCommand(self.speed, self.steer, self.boom, self.tilt)
         result.validate(self.p)
+        attachment_ready = attachment is None or (
+            abs(attachment[0] - boom) < 0.015 and abs(attachment[1] - tilt) < 0.002
+        )
         if not self.done and (
             (reached and abs(self.speed) < 0.02)
-            or (phase in durations and age >= durations[phase])
+            or (
+                phase in durations
+                and age >= durations[phase]
+                and abs(self.boom - boom) < 1e-6
+                and abs(self.tilt - tilt) < 1e-6
+                and attachment_ready
+            )
         ):
             self._advance(t, xy, yaw)
         return result

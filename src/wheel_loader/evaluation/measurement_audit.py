@@ -4,11 +4,22 @@ import copy
 
 
 def audit_parameters(parameters, ledger):
-    flat = {
-        f"{section}.{key}": value
-        for section, values in parameters.items()
-        for key, value in values.items()
-    }
+    def flatten(value, path=""):
+        if isinstance(value, dict):
+            return {
+                key: val
+                for name, item in value.items()
+                for key, val in flatten(item, f"{path}.{name}".strip(".")).items()
+            }
+        if isinstance(value, list) and any(isinstance(item, dict) for item in value):
+            return {
+                key: val
+                for i, item in enumerate(value)
+                for key, val in flatten(item, f"{path}.{i}").items()
+            }
+        return {} if isinstance(value, str) else {path: value}
+
+    flat = flatten(parameters)
     entries = ledger["active_parameters"]
     if set(flat) != set(entries):
         raise ValueError(

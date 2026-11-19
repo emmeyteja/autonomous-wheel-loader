@@ -63,10 +63,12 @@ def solve_linkage(parameters: dict, boom_angle=0.0, tilt_angle=0.0) -> LinkagePo
             raise ValueError(f"{section} command exceeds configured limits")
     b, k = parameters["boom"], parameters["linkage"]
     phi = k["initial_bellcrank_angle"] + tilt_angle
-    c = np.array([b["length"] * k["bellcrank_pivot_fraction"], 0.0])
+    c = np.array(
+        k.get("bellcrank_pivot", [b["length"] * k["bellcrank_pivot_fraction"], 0.0])
+    )
     p = np.array([b["length"], 0.0])
     upper = c + rotate(phi, [k["bellcrank_upper_length"], 0.0])
-    lower = c - rotate(phi, [k["bellcrank_lower_length"], 0.0])
+    lower = c + rotate(phi, k.get("rod_pin_local", [-k["bellcrank_lower_length"], 0.0]))
     attachment = np.asarray(k["bucket_anchor"])
     f = circle_intersection(
         p, float(np.linalg.norm(attachment)), lower, k["rod_length"]

@@ -4,6 +4,7 @@ URDF is a tree plus an explicit closure sidecar. Import integration must add
 that closure; the bare URDF must never be called a complete Z-bar dynamics model.
 """
 
+import itertools
 import json
 import math
 import xml.etree.ElementTree as ET
@@ -288,6 +289,8 @@ def build_asset(p: dict, output: Path):
         k["passive_max_velocity"],
         pose.bucket_angle,
     )
+    if "bodies" in p:
+        apply_reconstructed_bodies(root, p, output)
     ET.indent(root, space="  ")
     ET.ElementTree(root).write(
         output / "wa320.urdf", encoding="unicode", xml_declaration=True
@@ -311,3 +314,136 @@ def build_asset(p: dict, output: Path):
     }
     (output / "closure.json").write_text(json.dumps(closure, indent=2) + "\n")
     return output / "wa320.urdf"
+
+
+def apply_reconstructed_bodies(root, p, output):
+    """Replace all inertias, retain articulation and add explicit fixed component bodies."""
+    import numpy as np
+
+    from .mass_properties import body_properties
+
+    props = body_properties(p)
+    links = {node.attrib["name"]: node for node in root.findall("link")}
+    # Cab has its own mass/geometry; remove duplicated root visuals/collisions.
+    for kind in ("visual", "collision"):
+        for node in list(links["rear_frame"].findall(kind)):
+            links["rear_frame"].remove(node)
+    for name, body in p["bodies"].items():
+        if name not in links:
+            links[name] = ET.SubElement(root, "link", name=name)
+            j = ET.SubElement(root, "joint", name=name + "_fixed", type="fixed")
+            ET.SubElement(j, "parent", link=body["parent"])
+            ET.SubElement(j, "child", link=name)
+            ET.SubElement(j, "origin", xyz=vector(body["origin"]))
+        link = links[name]
+        old = link.find("inertial")
+        if old is not None:
+            link.remove(old)
+        prop = props[name]
+        node = ET.SubElement(link, "inertial")
+        ET.SubElement(node, "origin", xyz=vector(prop["com_m"]))
+        ET.SubElement(node, "mass", value=str(prop["mass_kg"]))
+        tensor = np.array(prop["inertia_kg_m2"])
+        ET.SubElement(
+            node,
+            "inertia",
+            **{
+                key: str(tensor[i, j])
+                for key, i, j in [
+                    ("ixx", 0, 0),
+                    ("iyy", 1, 1),
+                    ("izz", 2, 2),
+                    ("ixy", 0, 1),
+                    ("ixz", 0, 2),
+                    ("iyz", 1, 2),
+                ]
+            },
+        )
+        # Only rear/axle/cab proxies need new external shapes. Cylinder groups carry
+        # inertia but remain non-colliding mass proxies, with replay decorations.
+        if name in (
+            "rear_frame",
+            "engine_powertrain",
+            "cab",
+            "hydraulic_system",
+            "rear_axle",
+            "front_axle",
+            "front_frame",
+            "boom",
+            "bellcrank",
+        ):
+            for kind in ("visual", "collision"):
+                for child in list(link.findall(kind)):
+                    link.remove(child)
+            for primitive in p["collision_geometry"][name]:
+                for kind in ("visual", "collision"):
+                    child = ET.SubElement(link, kind)
+                    ET.SubElement(
+                        child,
+                        "origin",
+                        xyz=vector(primitive["center"]),
+                        rpy=vector(primitive["rpy"]),
+                    )
+                    geo = ET.SubElement(child, "geometry")
+                    ET.SubElement(geo, "box", size=vector(primitive["size"]))
+                    if kind == "visual":
+                        ET.SubElement(
+                            child,
+                            "material",
+                            name="glass" if name == "cab" else "yellow",
+                        )
+    joints = {node.attrib["name"]: node for node in root.findall("joint")}
+    for axle in ("front", "rear"):
+        for side, sign in (("left", 1), ("right", -1)):
+            joint = joints[f"{axle}_{side}_wheel_joint"]
+            joint.find("parent").set("link", axle + "_axle")
+            joint.find("origin").set(
+                "xyz", vector([0, sign * p["vehicle"]["track_width"] / 2, 0])
+            )
+    c = p["linkage"]["bellcrank_pivot"]
+    joints["tilt_joint"].find("origin").set("xyz", vector([c[0], 0, c[1]]))
+    d = p["linkage"]["rod_pin_local"]
+    joints["rod_joint"].find("origin").set("xyz", vector([d[0], 0, d[1]]))
+    # Bucket side-wall extrusion and segmented floor/back leave the mouth open.
+    bucket = links["bucket"]
+    for kind in ("visual", "collision"):
+        for node in list(bucket.findall(kind)):
+            bucket.remove(node)
+    profile = np.array(p["bucket"]["profile"])
+    width, plate = p["vehicle"]["bucket_width"], p["bucket"]["plate_thickness"]
+    vertices = [[x, y, z] for y in (-plate / 2, plate / 2) for x, z in profile]
+    n = len(profile)
+    faces = [list(range(n - 1, -1, -1)), list(range(n, 2 * n))] + [
+        [i, (i + 1) % n, (i + 1) % n + n, i + n] for i in range(n)
+    ]
+    mesh = output / "meshes" / "bucket_side.obj"
+    mesh.write_text(
+        "# Original approximate bucket side-wall extrusion\n"
+        + "".join("v " + vector(v) + "\n" for v in vertices)
+        + "".join("f " + " ".join(str(i + 1) for i in face) + "\n" for face in faces)
+    )
+    for kind in ("visual", "collision"):
+        for sign in (-1, 1):
+            child = ET.SubElement(bucket, kind)
+            ET.SubElement(
+                child, "origin", xyz=vector([0, sign * (width - plate) / 2, 0])
+            )
+            geo = ET.SubElement(child, "geometry")
+            ET.SubElement(geo, "mesh", filename="meshes/bucket_side.obj")
+            if kind == "visual":
+                ET.SubElement(child, "material", name="steel")
+        for a, b in itertools.pairwise(profile):
+            delta = b - a
+            child = ET.SubElement(bucket, kind)
+            ET.SubElement(
+                child,
+                "origin",
+                xyz=vector([(a[0] + b[0]) / 2, 0, (a[1] + b[1]) / 2]),
+                rpy=vector([0, -math.atan2(delta[1], delta[0]), 0]),
+            )
+            geo = ET.SubElement(child, "geometry")
+            ET.SubElement(
+                geo, "box", size=vector([float(np.linalg.norm(delta)), width, plate])
+            )
+            if kind == "visual":
+                ET.SubElement(child, "material", name="steel")

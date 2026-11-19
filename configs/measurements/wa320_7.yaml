@@ -26,453 +26,3545 @@ sources:
     distribution: User-supplied reference; PDF and artwork are not redistributed.
 real_machine_measurements:
   available: false
-  note: No raw, calibrated, synchronized measurements of the selected machine have been supplied.
-    All true vehicle errors are unknown.
+  note: No raw, calibrated, synchronized measurements of the selected machine have
+    been supplied. All true vehicle errors are unknown.
 active_parameters:
   vehicle.mass:
     status: published_nominal
     unit: kg
     sources:
     - komatsu_7
-    - aoshima_gap
+    source_tag: BROCHURE
+    confidence: documented
+    notes: Operating configuration reference; not measured accuracy.
     true_vehicle_error: null
   vehicle.wheelbase:
-    status: published_dimension
+    status: published_nominal
     unit: m
     sources:
     - komatsu_7
-    - aoshima_gap
+    source_tag: BROCHURE
+    confidence: documented
+    notes: Operating configuration reference; not measured accuracy.
     true_vehicle_error: null
   vehicle.track_width:
-    status: published_dimension
+    status: published_nominal
     unit: m
     sources:
     - komatsu_7
-    - aoshima_gap
+    source_tag: BROCHURE
+    confidence: documented
+    notes: Operating configuration reference; not measured accuracy.
     true_vehicle_error: null
   vehicle.wheel_radius:
-    status: derived_published_nominal
+    status: derived_reference
     unit: m
     sources:
-    - komatsu_7
-    - aoshima_gap
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
     true_vehicle_error: null
   vehicle.bucket_width:
     status: published_nominal
     unit: m
     sources:
     - komatsu_7
-    - aoshima_gap
+    source_tag: BROCHURE
+    confidence: documented
+    notes: Operating configuration reference; not measured accuracy.
     true_vehicle_error: null
   vehicle.bucket_volume:
-    status: published_capacity_metadata
+    status: published_nominal
     unit: m^3
     sources:
     - komatsu_7
-    - aoshima_gap
+    source_tag: BROCHURE
+    confidence: documented
+    notes: Operating configuration reference; not measured accuracy.
     true_vehicle_error: null
   vehicle.wheel_width:
-    status: engineering_estimate
+    status: derived_reference
     unit: m
     sources:
     - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: Outside tire width minus track, symmetric tire assumption.
     true_vehicle_error: null
   vehicle.articulation_height:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  vehicle.overall_width:
+    status: published_nominal
+    unit: m
+    sources:
+    - komatsu_7
+    source_tag: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  vehicle.ground_clearance:
+    status: published_nominal
+    unit: m
+    sources:
+    - komatsu_7
+    source_tag: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  vehicle.overall_length:
+    status: published_nominal
+    unit: m
+    sources:
+    - komatsu_7
+    source_tag: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  vehicle.overall_height:
+    status: published_nominal
+    unit: m
+    sources:
+    - komatsu_7
+    source_tag: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  vehicle.hinge_pin_height:
+    status: published_nominal
+    unit: m
+    sources:
+    - komatsu_7
+    source_tag: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  vehicle.bucket_max_height:
+    status: published_nominal
+    unit: m
+    sources:
+    - komatsu_7
+    source_tag: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  vehicle.dump_clearance:
+    status: published_nominal
+    unit: m
+    sources:
+    - komatsu_7
+    source_tag: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  vehicle.dump_reach:
+    status: published_nominal
+    unit: m
+    sources:
+    - komatsu_7
+    source_tag: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
     true_vehicle_error: null
   articulation.min_angle:
-    status: derived_published_nominal
+    status: derived_reference
     unit: rad
     sources:
-    - komatsu_7
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
     true_vehicle_error: null
   articulation.max_angle:
-    status: derived_published_nominal
+    status: derived_reference
     unit: rad
     sources:
-    - komatsu_7
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
     true_vehicle_error: null
   articulation.max_velocity:
     status: engineering_estimate
     unit: rad/s
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   articulation.max_torque:
-    status: engineering_estimate
+    status: derived_reference
     unit: N*m
     sources:
     - project_assumption
+    source_tag: DERIVED
+    confidence: low
+    notes: Conservative virtual-work upper bound from estimated per-cylinder force
+      caps and maximum geometric moment arm; replaces the legacy rotary-motor proxy
+      cap in v1. Not a manufacturer joint rating.
     true_vehicle_error: null
   boom.pivot:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Digitized B in articulation/front frame; approx 31 mm visible-pick discrepancy.
     true_vehicle_error: null
+    uncertainty_m: 0.03
+    uncertainty_kind: assumed drawing tolerance, not confidence bound
   boom.length:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Brochure rigid fit, not CAD.
     true_vehicle_error: null
+    uncertainty_m: 0.03
+    uncertainty_kind: assumed drawing tolerance, not confidence bound
   boom.initial_elevation:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Digitized lower boom pose.
     true_vehicle_error: null
   boom.min_angle:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   boom.max_angle:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   boom.max_velocity:
     status: engineering_estimate
     unit: rad/s
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   boom.max_torque:
-    status: engineering_estimate
+    status: derived_reference
     unit: N*m
     sources:
     - project_assumption
+    source_tag: DERIVED
+    confidence: low
+    notes: Conservative virtual-work upper bound from estimated per-cylinder force
+      caps and maximum geometric moment arm; replaces the legacy rotary-motor proxy
+      cap in v1. Not a manufacturer joint rating.
     true_vehicle_error: null
   boom.rail_spacing:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   boom.rail_thickness:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   linkage.bellcrank_pivot_fraction:
     status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   linkage.bellcrank_upper_length:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   linkage.bellcrank_lower_length:
-    status: engineering_estimate
+    status: derived_reference
     unit: m
     sources:
     - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
     true_vehicle_error: null
   linkage.initial_bellcrank_angle:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   linkage.rod_length:
-    status: engineering_estimate
+    status: derived_reference
     unit: m
     sources:
     - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
     true_vehicle_error: null
   linkage.bucket_anchor:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
+    uncertainty_m: 0.03
+    uncertainty_kind: assumed sensitivity range; pin identification/model error can
+      be larger
   linkage.tilt_cylinder_base:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   linkage.min_angle:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   linkage.max_angle:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated assembly-branch travel envelope, inside the geometric toggle;
+      not a measured mechanical stop.
     true_vehicle_error: null
   linkage.max_velocity:
     status: engineering_estimate
     unit: rad/s
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   linkage.max_torque:
-    status: engineering_estimate
+    status: derived_reference
     unit: N*m
     sources:
     - project_assumption
+    source_tag: DERIVED
+    confidence: low
+    notes: Conservative virtual-work upper bound from estimated per-cylinder force
+      caps and maximum geometric moment arm; replaces the legacy rotary-motor proxy
+      cap in v1. Not a manufacturer joint rating.
     true_vehicle_error: null
   linkage.rod_min_angle:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   linkage.rod_max_angle:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   linkage.passive_max_velocity:
     status: engineering_estimate
     unit: rad/s
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   linkage.bar_thickness:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
+  linkage.bellcrank_pivot:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+    uncertainty_m: 0.03
+    uncertainty_kind: assumed sensitivity range; pin identification/model error can
+      be larger
+  linkage.rod_pin_local:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated point on two-pose equal-length locus; not uniquely identified.
+      Old D pick rejected.
+    true_vehicle_error: null
+    uncertainty_m: 0.2
+    uncertainty_kind: assumed sensitivity range; pin identification/model error can
+      be larger
   bucket.lip:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated local lip fitted to hard published 45-degree dump reach/clearance;
+      not independent validation and not the earlier pixel-average lip.
     true_vehicle_error: null
   bucket.back_bottom:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   bucket.back_top:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated mouth top constrained by published bucket maximum height at 66
+      degree rollback.
     true_vehicle_error: null
   bucket.plate_thickness:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   bucket.min_angle:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   bucket.max_angle:
     status: engineering_estimate
     unit: rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bucket.profile:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Approximate digitized side outline, lip and upper mouth adjusted to published
+      workspace targets. Not measured profile.
     true_vehicle_error: null
   geometry.rear_box_size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   geometry.rear_box_center:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   geometry.front_box_size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   geometry.front_rail_spacing:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   geometry.front_rail_width:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   geometry.front_axle_box_size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   geometry.front_box_center:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   geometry.lift_cylinder_base:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated from circle intersection satisfying manual length endpoints at
+      brochure boom elevations; not measured mounting coordinates.
     true_vehicle_error: null
   geometry.lift_cylinder_rod_pin:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   geometry.cab_size:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   geometry.cab_center:
     status: engineering_estimate
     unit: m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  geometry.steering_base:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated symmetric pin arrangement constrained by manual end lengths;
+      not digitized.
+    true_vehicle_error: null
+  geometry.steering_front_pin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated symmetric pin arrangement; right side mirrors Y.
     true_vehicle_error: null
   masses.rear_frame:
     status: engineering_estimate
     unit: kg
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: 1206 kg bare frame + 1815 kg counterweight + estimated 250 kg guards/steps/structural
+      attachments. COM uses three separate primitives.
+    true_vehicle_error: null
+  masses.engine_powertrain:
+    status: engineering_estimate
+    unit: kg
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: 'Estimated installed powertrain group: engine, transmission/HST, cooling,
+      mounts, exhaust and omitted housings. Manual dry component subtotal is not a
+      complete installed group.'
+    true_vehicle_error: null
+  masses.cab:
+    status: derived_reference
+    unit: kg
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: documented_reference
+    notes: 838 kg cab/floor + 50 kg seat from manual; no duplicated cab mass in rear_frame.
+    true_vehicle_error: null
+  masses.hydraulic_system:
+    status: engineering_estimate
+    unit: kg
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: 'Explicit estimated rear equipment group: tanks, fluids, fuel, pumps, valves,
+      hoses, electrical equipment and miscellaneous service equipment. Large uncertainty;
+      independent measurements required.'
+    true_vehicle_error: null
+  masses.rear_axle:
+    status: manual_reference
+    unit: kg
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
     true_vehicle_error: null
   masses.front_frame:
-    status: engineering_estimate
+    status: manual_reference
     unit: kg
     sources:
-    - project_assumption
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
     true_vehicle_error: null
-  masses.wheel:
-    status: engineering_estimate
+  masses.front_axle:
+    status: manual_reference
     unit: kg
     sources:
-    - project_assumption
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
     true_vehicle_error: null
   masses.boom:
-    status: engineering_estimate
+    status: manual_reference
     unit: kg
     sources:
-    - project_assumption
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
+    true_vehicle_error: null
+  masses.bellcrank:
+    status: manual_reference
+    unit: kg
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
+    true_vehicle_error: null
+  masses.rod:
+    status: manual_reference
+    unit: kg
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
     true_vehicle_error: null
   masses.bucket:
     status: engineering_estimate
     unit: kg
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Manual 2.8 m3 bucket with BOC/hinge pin is a proxy for selected 3.0 m3
+      bucket; this mass is ESTIMATED for that option.
     true_vehicle_error: null
-  masses.bellcrank:
-    status: engineering_estimate
+  masses.lift_cylinders:
+    status: derived_reference
     unit: kg
     sources:
     - project_assumption
+    source_tag: DERIVED
+    confidence: documented_reference
+    notes: Two 111 kg manual cylinders; fixed barrel/rod mass proxies split 60/40,
+      not a full cylinder dynamic mechanism.
     true_vehicle_error: null
-  masses.rod:
-    status: engineering_estimate
+  masses.bucket_cylinder:
+    status: manual_reference
+    unit: kg
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
+    true_vehicle_error: null
+  masses.steering_cylinders:
+    status: derived_reference
     unit: kg
     sources:
     - project_assumption
+    source_tag: DERIVED
+    confidence: documented_reference
+    notes: Two 21 kg manual cylinders; split between rear/front fixed proxies.
+    true_vehicle_error: null
+  masses.wheel:
+    status: manual_reference
+    unit: kg
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
     true_vehicle_error: null
   contact.static_friction:
     status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   contact.dynamic_friction:
     status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   contact.restitution:
     status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   wheels.collision_sides:
-    status: numerical_setting
+    status: engineering_estimate
     unit: '1'
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   wheels.max_velocity:
     status: engineering_estimate
     unit: rad/s
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   wheels.max_torque:
     status: engineering_estimate
     unit: N*m
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   solver.dt:
     status: numerical_setting
     unit: s
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   solver.position_iterations:
     status: numerical_setting
     unit: '1'
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   solver.velocity_iterations:
     status: numerical_setting
     unit: '1'
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   solver.wheel_damping:
     status: numerical_setting
     unit: N*m*s/rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   solver.joint_stiffness:
     status: numerical_setting
     unit: N*m/rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
     true_vehicle_error: null
   solver.joint_damping:
     status: numerical_setting
     unit: N*m*s/rad
     sources:
     - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  cylinders.lift.bore:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.lift.rod_diameter:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.lift.stroke:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.lift.pin_distance_min:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.lift.pin_distance_max:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.bucket.bore:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.bucket.rod_diameter:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.bucket.stroke:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.bucket.pin_distance_min:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.bucket.pin_distance_max:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.steering.bore:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.steering.rod_diameter:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.steering.stroke:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.steering.pin_distance_min:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  cylinders.steering.pin_distance_max:
+    status: manual_reference
+    unit: m
+    sources:
+    - shop_06202
+    source_tag: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    true_vehicle_error: null
+  bodies.rear_frame.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_frame.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.1.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated counterweight location constrained by nominal overall length;
+      no mass correction.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.2.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.2.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.2.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_frame.primitives.2.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.engine_powertrain.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.engine_powertrain.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.engine_powertrain.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.engine_powertrain.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.engine_powertrain.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.engine_powertrain.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.engine_powertrain.primitives.1.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.engine_powertrain.primitives.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.engine_powertrain.primitives.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.engine_powertrain.primitives.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.cab.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.cab.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.cab.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.cab.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.cab.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.cab.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.hydraulic_system.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.hydraulic_system.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.hydraulic_system.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.hydraulic_system.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.hydraulic_system.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.hydraulic_system.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.hydraulic_system.primitives.1.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.hydraulic_system.primitives.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.hydraulic_system.primitives.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.hydraulic_system.primitives.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_axle.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_axle.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rear_axle.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rear_axle.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_axle.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_axle.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_frame.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_frame.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.1.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_frame.primitives.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_axle.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_axle.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.front_axle.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.front_axle.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_axle.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_axle.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.boom.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.boom.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.1.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.boom.primitives.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.2.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.boom.primitives.2.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.2.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.2.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.3.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.boom.primitives.3.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.3.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.boom.primitives.3.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bellcrank.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bellcrank.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bellcrank.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bellcrank.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bellcrank.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bellcrank.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bellcrank.primitives.1.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bellcrank.primitives.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bellcrank.primitives.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bellcrank.primitives.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rod.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rod.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rod.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rod.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rod.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rod.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bucket.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bucket.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.1.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bucket.primitives.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.2.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bucket.primitives.2.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.2.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.2.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.3.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bucket.primitives.3.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.3.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket.primitives.3.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_left_wheel.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_left_wheel.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rear_left_wheel.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rear_left_wheel.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_left_wheel.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_left_wheel.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_right_wheel.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_right_wheel.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rear_right_wheel.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.rear_right_wheel.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_right_wheel.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.rear_right_wheel.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_left_wheel.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_left_wheel.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.front_left_wheel.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.front_left_wheel.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_left_wheel.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_left_wheel.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_right_wheel.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_right_wheel.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.front_right_wheel.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.front_right_wheel.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_right_wheel.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.front_right_wheel.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_barrel_left.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_barrel_left.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.lift_barrel_left.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.lift_barrel_left.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_barrel_left.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_barrel_left.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_rod_left.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_rod_left.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.lift_rod_left.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.lift_rod_left.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_rod_left.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_rod_left.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_barrel_right.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_barrel_right.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.lift_barrel_right.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.lift_barrel_right.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_barrel_right.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_barrel_right.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_rod_right.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_rod_right.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.lift_rod_right.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.lift_rod_right.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_rod_right.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.lift_rod_right.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket_barrel.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket_barrel.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bucket_barrel.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bucket_barrel.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket_barrel.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket_barrel.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket_piston.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket_piston.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bucket_piston.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.bucket_piston.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket_piston.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.bucket_piston.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.steering_rear.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.steering_rear.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.steering_rear.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.steering_rear.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.steering_rear.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.steering_rear.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.steering_front.origin:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.steering_front.mass_fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.steering_front.primitives.0.fraction:
+    status: derived_reference
+    unit: '1'
+    sources:
+    - project_assumption
+    source_tag: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+    true_vehicle_error: null
+  bodies.steering_front.primitives.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.steering_front.primitives.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  bodies.steering_front.primitives.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+    true_vehicle_error: null
+  maneuver.settle:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.forward_right:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.lower_attack:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.push:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.curl_lift:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.reverse_loaded:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.forward_left:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.raise_dump:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.dump:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.rack_back:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.reverse_home:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.lower_finish:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  maneuver.stop:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+    true_vehicle_error: null
+  actuators.reference_gain:
+    status: engineering_estimate
+    unit: 1/s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.drive.tau:
+    status: engineering_estimate
+    unit: s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.drive.vmax:
+    status: engineering_estimate
+    unit: m/s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.steering.tau:
+    status: engineering_estimate
+    unit: s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.steering.vmax:
+    status: engineering_estimate
+    unit: m/s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.steering.fmax:
+    status: engineering_estimate
+    unit: N
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.steering.stiffness:
+    status: engineering_estimate
+    unit: N/m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.steering.damping:
+    status: engineering_estimate
+    unit: N*s/m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.steering.integral_gain:
+    status: engineering_estimate
+    unit: N/(m*s)
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated force-servo integral gain for load holding; bounded within the
+      same per-cylinder force cap, not an extra corrective force.
+    true_vehicle_error: null
+  actuators.lift.tau:
+    status: engineering_estimate
+    unit: s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.lift.vmax:
+    status: engineering_estimate
+    unit: m/s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.lift.fmax:
+    status: engineering_estimate
+    unit: N
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.lift.stiffness:
+    status: engineering_estimate
+    unit: N/m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.lift.damping:
+    status: engineering_estimate
+    unit: N*s/m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.lift.integral_gain:
+    status: engineering_estimate
+    unit: N/(m*s)
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated force-servo integral gain for load holding; bounded within the
+      same per-cylinder force cap, not an extra corrective force.
+    true_vehicle_error: null
+  actuators.bucket.tau:
+    status: engineering_estimate
+    unit: s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.bucket.vmax:
+    status: engineering_estimate
+    unit: m/s
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.bucket.fmax:
+    status: engineering_estimate
+    unit: N
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.bucket.stiffness:
+    status: engineering_estimate
+    unit: N/m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.bucket.damping:
+    status: engineering_estimate
+    unit: N*s/m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    true_vehicle_error: null
+  actuators.bucket.integral_gain:
+    status: engineering_estimate
+    unit: N/(m*s)
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated force-servo integral gain for load holding; bounded within the
+      same per-cylinder force cap, not an extra corrective force.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.2.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.2.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_frame.2.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.engine_powertrain.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.engine_powertrain.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.engine_powertrain.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.engine_powertrain.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.engine_powertrain.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.engine_powertrain.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.cab.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.cab.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.cab.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.hydraulic_system.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.hydraulic_system.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.hydraulic_system.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.hydraulic_system.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.hydraulic_system.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.hydraulic_system.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_axle.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_axle.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.rear_axle.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.front_frame.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.front_frame.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.front_frame.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.front_frame.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.front_frame.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.front_frame.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.front_axle.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.front_axle.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.front_axle.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.2.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.2.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.2.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.3.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.3.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.boom.3.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.bellcrank.0.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.bellcrank.0.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.bellcrank.0.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.bellcrank.1.center:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.bellcrank.1.size:
+    status: engineering_estimate
+    unit: m
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
+    true_vehicle_error: null
+  collision_geometry.bellcrank.1.rpy:
+    status: engineering_estimate
+    unit: rad
+    sources:
+    - project_assumption
+    source_tag: ESTIMATED
+    confidence: low
+    notes: Estimated exterior/contact geometry, configurable independently of inertia
+      primitives.
     true_vehicle_error: null
 published_additional:
   overall_length:
     value: 7.72
     unit: m
     source: komatsu_7
-    note: Specification table; drawing also distinguishes 7.630 m and a 90 mm edge extension.
+    note: Specification table; drawing also distinguishes 7.630 m and a 90 mm edge
+      extension.
   overall_height:
     value: 3.2
     unit: m
@@ -513,19 +3605,19 @@ published_additional:
     source: komatsu_7
 unavailable:
 - verified complete PZ pivot/link and cylinder mounting table for the selected configuration
-- confirmation that SEN06202-03 cylinder specifications apply to the selected machine and
-  bucket option
+- confirmation that SEN06202-03 cylinder specifications apply to the selected machine
+  and bucket option
 - hydraulic chamber time series, valve/flow dynamics, friction and power sharing
-- component centres of mass and inertia tensors; allocation of published component weights
-  to model bodies
+- component centres of mass and inertia tensors; allocation of published component
+  weights to model bodies
 - calibrated tire, slip, friction and material parameters
 - calibrated sensor models, mounting survey and timestamp/latency measurements
 error_semantics:
   'null': Unknown, never zero or perfect accuracy.
-  diagram_residual: Distance to manually picked features or a published dimension in the same
-    brochure.
-  pick_sensitivity: Conditional variation under assumed pixel/angle perturbations, not confidence
-    in true geometry.
+  diagram_residual: Distance to manually picked features or a published dimension
+    in the same brochure.
+  pick_sensitivity: Conditional variation under assumed pixel/angle perturbations,
+    not confidence in true geometry.
   rejected_hypothesis: Retained for audit; not approved as active physical geometry.
 candidate_parameters:
   boom.length:
@@ -537,7 +3629,8 @@ candidate_parameters:
     pick_sensitivity_p05_p95_m:
     - 2.6694600936348367
     - 2.7558783188565097
-    note: Assumed visible picks +/-3 px, axle/ground +/-1 px; not a physical confidence interval.
+    note: Assumed visible picks +/-3 px, axle/ground +/-1 px; not a physical confidence
+      interval.
   boom.base_front_axle_XZ:
     value:
     - -0.7053402201918828
@@ -565,8 +3658,8 @@ candidate_parameters:
     source: diagram_fit
     true_vehicle_error: null
     rod_length_spread_m: 0.12143296458709307
-    note: Inconsistent with registered bucket poses and the assumed one-rod state correspondence;
-      not promoted.
+    note: Inconsistent with registered bucket poses and the assumed one-rod state
+      correspondence; not promoted.
   bucket.lip_local_XZ:
     value:
     - 1.4453439695413022
@@ -593,14 +3686,14 @@ drawing_cross_checks:
   bucket_dump_reach_error_m: 0.09604020093690346
   active_boom_base_difference_from_drawing_m: 0.4704545444064463
   active_lowered_hinge_difference_from_drawing_m: 0.81296228290976
-  note: All are same-drawing discrepancies, not true real-machine estimation errors. Candidate
-    data are not active vehicle dimensions.
+  note: All are same-drawing discrepancies, not true real-machine estimation errors.
+    Candidate data are not active vehicle dimensions.
 shop_manual_reference:
   source: shop_06202
   status: published_reference_not_promoted
   true_vehicle_error: null
-  applicability: Serial 80001 and up; non-EU and EU specifications differ from selected paper/brochure
-    configuration. No active parameter overrides.
+  applicability: Serial 80001 and up; non-EU and EU specifications differ from selected
+    paper/brochure configuration. No active parameter overrides.
   cylinders:
     printed_pages:
     - 01-11
@@ -654,8 +3747,8 @@ shop_manual_reference:
       overall_length_with_BOC_m: 7.7
       dump_clearance_BOC_m: 2.835
       dump_reach_BOC_m: 1.02
-    dump_conditions: 45 degree bucket dump; BOC means bolt-on cutting edge. Do not mix cutting-edge
-      and BOC-tip definitions.
+    dump_conditions: 45 degree bucket dump; BOC means bolt-on cutting edge. Do not
+      mix cutting-edge and BOC-tip definitions.
   component_weights:
     printed_pages:
     - 01-17
@@ -668,8 +3761,8 @@ shop_manual_reference:
     - 89
     - 90
     unit: kg
-    note: Handling/transport reference weights, not identified simulation body masses or inertia.
-      Listed assemblies overlap with lumped model bodies.
+    note: Handling/transport reference weights, not identified simulation body masses
+      or inertia. Listed assemblies overlap with lumped model bodies.
     tire_and_rim_each: 341.0
     lift_cylinder_each: 111.0
     bucket_cylinder: 196.0
@@ -688,8 +3781,8 @@ shop_manual_reference:
     work_equipment_set_pressure_Pa: 30400000.0
     steering_set_pressure_Pa: 20600000.0
     pump_displacement_m3_per_rev: 9.0e-05
-    note: Relief/set values and displacement do not supply operating chamber pressures or
-      actual flow.
+    note: Relief/set values and displacement do not supply operating chamber pressures
+      or actual flow.
   service_acceptance:
     printed_page: 20-13
     pdf_page: 427
@@ -701,8 +3794,8 @@ shop_manual_reference:
       nominal: 5.6
       plus_minus: 0.5
     note: Oil 45-55 C; high idle. Approximate monitor accuracy is not raw sensor calibration
-      or a model error bound. Raise posture per manual F/G; not interchangeable with brochure
-      6.3 s.
+      or a model error bound. Raise posture per manual F/G; not interchangeable with
+      brochure 6.3 s.
   lift_bottom_pressure_sensor:
     printed_page: 10-315
     pdf_page: 407
@@ -713,8 +3806,8 @@ shop_manual_reference:
     - 0.5
     - 4.5
     status: published_transfer_curve_not_instrument_calibration
-    note: Bottom-line pressure sensor shown at piping block. No complete uncertainty, bandwidth
-      or dynamic data supplied.
+    note: Bottom-line pressure sensor shown at piping block. No complete uncertainty,
+      bandwidth or dynamic data supplied.
   sensor_inventory:
     printed_page: 10-284
     pdf_page: 376
@@ -724,6 +3817,9 @@ shop_manual_reference:
     - boom potentiometer
     - speed sensor
     - PPC pilot pressures
-    note: Signal listing establishes documented inputs, not calibration, continuous bucket
-      angle/stroke sensing or middleware interfaces. Pilot pressure differs from cylinder
-      chamber pressure.
+    note: Signal listing establishes documented inputs, not calibration, continuous
+      bucket angle/stroke sensing or middleware interfaces. Pilot pressure differs
+      from cylinder chamber pressure.
+active_model_version: WA320_reconstructed_v1
+candidate_parameters_scope: Earlier brochure-only hypotheses; active v1 estimates
+  and their uncertainty are in active_parameters and the canonical vehicle configuration.

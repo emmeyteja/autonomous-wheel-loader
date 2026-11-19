@@ -190,3 +190,14 @@ def test_phase_events_serialize_float32_simulator_observations():
     cycle = VCycleController(P, VCycleScenario())
     cycle.command(2.0, 0.01, np.array([0, 0], dtype=np.float32), np.float32(0))
     json.dumps(cycle.events)
+
+
+def test_timed_phase_waits_for_measured_attachment():
+    cycle = VCycleController(P, VCycleScenario())
+    cycle.phase = PHASES.index("raise_dump")
+    target = P["maneuver"]["raise_dump"]
+    cycle.boom, cycle.tilt = target
+    cycle.command(30, 0.01, [0, 0], 0, attachment=[target[0] - 0.1, target[1]])
+    assert cycle.phase_name == "raise_dump"
+    cycle.command(31, 0.01, [0, 0], 0, attachment=target)
+    assert cycle.phase_name == "dump"

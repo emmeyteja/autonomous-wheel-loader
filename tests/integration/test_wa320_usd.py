@@ -27,7 +27,12 @@ class ConvertedAssetTests(unittest.TestCase):
                 for prim in stage.Traverse()
                 if prim.HasAPI(UsdPhysics.RigidBodyAPI)
             }
-            self.assertEqual(len(bodies), 10)
+            from wheel_loader.vehicle.parameters import load_parameters
+
+            self.assertEqual(
+                len(bodies),
+                len(load_parameters(ROOT / "configs/vehicle/wa320.yaml")["bodies"]),
+            )
             mass = sum(
                 UsdPhysics.MassAPI(prim).GetMassAttr().Get() for prim in bodies.values()
             )

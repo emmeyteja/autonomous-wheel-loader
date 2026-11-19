@@ -24,6 +24,12 @@ def main():
         action="store_true",
         help="Add an immovable contact-test pile; no material loading",
     )
+    parser.add_argument(
+        "--usd", type=Path, default=Path("assets/wheel_loader/wa320/usd/wa320.usda")
+    )
+    parser.add_argument(
+        "--config", type=Path, default=Path("configs/vehicle/wa320.yaml")
+    )
     args = parser.parse_args()
     if args.case == "all":
         results = {}
@@ -33,6 +39,10 @@ def main():
                 [
                     sys.executable,
                     str(Path(__file__).resolve()),
+                    "--config",
+                    str(args.config),
+                    "--usd",
+                    str(args.usd),
                     "--case",
                     name,
                     "--output",
@@ -54,8 +64,8 @@ def main():
             raise SystemExit("V-cycle suite failed; inspect suite.json")
         return
     run_ground(
-        load_parameters("configs/vehicle/wa320.yaml"),
-        Path("assets/wheel_loader/wa320/usd/wa320.usda"),
+        load_parameters(args.config),
+        args.usd,
         args.output,
         profile=load_profile("configs/simulation/newton.yaml"),
         contact_profile=load_ground_profile("configs/simulation/newton_ground.yaml"),

@@ -14,6 +14,7 @@ BOUNDED_JOINTS = frozenset(
 @dataclass(frozen=True)
 class NewtonProfile:
     num_substeps: int = 8
+    loop_impedance: float = 0.95
     loop_time_constant: float = 0.002  # seconds
     stop_time_constant: float = 0.002  # seconds
     stop_impedance: float = 0.9999  # dimensionless MuJoCo constraint impedance
@@ -26,7 +27,12 @@ class NewtonProfile:
             value = getattr(self, name)
             if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
                 raise ValueError(f"{name} must be a positive integer")
-        for name in ("loop_time_constant", "stop_time_constant", "stop_impedance"):
+        for name in (
+            "loop_time_constant",
+            "stop_time_constant",
+            "stop_impedance",
+            "loop_impedance",
+        ):
             value = getattr(self, name)
             if (
                 isinstance(value, bool)
@@ -36,7 +42,7 @@ class NewtonProfile:
             ):
                 raise ValueError(f"{name} must be finite and positive")
 
-        if self.stop_impedance > 0.9999:
+        if max(self.stop_impedance, self.loop_impedance) > 0.9999:
             raise ValueError(
                 "Stop impedance must not exceed MuJoCo's supported maximum .9999"
             )
@@ -65,7 +71,7 @@ def load_profile(path):
     if not isinstance(data, dict):
         raise TypeError("Newton profile must be a mapping")
     expected = set(NewtonProfile.__dataclass_fields__)
-    if set(data) != expected:
+    if set(data) not in (expected, expected - {"loop_impedance"}):
         raise ValueError("Newton profile fields differ from the supported schema")
     return NewtonProfile(**data)
 
@@ -155,6 +161,15 @@ def prepare_asset(source, output, profile, *, require_fixed_base=False):
         prim.CreateAttribute("mjc:solref", Sdf.ValueTypeNames.Float2).Set(
             Gf.Vec2f(profile.loop_time_constant, 1.0)
         )
+        prim.CreateAttribute("mjc:solimp", Sdf.ValueTypeNames.FloatArray).Set(
+            [
+                0.9 if profile.loop_impedance == 0.95 else profile.loop_impedance,
+                profile.loop_impedance,
+                0.001,
+                0.5,
+                2.0,
+            ]
+        )
     for prim in prepared.Traverse():
         if prim.IsA(UsdPhysics.RevoluteJoint) and prim.GetName() in BOUNDED_JOINTS:
             prim.CreateAttribute("mjc:solreflimit", Sdf.ValueTypeNames.Float2).Set(
@@ -202,6 +217,16 @@ def audit_import(path, profile):
     equalities = root.findall("equality/connect")
     loops = len(equalities) == 2 and all(
         close(node.get("solref"), [profile.loop_time_constant, 1.0])
+        and close(
+            node.get("solimp"),
+            [
+                0.9 if profile.loop_impedance == 0.95 else profile.loop_impedance,
+                profile.loop_impedance,
+                0.001,
+                0.5,
+                2.0,
+            ],
+        )
         for node in equalities
     )
     passive = not any(

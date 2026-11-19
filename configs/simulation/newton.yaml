@@ -6,3 +6,4 @@ nconmax: 2048  # SOURCE: estimated contact capacity for the fixture
 loop_time_constant: 0.002  # SOURCE: estimated numerical closure reference time, s
 stop_time_constant: 0.002  # SOURCE: tested numerical joint-limit reference time, s
 stop_impedance: 0.9999  # SOURCE: estimated numerical near-rigid limit impedance
+loop_impedance: 0.9999  # Numerical near-rigid pin closure; not material/actuator calibration

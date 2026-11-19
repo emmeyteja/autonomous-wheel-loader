@@ -15,23 +15,703 @@
   </material>
   <link name="rear_frame">
     <inertial>
-      <origin xyz="-1.475 0 0.1" />
-      <mass value="7000.0" />
-      <inertia ixx="1873.9583333333337" iyy="5548.958333333335" izz="6477.916666666667" ixy="0" ixz="0" iyz="0" />
+      <origin xyz="-2.3116292096 0 -0.0732497707123" />
+      <mass value="3271.0" />
+      <inertia ixx="849.6020632706615" iyy="3885.1874125889826" izz="4488.674515984988" ixy="0.0" ixz="-71.01755584034188" iyz="0.0" />
     </inertial>
     <visual>
-      <origin xyz="-1.475 0 0.1" rpy="0 0 0" />
+      <origin xyz="-1.15 0 -0.1" rpy="0 0 0" />
       <geometry>
-        <box size="2.95 1.55 0.9" />
+        <box size="1.8 1.35 0.55" />
       </geometry>
       <material name="yellow" />
     </visual>
     <collision>
-      <origin xyz="-1.475 0 0.1" rpy="0 0 0" />
+      <origin xyz="-1.15 0 -0.1" rpy="0 0 0" />
       <geometry>
-        <box size="2.95 1.55 0.9" />
+        <box size="1.8 1.35 0.55" />
       </geometry>
     </collision>
+    <visual>
+      <origin xyz="-3.19528327527 0 -0.1" rpy="0 0 0" />
+      <geometry>
+        <box size="0.65 1.8 0.65" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="-3.19528327527 0 -0.1" rpy="0 0 0" />
+      <geometry>
+        <box size="0.65 1.8 0.65" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="-1.5 0 0.25" rpy="0 0 0" />
+      <geometry>
+        <box size="2.8 1.6 0.15" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="-1.5 0 0.25" rpy="0 0 0" />
+      <geometry>
+        <box size="2.8 1.6 0.15" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="front_frame">
+    <inertial>
+      <origin xyz="0.85 0 -0.2" />
+      <mass value="1226.0" />
+      <inertia ixx="277.8933333333334" iyy="198.20333333333335" izz="425.0133333333334" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial>
+    <visual>
+      <origin xyz="0.85 -0.45 -0.2" rpy="0 0 0" />
+      <geometry>
+        <box size="1.3 0.2 0.5" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="0.85 -0.45 -0.2" rpy="0 0 0" />
+      <geometry>
+        <box size="1.3 0.2 0.5" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0.85 0.45 -0.2" rpy="0 0 0" />
+      <geometry>
+        <box size="1.3 0.2 0.5" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="0.85 0.45 -0.2" rpy="0 0 0" />
+      <geometry>
+        <box size="1.3 0.2 0.5" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="articulation_joint" type="revolute">
+    <parent link="rear_frame" />
+    <child link="front_frame" />
+    <origin xyz="0 0 0" rpy="0 -0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="97673.11138159224" velocity="0.2" lower="-0.6719517620178169" upper="0.6719517620178169" />
+  </joint>
+  <link name="rear_left_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
+      <geometry>
+        <cylinder radius="0.695" length="0.54" />
+      </geometry>
+    </collision>
+    <visual name="tire_rubber">
+      <geometry>
+        <mesh filename="meshes/tire_rubber.obj" />
+      </geometry>
+      <material name="tire_rubber">
+        <color rgba="0.065 0.072 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_tread">
+      <geometry>
+        <mesh filename="meshes/tire_tread.obj" />
+      </geometry>
+      <material name="tire_tread">
+        <color rgba="0.095 0.103 0.11 1" />
+      </material>
+    </visual>
+    <visual name="tire_rim">
+      <geometry>
+        <mesh filename="meshes/tire_rim.obj" />
+      </geometry>
+      <material name="tire_rim">
+        <color rgba="0.95 0.58 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_hub">
+      <geometry>
+        <mesh filename="meshes/tire_hub.obj" />
+      </geometry>
+      <material name="tire_hub">
+        <color rgba="0.27 0.29 0.31 1" />
+      </material>
+    </visual>
+    <visual name="tire_bolts">
+      <geometry>
+        <mesh filename="meshes/tire_bolts.obj" />
+      </geometry>
+      <material name="tire_bolts">
+        <color rgba="0.55 0.57 0.59 1" />
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="341.0" />
+      <inertia ixx="49.46418124999999" iyy="82.35576249999998" izz="49.46418124999999" ixy="0.0" ixz="0.0" iyz="-2.0140284848353797e-15" />
+    </inertial>
+  </link>
+  <joint name="rear_left_wheel_joint" type="continuous">
+    <parent link="rear_axle" />
+    <child link="rear_left_wheel" />
+    <origin xyz="0 1.025 0" rpy="0 -0 0" />
+    <axis xyz="0 1 0" />
+    <limit effort="12000.0" velocity="4.0" />
+  </joint>
+  <link name="rear_right_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
+      <geometry>
+        <cylinder radius="0.695" length="0.54" />
+      </geometry>
+    </collision>
+    <visual name="tire_rubber">
+      <geometry>
+        <mesh filename="meshes/tire_rubber.obj" />
+      </geometry>
+      <material name="tire_rubber">
+        <color rgba="0.065 0.072 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_tread">
+      <geometry>
+        <mesh filename="meshes/tire_tread.obj" />
+      </geometry>
+      <material name="tire_tread">
+        <color rgba="0.095 0.103 0.11 1" />
+      </material>
+    </visual>
+    <visual name="tire_rim">
+      <geometry>
+        <mesh filename="meshes/tire_rim.obj" />
+      </geometry>
+      <material name="tire_rim">
+        <color rgba="0.95 0.58 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_hub">
+      <geometry>
+        <mesh filename="meshes/tire_hub.obj" />
+      </geometry>
+      <material name="tire_hub">
+        <color rgba="0.27 0.29 0.31 1" />
+      </material>
+    </visual>
+    <visual name="tire_bolts">
+      <geometry>
+        <mesh filename="meshes/tire_bolts.obj" />
+      </geometry>
+      <material name="tire_bolts">
+        <color rgba="0.55 0.57 0.59 1" />
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="341.0" />
+      <inertia ixx="49.46418124999999" iyy="82.35576249999998" izz="49.46418124999999" ixy="0.0" ixz="0.0" iyz="-2.0140284848353797e-15" />
+    </inertial>
+  </link>
+  <joint name="rear_right_wheel_joint" type="continuous">
+    <parent link="rear_axle" />
+    <child link="rear_right_wheel" />
+    <origin xyz="0 -1.025 0" rpy="0 -0 0" />
+    <axis xyz="0 1 0" />
+    <limit effort="12000.0" velocity="4.0" />
+  </joint>
+  <link name="front_left_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
+      <geometry>
+        <cylinder radius="0.695" length="0.54" />
+      </geometry>
+    </collision>
+    <visual name="tire_rubber">
+      <geometry>
+        <mesh filename="meshes/tire_rubber.obj" />
+      </geometry>
+      <material name="tire_rubber">
+        <color rgba="0.065 0.072 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_tread">
+      <geometry>
+        <mesh filename="meshes/tire_tread.obj" />
+      </geometry>
+      <material name="tire_tread">
+        <color rgba="0.095 0.103 0.11 1" />
+      </material>
+    </visual>
+    <visual name="tire_rim">
+      <geometry>
+        <mesh filename="meshes/tire_rim.obj" />
+      </geometry>
+      <material name="tire_rim">
+        <color rgba="0.95 0.58 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_hub">
+      <geometry>
+        <mesh filename="meshes/tire_hub.obj" />
+      </geometry>
+      <material name="tire_hub">
+        <color rgba="0.27 0.29 0.31 1" />
+      </material>
+    </visual>
+    <visual name="tire_bolts">
+      <geometry>
+        <mesh filename="meshes/tire_bolts.obj" />
+      </geometry>
+      <material name="tire_bolts">
+        <color rgba="0.55 0.57 0.59 1" />
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="341.0" />
+      <inertia ixx="49.46418124999999" iyy="82.35576249999998" izz="49.46418124999999" ixy="0.0" ixz="0.0" iyz="-2.0140284848353797e-15" />
+    </inertial>
+  </link>
+  <joint name="front_left_wheel_joint" type="continuous">
+    <parent link="front_axle" />
+    <child link="front_left_wheel" />
+    <origin xyz="0 1.025 0" rpy="0 -0 0" />
+    <axis xyz="0 1 0" />
+    <limit effort="12000.0" velocity="4.0" />
+  </joint>
+  <link name="front_right_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
+      <geometry>
+        <cylinder radius="0.695" length="0.54" />
+      </geometry>
+    </collision>
+    <visual name="tire_rubber">
+      <geometry>
+        <mesh filename="meshes/tire_rubber.obj" />
+      </geometry>
+      <material name="tire_rubber">
+        <color rgba="0.065 0.072 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_tread">
+      <geometry>
+        <mesh filename="meshes/tire_tread.obj" />
+      </geometry>
+      <material name="tire_tread">
+        <color rgba="0.095 0.103 0.11 1" />
+      </material>
+    </visual>
+    <visual name="tire_rim">
+      <geometry>
+        <mesh filename="meshes/tire_rim.obj" />
+      </geometry>
+      <material name="tire_rim">
+        <color rgba="0.95 0.58 0.08 1" />
+      </material>
+    </visual>
+    <visual name="tire_hub">
+      <geometry>
+        <mesh filename="meshes/tire_hub.obj" />
+      </geometry>
+      <material name="tire_hub">
+        <color rgba="0.27 0.29 0.31 1" />
+      </material>
+    </visual>
+    <visual name="tire_bolts">
+      <geometry>
+        <mesh filename="meshes/tire_bolts.obj" />
+      </geometry>
+      <material name="tire_bolts">
+        <color rgba="0.55 0.57 0.59 1" />
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="341.0" />
+      <inertia ixx="49.46418124999999" iyy="82.35576249999998" izz="49.46418124999999" ixy="0.0" ixz="0.0" iyz="-2.0140284848353797e-15" />
+    </inertial>
+  </link>
+  <joint name="front_right_wheel_joint" type="continuous">
+    <parent link="front_axle" />
+    <child link="front_right_wheel" />
+    <origin xyz="0 -1.025 0" rpy="0 -0 0" />
+    <axis xyz="0 1 0" />
+    <limit effort="12000.0" velocity="4.0" />
+  </joint>
+  <link name="boom">
+    <inertial>
+      <origin xyz="1.39006033455 0 0.0587328482306" />
+      <mass value="1313.0" />
+      <inertia ixx="269.3547651014588" iyy="677.7348821370597" izz="889.7915670356008" ixy="0.0" ixz="-15.933214527256762" iyz="0.0" />
+    </inertial>
+    <visual>
+      <origin xyz="1.35 -0.425 0" rpy="0 0 0" />
+      <geometry>
+        <box size="2.7 0.18 0.18" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="1.35 -0.425 0" rpy="0 0 0" />
+      <geometry>
+        <box size="2.7 0.18 0.18" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="1.35 0.425 0" rpy="0 0 0" />
+      <geometry>
+        <box size="2.7 0.18 0.18" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="1.35 0.425 0" rpy="0 0 0" />
+      <geometry>
+        <box size="2.7 0.18 0.18" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="1.55030167275 -0.425 0.293664241153" rpy="0 -1.09774170044 0" />
+      <geometry>
+        <box size="0.659785660239 0.18 0.18" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="1.55030167275 -0.425 0.293664241153" rpy="0 -1.09774170044 0" />
+      <geometry>
+        <box size="0.659785660239 0.18 0.18" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="1.55030167275 0.425 0.293664241153" rpy="0 -1.09774170044 0" />
+      <geometry>
+        <box size="0.659785660239 0.18 0.18" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="1.55030167275 0.425 0.293664241153" rpy="0 -1.09774170044 0" />
+      <geometry>
+        <box size="0.659785660239 0.18 0.18" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="boom_joint" type="revolute">
+    <parent link="front_frame" />
+    <child link="boom" />
+    <origin xyz="0.809659779808 0 0.892306356184" rpy="0 0.725752774935 0" />
+    <axis xyz="0 -1 0" />
+    <limit effort="1729644.6023486396" velocity="0.12" lower="0.0" upper="1.5647716097895954" />
+  </joint>
+  <link name="bellcrank">
+    <inertial>
+      <origin xyz="-0.0808676228839 0 0.0451158558569" />
+      <mass value="300.0" />
+      <inertia ixx="3.0998073291134416" iyy="53.461031017077715" izz="52.57122368796427" ixy="0.0" ixz="6.2312380336430095" iyz="0.0" />
+    </inertial>
+    <visual>
+      <origin xyz="0.25 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.9 0.22 0.2" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="0.25 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.9 0.22 0.2" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="-0.411735245768 0 0.0902317117138" rpy="0 -2.92585340851 0" />
+      <geometry>
+        <box size="0.843012869193 0.2 0.2" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="-0.411735245768 0 0.0902317117138" rpy="0 -2.92585340851 0" />
+      <geometry>
+        <box size="0.843012869193 0.2 0.2" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="tilt_joint" type="revolute">
+    <parent link="boom" />
+    <child link="bellcrank" />
+    <origin xyz="1.70060334551 0 0.587328482306" rpy="0 -2.06373528862 0" />
+    <axis xyz="0 -1 0" />
+    <limit effort="287481.61727564136" velocity="0.15" lower="-0.15" upper="0.624" />
+  </joint>
+  <link name="rod">
+    <visual>
+      <origin xyz="0.371925215498 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.743850430996 0.08 0.08" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <collision>
+      <origin xyz="0.371925215498 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.743850430996 0.08 0.08" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0.421761829578 0 0" />
+      <mass value="68.0" />
+      <inertia ixx="0.255" iyy="4.159515593492158" izz="4.159515593492158" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial>
+  </link>
+  <joint name="rod_joint" type="revolute">
+    <parent link="bellcrank" />
+    <child link="rod" />
+    <origin xyz="-0.823470491536 0 0.180463423428" rpy="0 1.28275886776 0" />
+    <axis xyz="0 -1 0" />
+    <limit effort="0" velocity="3.0" lower="-3.141592653589793" upper="3.141592653589793" />
+  </joint>
+  <link name="bucket">
+    <inertial>
+      <origin xyz="0.4225 0 0.1655" />
+      <mass value="1328.0" />
+      <inertia ixx="1283.5166480000003" iyy="480.599548" izz="1385.3756866666668" ixy="0.0" ixz="85.95313999999999" iyz="0.0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 -1.3125 0" />
+      <geometry>
+        <mesh filename="meshes/bucket_side.obj" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="0 1.3125 0" />
+      <geometry>
+        <mesh filename="meshes/bucket_side.obj" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="0.851597016195 0 -0.241915564467" rpy="0 -3.03665465323 0" />
+      <geometry>
+        <box size="1.02909367965 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="0.231408114558 0 -0.155477326969" rpy="0 -2.85013585911 0" />
+      <geometry>
+        <box size="0.226497341685 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="0.0542362768496 0 -0.0578520286396" rpy="0 -2.38321493938 0" />
+      <geometry>
+        <box size="0.189266561121 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="-0.0506205250597 0 0.112088305489" rpy="0 -1.90285579434 0" />
+      <geometry>
+        <box size="0.221831602864 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="-0.0650835322196 0 0.321801909308" rpy="0 -1.3667783472 0" />
+      <geometry>
+        <box size="0.214155090557 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="-0.00361575178998 0 0.459200477327" rpy="0 -0.685729510906 0" />
+      <geometry>
+        <box size="0.102778976904 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="0.0903937947494 0 0.560441527446" rpy="0 -0.902506907964 0" />
+      <geometry>
+        <box size="0.175056166415 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="0.159093078759 0 0.694224343675" rpy="0 -1.35212738092 0" />
+      <geometry>
+        <box size="0.133342337497 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="0.151861575179 0 0.824391408115" rpy="0 -1.89254688119 0" />
+      <geometry>
+        <box size="0.137208133322 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="0.180787589499 0 0.932863961814" rpy="0 -0.708626272128 0" />
+      <geometry>
+        <box size="0.133342337497 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="0.520668257757 0 1.0449522673" rpy="0 -0.233179800647 0" />
+      <geometry>
+        <box size="0.594612553068 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <visual>
+      <origin xyz="1.01617790807 0 1.12854481586" rpy="0 -0.0720848237679 0" />
+      <geometry>
+        <box size="0.413573057701 2.685 0.06" />
+      </geometry>
+      <material name="steel" />
+    </visual>
+    <collision>
+      <origin xyz="0 -1.3125 0" />
+      <geometry>
+        <mesh filename="meshes/bucket_side.obj" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0 1.3125 0" />
+      <geometry>
+        <mesh filename="meshes/bucket_side.obj" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.851597016195 0 -0.241915564467" rpy="0 -3.03665465323 0" />
+      <geometry>
+        <box size="1.02909367965 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.231408114558 0 -0.155477326969" rpy="0 -2.85013585911 0" />
+      <geometry>
+        <box size="0.226497341685 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.0542362768496 0 -0.0578520286396" rpy="0 -2.38321493938 0" />
+      <geometry>
+        <box size="0.189266561121 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="-0.0506205250597 0 0.112088305489" rpy="0 -1.90285579434 0" />
+      <geometry>
+        <box size="0.221831602864 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="-0.0650835322196 0 0.321801909308" rpy="0 -1.3667783472 0" />
+      <geometry>
+        <box size="0.214155090557 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="-0.00361575178998 0 0.459200477327" rpy="0 -0.685729510906 0" />
+      <geometry>
+        <box size="0.102778976904 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.0903937947494 0 0.560441527446" rpy="0 -0.902506907964 0" />
+      <geometry>
+        <box size="0.175056166415 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.159093078759 0 0.694224343675" rpy="0 -1.35212738092 0" />
+      <geometry>
+        <box size="0.133342337497 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.151861575179 0 0.824391408115" rpy="0 -1.89254688119 0" />
+      <geometry>
+        <box size="0.137208133322 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.180787589499 0 0.932863961814" rpy="0 -0.708626272128 0" />
+      <geometry>
+        <box size="0.133342337497 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="0.520668257757 0 1.0449522673" rpy="0 -0.233179800647 0" />
+      <geometry>
+        <box size="0.594612553068 2.685 0.06" />
+      </geometry>
+    </collision>
+    <collision>
+      <origin xyz="1.01617790807 0 1.12854481586" rpy="0 -0.0720848237679 0" />
+      <geometry>
+        <box size="0.413573057701 2.685 0.06" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="bucket_joint" type="revolute">
+    <parent link="boom" />
+    <child link="bucket" />
+    <origin xyz="2.70955017578 0 0" rpy="0 -0.725752774935 0" />
+    <axis xyz="0 -1 0" />
+    <limit effort="0" velocity="3.0" lower="-3.0" upper="1.5" />
+  </joint>
+  <link name="engine_powertrain">
+    <inertial>
+      <origin xyz="-1.7025 0 -0.1525" />
+      <mass value="2400.0" />
+      <inertia ixx="312.01000000000005" iyy="727.1200000000001" izz="869.71" ixy="0.0" ixz="69.61500000000001" iyz="0.0" />
+    </inertial>
+    <visual>
+      <origin xyz="-2 0 -0.1" rpy="0 0 0" />
+      <geometry>
+        <box size="1.25 1.1 0.65" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="-2 0 -0.1" rpy="0 0 0" />
+      <geometry>
+        <box size="1.25 1.1 0.65" />
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="-1.15 0 -0.25" rpy="0 0 0" />
+      <geometry>
+        <box size="0.8 1 0.5" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="-1.15 0 -0.25" rpy="0 0 0" />
+      <geometry>
+        <box size="0.8 1 0.5" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="engine_powertrain_fixed" type="fixed">
+    <parent link="rear_frame" />
+    <child link="engine_powertrain" />
+    <origin xyz="0 0 0" />
+  </joint>
+  <link name="cab">
+    <inertial>
+      <origin xyz="-0.9 0 1.25" />
+      <mass value="888.0" />
+      <inertia ixx="348.725" iyy="338.92" izz="259.925" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial>
     <visual>
       <origin xyz="-0.9 0 1.25" rpy="0 0 0" />
       <geometry>
@@ -46,457 +726,193 @@
       </geometry>
     </collision>
   </link>
-  <link name="front_frame">
-    <inertial>
-      <origin xyz="1.05 0 -0.2" />
-      <mass value="3500.0" />
-      <inertia ixx="565.8333333333334" iyy="729.1666666666666" izz="1149.1666666666667" ixy="0" ixz="0" iyz="0" />
-    </inertial>
-    <visual>
-      <origin xyz="1.05 -0.45 -0.2" rpy="0 0 0" />
-      <geometry>
-        <box size="1.5 0.2 0.5" />
-      </geometry>
-      <material name="yellow" />
-    </visual>
-    <collision>
-      <origin xyz="1.05 -0.45 -0.2" rpy="0 0 0" />
-      <geometry>
-        <box size="1.5 0.2 0.5" />
-      </geometry>
-    </collision>
-    <visual>
-      <origin xyz="1.05 0.45 -0.2" rpy="0 0 0" />
-      <geometry>
-        <box size="1.5 0.2 0.5" />
-      </geometry>
-      <material name="yellow" />
-    </visual>
-    <collision>
-      <origin xyz="1.05 0.45 -0.2" rpy="0 0 0" />
-      <geometry>
-        <box size="1.5 0.2 0.5" />
-      </geometry>
-    </collision>
-    <visual>
-      <origin xyz="1.515 0 -0.405" rpy="0 0 0" />
-      <geometry>
-        <box size="0.4 1.3 0.2" />
-      </geometry>
-      <material name="yellow" />
-    </visual>
-    <collision>
-      <origin xyz="1.515 0 -0.405" rpy="0 0 0" />
-      <geometry>
-        <box size="0.4 1.3 0.2" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="articulation_joint" type="revolute">
+  <joint name="cab_fixed" type="fixed">
     <parent link="rear_frame" />
-    <child link="front_frame" />
-    <origin xyz="0 0 0" rpy="0 -0 0" />
-    <axis xyz="0 0 1" />
-    <limit effort="120000.0" velocity="0.2" lower="-0.6719517620178169" upper="0.6719517620178169" />
+    <child link="cab" />
+    <origin xyz="0 0 0" />
   </joint>
-  <link name="rear_left_wheel">
+  <link name="hydraulic_system">
     <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="400.0" />
-      <inertia ixx="56.63583333333332" iyy="96.60499999999999" izz="56.63583333333332" ixy="0" ixz="0" iyz="0" />
-    </inertial>
-    <collision>
-      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
-      <geometry>
-        <cylinder radius="0.695" length="0.5" />
-      </geometry>
-    </collision>
-    <visual name="tire_rubber">
-      <geometry>
-        <mesh filename="meshes/tire_rubber.obj" />
-      </geometry>
-      <material name="tire_rubber">
-        <color rgba="0.065 0.072 0.08 1" />
-      </material>
-    </visual>
-    <visual name="tire_tread">
-      <geometry>
-        <mesh filename="meshes/tire_tread.obj" />
-      </geometry>
-      <material name="tire_tread">
-        <color rgba="0.095 0.103 0.11 1" />
-      </material>
-    </visual>
-    <visual name="tire_rim">
-      <geometry>
-        <mesh filename="meshes/tire_rim.obj" />
-      </geometry>
-      <material name="tire_rim">
-        <color rgba="0.95 0.58 0.08 1" />
-      </material>
-    </visual>
-    <visual name="tire_hub">
-      <geometry>
-        <mesh filename="meshes/tire_hub.obj" />
-      </geometry>
-      <material name="tire_hub">
-        <color rgba="0.27 0.29 0.31 1" />
-      </material>
-    </visual>
-    <visual name="tire_bolts">
-      <geometry>
-        <mesh filename="meshes/tire_bolts.obj" />
-      </geometry>
-      <material name="tire_bolts">
-        <color rgba="0.55 0.57 0.59 1" />
-      </material>
-    </visual>
-  </link>
-  <joint name="rear_left_wheel_joint" type="continuous">
-    <parent link="rear_frame" />
-    <child link="rear_left_wheel" />
-    <origin xyz="-1.515 1.025 -0.405" rpy="0 -0 0" />
-    <axis xyz="0 1 0" />
-    <limit effort="12000.0" velocity="4.0" />
-  </joint>
-  <link name="rear_right_wheel">
-    <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="400.0" />
-      <inertia ixx="56.63583333333332" iyy="96.60499999999999" izz="56.63583333333332" ixy="0" ixz="0" iyz="0" />
-    </inertial>
-    <collision>
-      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
-      <geometry>
-        <cylinder radius="0.695" length="0.5" />
-      </geometry>
-    </collision>
-    <visual name="tire_rubber">
-      <geometry>
-        <mesh filename="meshes/tire_rubber.obj" />
-      </geometry>
-      <material name="tire_rubber">
-        <color rgba="0.065 0.072 0.08 1" />
-      </material>
-    </visual>
-    <visual name="tire_tread">
-      <geometry>
-        <mesh filename="meshes/tire_tread.obj" />
-      </geometry>
-      <material name="tire_tread">
-        <color rgba="0.095 0.103 0.11 1" />
-      </material>
-    </visual>
-    <visual name="tire_rim">
-      <geometry>
-        <mesh filename="meshes/tire_rim.obj" />
-      </geometry>
-      <material name="tire_rim">
-        <color rgba="0.95 0.58 0.08 1" />
-      </material>
-    </visual>
-    <visual name="tire_hub">
-      <geometry>
-        <mesh filename="meshes/tire_hub.obj" />
-      </geometry>
-      <material name="tire_hub">
-        <color rgba="0.27 0.29 0.31 1" />
-      </material>
-    </visual>
-    <visual name="tire_bolts">
-      <geometry>
-        <mesh filename="meshes/tire_bolts.obj" />
-      </geometry>
-      <material name="tire_bolts">
-        <color rgba="0.55 0.57 0.59 1" />
-      </material>
-    </visual>
-  </link>
-  <joint name="rear_right_wheel_joint" type="continuous">
-    <parent link="rear_frame" />
-    <child link="rear_right_wheel" />
-    <origin xyz="-1.515 -1.025 -0.405" rpy="0 -0 0" />
-    <axis xyz="0 1 0" />
-    <limit effort="12000.0" velocity="4.0" />
-  </joint>
-  <link name="front_left_wheel">
-    <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="400.0" />
-      <inertia ixx="56.63583333333332" iyy="96.60499999999999" izz="56.63583333333332" ixy="0" ixz="0" iyz="0" />
-    </inertial>
-    <collision>
-      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
-      <geometry>
-        <cylinder radius="0.695" length="0.5" />
-      </geometry>
-    </collision>
-    <visual name="tire_rubber">
-      <geometry>
-        <mesh filename="meshes/tire_rubber.obj" />
-      </geometry>
-      <material name="tire_rubber">
-        <color rgba="0.065 0.072 0.08 1" />
-      </material>
-    </visual>
-    <visual name="tire_tread">
-      <geometry>
-        <mesh filename="meshes/tire_tread.obj" />
-      </geometry>
-      <material name="tire_tread">
-        <color rgba="0.095 0.103 0.11 1" />
-      </material>
-    </visual>
-    <visual name="tire_rim">
-      <geometry>
-        <mesh filename="meshes/tire_rim.obj" />
-      </geometry>
-      <material name="tire_rim">
-        <color rgba="0.95 0.58 0.08 1" />
-      </material>
-    </visual>
-    <visual name="tire_hub">
-      <geometry>
-        <mesh filename="meshes/tire_hub.obj" />
-      </geometry>
-      <material name="tire_hub">
-        <color rgba="0.27 0.29 0.31 1" />
-      </material>
-    </visual>
-    <visual name="tire_bolts">
-      <geometry>
-        <mesh filename="meshes/tire_bolts.obj" />
-      </geometry>
-      <material name="tire_bolts">
-        <color rgba="0.55 0.57 0.59 1" />
-      </material>
-    </visual>
-  </link>
-  <joint name="front_left_wheel_joint" type="continuous">
-    <parent link="front_frame" />
-    <child link="front_left_wheel" />
-    <origin xyz="1.515 1.025 -0.405" rpy="0 -0 0" />
-    <axis xyz="0 1 0" />
-    <limit effort="12000.0" velocity="4.0" />
-  </joint>
-  <link name="front_right_wheel">
-    <inertial>
-      <origin xyz="0 0 0" />
-      <mass value="400.0" />
-      <inertia ixx="56.63583333333332" iyy="96.60499999999999" izz="56.63583333333332" ixy="0" ixz="0" iyz="0" />
-    </inertial>
-    <collision>
-      <origin xyz="0 0 0" rpy="1.57079632679 0 0" />
-      <geometry>
-        <cylinder radius="0.695" length="0.5" />
-      </geometry>
-    </collision>
-    <visual name="tire_rubber">
-      <geometry>
-        <mesh filename="meshes/tire_rubber.obj" />
-      </geometry>
-      <material name="tire_rubber">
-        <color rgba="0.065 0.072 0.08 1" />
-      </material>
-    </visual>
-    <visual name="tire_tread">
-      <geometry>
-        <mesh filename="meshes/tire_tread.obj" />
-      </geometry>
-      <material name="tire_tread">
-        <color rgba="0.095 0.103 0.11 1" />
-      </material>
-    </visual>
-    <visual name="tire_rim">
-      <geometry>
-        <mesh filename="meshes/tire_rim.obj" />
-      </geometry>
-      <material name="tire_rim">
-        <color rgba="0.95 0.58 0.08 1" />
-      </material>
-    </visual>
-    <visual name="tire_hub">
-      <geometry>
-        <mesh filename="meshes/tire_hub.obj" />
-      </geometry>
-      <material name="tire_hub">
-        <color rgba="0.27 0.29 0.31 1" />
-      </material>
-    </visual>
-    <visual name="tire_bolts">
-      <geometry>
-        <mesh filename="meshes/tire_bolts.obj" />
-      </geometry>
-      <material name="tire_bolts">
-        <color rgba="0.55 0.57 0.59 1" />
-      </material>
-    </visual>
-  </link>
-  <joint name="front_right_wheel_joint" type="continuous">
-    <parent link="front_frame" />
-    <child link="front_right_wheel" />
-    <origin xyz="1.515 -1.025 -0.405" rpy="0 -0 0" />
-    <axis xyz="0 1 0" />
-    <limit effort="12000.0" velocity="4.0" />
-  </joint>
-  <link name="boom">
-    <inertial>
-      <origin xyz="1.35 0 0" />
-      <mass value="1500.0" />
-      <inertia ixx="136.6625" iyy="915.3000000000002" izz="1043.8625000000002" ixy="0" ixz="0" iyz="0" />
+      <origin xyz="-1.0825 0 0.075" />
+      <mass value="1166.0" />
+      <inertia ixx="205.59252083333334" iyy="386.8399333333334" izz="393.94524583333344" ixy="0.0" ixz="122.64862500000001" iyz="0.0" />
     </inertial>
     <visual>
-      <origin xyz="1.35 -0.425 0" rpy="0 0 0" />
+      <origin xyz="-0.7 0 -0.15" rpy="0 0 0" />
       <geometry>
-        <box size="2.7 0.18 0.18" />
+        <box size="0.7 1 0.55" />
       </geometry>
       <material name="yellow" />
     </visual>
     <collision>
-      <origin xyz="1.35 -0.425 0" rpy="0 0 0" />
+      <origin xyz="-0.7 0 -0.15" rpy="0 0 0" />
       <geometry>
-        <box size="2.7 0.18 0.18" />
+        <box size="0.7 1 0.55" />
       </geometry>
     </collision>
     <visual>
-      <origin xyz="1.35 0.425 0" rpy="0 0 0" />
+      <origin xyz="-1.55 0 0.35" rpy="0 0 0" />
       <geometry>
-        <box size="2.7 0.18 0.18" />
+        <box size="1.1 1.1 0.5" />
       </geometry>
       <material name="yellow" />
     </visual>
     <collision>
-      <origin xyz="1.35 0.425 0" rpy="0 0 0" />
+      <origin xyz="-1.55 0 0.35" rpy="0 0 0" />
       <geometry>
-        <box size="2.7 0.18 0.18" />
+        <box size="1.1 1.1 0.5" />
       </geometry>
     </collision>
   </link>
-  <joint name="boom_joint" type="revolute">
-    <parent link="front_frame" />
-    <child link="boom" />
-    <origin xyz="0.55 0 0.5" rpy="0 0.25 0" />
-    <axis xyz="0 -1 0" />
-    <limit effort="180000.0" velocity="0.12" lower="0.0" upper="1.25" />
+  <joint name="hydraulic_system_fixed" type="fixed">
+    <parent link="rear_frame" />
+    <child link="hydraulic_system" />
+    <origin xyz="0 0 0" />
   </joint>
-  <link name="bellcrank">
+  <link name="rear_axle">
     <inertial>
-      <origin xyz="0.075 0 0" />
-      <mass value="100.0" />
-      <inertia ixx="0.10666666666666667" iyy="9.240833333333333" izz="9.240833333333333" ixy="0" ixz="0" iyz="0" />
+      <origin xyz="0 0 0" />
+      <mass value="677.0" />
+      <inertia ixx="199.2411" iyy="23.362141666666666" izz="189.70104166666667" ixy="0.0" ixz="0.0" iyz="0.0" />
     </inertial>
     <visual>
-      <origin xyz="0.075 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="1.05 0.08 0.08" />
+        <box size="0.35 1.8 0.54" />
       </geometry>
-      <material name="dark" />
+      <material name="yellow" />
     </visual>
     <collision>
-      <origin xyz="0.075 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="1.05 0.08 0.08" />
+        <box size="0.35 1.8 0.54" />
       </geometry>
     </collision>
   </link>
-  <joint name="tilt_joint" type="revolute">
+  <joint name="rear_axle_fixed" type="fixed">
+    <parent link="rear_frame" />
+    <child link="rear_axle" />
+    <origin xyz="-1.515 0 -0.405" />
+  </joint>
+  <link name="front_axle">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="714.0" />
+      <inertia ixx="210.1302" iyy="24.63895" izz="200.06875000000002" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.35 1.8 0.54" />
+      </geometry>
+      <material name="yellow" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.35 1.8 0.54" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="front_axle_fixed" type="fixed">
+    <parent link="front_frame" />
+    <child link="front_axle" />
+    <origin xyz="1.515 0 -0.405" />
+  </joint>
+  <link name="lift_barrel_left">
+    <inertial>
+      <origin xyz="1.05 0.68 0.2" />
+      <mass value="66.6" />
+      <inertia ixx="5.896875" iyy="5.896875" izz="0.69375" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial>
+  </link>
+  <joint name="lift_barrel_left_fixed" type="fixed">
+    <parent link="front_frame" />
+    <child link="lift_barrel_left" />
+    <origin xyz="0 0 0" />
+  </joint>
+  <link name="lift_rod_left">
+    <inertial>
+      <origin xyz="0.8 0.57 -0.12" />
+      <mass value="44.400000000000006" />
+      <inertia ixx="0.07400000000000002" iyy="2.4050000000000007" izz="2.4050000000000007" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial>
+  </link>
+  <joint name="lift_rod_left_fixed" type="fixed">
     <parent link="boom" />
-    <child link="bellcrank" />
-    <origin xyz="1.485 0 0" rpy="0 -1.1 0" />
-    <axis xyz="0 -1 0" />
-    <limit effort="100000.0" velocity="0.15" lower="-0.8" upper="0.8" />
+    <child link="lift_rod_left" />
+    <origin xyz="0 0 0" />
   </joint>
-  <link name="rod">
+  <link name="lift_barrel_right">
     <inertial>
-      <origin xyz="0.795 0 0" />
-      <mass value="75.0" />
-      <inertia ixx="0.08" iyy="15.840625000000003" izz="15.840625000000003" ixy="0" ixz="0" iyz="0" />
+      <origin xyz="1.05 -0.68 0.2" />
+      <mass value="66.6" />
+      <inertia ixx="5.896875" iyy="5.896875" izz="0.69375" ixy="0.0" ixz="0.0" iyz="0.0" />
     </inertial>
-    <visual>
-      <origin xyz="0.795 0 0" rpy="0 0 0" />
-      <geometry>
-        <box size="1.59 0.08 0.08" />
-      </geometry>
-      <material name="steel" />
-    </visual>
-    <collision>
-      <origin xyz="0.795 0 0" rpy="0 0 0" />
-      <geometry>
-        <box size="1.59 0.08 0.08" />
-      </geometry>
-    </collision>
   </link>
-  <joint name="rod_joint" type="revolute">
+  <joint name="lift_barrel_right_fixed" type="fixed">
+    <parent link="front_frame" />
+    <child link="lift_barrel_right" />
+    <origin xyz="0 0 0" />
+  </joint>
+  <link name="lift_rod_right">
+    <inertial>
+      <origin xyz="0.8 -0.57 -0.12" />
+      <mass value="44.400000000000006" />
+      <inertia ixx="0.07400000000000002" iyy="2.4050000000000007" izz="2.4050000000000007" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial>
+  </link>
+  <joint name="lift_rod_right_fixed" type="fixed">
+    <parent link="boom" />
+    <child link="lift_rod_right" />
+    <origin xyz="0 0 0" />
+  </joint>
+  <link name="bucket_barrel">
+    <inertial>
+      <origin xyz="1.55 0 1" />
+      <mass value="117.6" />
+      <inertia ixx="1.32496" iyy="10.46248" izz="10.46248" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial>
+  </link>
+  <joint name="bucket_barrel_fixed" type="fixed">
+    <parent link="front_frame" />
+    <child link="bucket_barrel" />
+    <origin xyz="0 0 0" />
+  </joint>
+  <link name="bucket_piston">
+    <inertial>
+      <origin xyz="0.4 0 0" />
+      <mass value="78.4" />
+      <inertia ixx="0.22082666666666673" iyy="3.3117466666666666" izz="3.3117466666666666" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial>
+  </link>
+  <joint name="bucket_piston_fixed" type="fixed">
     <parent link="bellcrank" />
-    <child link="rod" />
-    <origin xyz="-0.45 0 0" rpy="0 0.495854815854 0" />
-    <axis xyz="0 -1 0" />
-    <limit effort="0" velocity="3.0" lower="-3.141592653589793" upper="3.141592653589793" />
+    <child link="bucket_piston" />
+    <origin xyz="0 0 0" />
   </joint>
-  <link name="bucket">
+  <link name="steering_rear">
     <inertial>
-      <origin xyz="0.55 0 -0.05" />
-      <mass value="1400.0" />
-      <inertia ixx="957.7429166666667" iyy="345.3333333333333" izz="1069.7429166666666" ixy="0" ixz="0" iyz="0" />
+      <origin xyz="-0.45 0 -0.35" />
+      <mass value="21.0" />
+      <inertia ixx="1.1452000000000002" iyy="1.1452000000000002" izz="2.24" ixy="0.0" ixz="0.0" iyz="0.0" />
     </inertial>
-    <visual>
-      <origin xyz="0.55 0 -0.55" rpy="0 -0 0" />
-      <geometry>
-        <box size="1.4 2.685 0.06" />
-      </geometry>
-      <material name="yellow" />
-    </visual>
-    <collision>
-      <origin xyz="0.55 0 -0.55" rpy="0 -0 0" />
-      <geometry>
-        <box size="1.4 2.685 0.06" />
-      </geometry>
-    </collision>
-    <visual>
-      <origin xyz="-0.15 0 -0.05" rpy="0 0 0" />
-      <geometry>
-        <box size="0.06 2.685 1" />
-      </geometry>
-      <material name="yellow" />
-    </visual>
-    <collision>
-      <origin xyz="-0.15 0 -0.05" rpy="0 0 0" />
-      <geometry>
-        <box size="0.06 2.685 1" />
-      </geometry>
-    </collision>
-    <visual>
-      <origin xyz="0.55 -1.3125 -0.05" rpy="0 0 0" />
-      <geometry>
-        <box size="1.4 0.06 1" />
-      </geometry>
-      <material name="yellow" />
-    </visual>
-    <collision>
-      <origin xyz="0.55 -1.3125 -0.05" rpy="0 0 0" />
-      <geometry>
-        <box size="1.4 0.06 1" />
-      </geometry>
-    </collision>
-    <visual>
-      <origin xyz="0.55 1.3125 -0.05" rpy="0 0 0" />
-      <geometry>
-        <box size="1.4 0.06 1" />
-      </geometry>
-      <material name="yellow" />
-    </visual>
-    <collision>
-      <origin xyz="0.55 1.3125 -0.05" rpy="0 0 0" />
-      <geometry>
-        <box size="1.4 0.06 1" />
-      </geometry>
-    </collision>
   </link>
-  <joint name="bucket_joint" type="revolute">
-    <parent link="boom" />
-    <child link="bucket" />
-    <origin xyz="2.7 0 0" rpy="0 0.0188238718699 0" />
-    <axis xyz="0 -1 0" />
-    <limit effort="0" velocity="3.0" lower="-1.5" upper="0.5" />
+  <joint name="steering_rear_fixed" type="fixed">
+    <parent link="rear_frame" />
+    <child link="steering_rear" />
+    <origin xyz="0 0 0" />
+  </joint>
+  <link name="steering_front">
+    <inertial>
+      <origin xyz="0.45 0 -0.35" />
+      <mass value="21.0" />
+      <inertia ixx="1.1452000000000002" iyy="1.1452000000000002" izz="2.24" ixy="0.0" ixz="0.0" iyz="0.0" />
+    </inertial>
+  </link>
+  <joint name="steering_front_fixed" type="fixed">
+    <parent link="front_frame" />
+    <child link="steering_front" />
+    <origin xyz="0 0 0" />
   </joint>
 </robot>

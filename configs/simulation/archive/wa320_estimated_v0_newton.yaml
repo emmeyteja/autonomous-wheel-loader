@@ -1,0 +1,8 @@
+# Newton / MuJoCo Warp numerical profile. Not hydraulic or material calibration.
+num_substeps: 8  # SOURCE: tested; control tick is divided into eight solver steps
+iterations: 200  # SOURCE: tested baseline solver iteration cap
+njmax: 8192  # SOURCE: estimated constraint capacity for the fixture
+nconmax: 2048  # SOURCE: estimated contact capacity for the fixture
+loop_time_constant: 0.002  # SOURCE: estimated numerical closure reference time, s
+stop_time_constant: 0.002  # SOURCE: tested numerical joint-limit reference time, s
+stop_impedance: 0.9999  # SOURCE: estimated numerical near-rigid limit impedance

@@ -30,6 +30,9 @@ def convert(p, urdf: Path, output: Path, *, fixed=False):
         | dict.fromkeys(driven, p["solver"]["joint_damping"])
         | dict.fromkeys(passive, 0.0)
     )
+    if "actuators" in p:
+        stiffness = dict.fromkeys(wheel_names + driven + passive, 0.0)
+        damping = dict.fromkeys(wheel_names + driven + passive, 0.0)
     config = URDFImporterConfig(
         urdf_path=str(Path(urdf).resolve()),
         usd_path=str(Path(output).resolve()),
@@ -165,12 +168,14 @@ def convert(p, urdf: Path, output: Path, *, fixed=False):
     flattened.Export(str(portable))
     portable.write_text(portable.read_text().rstrip() + "\n")
     metadata = {
-        "model": "wa320-like original estimated geometry",
+        "model": p.get("model_version", "wa320-like original estimated geometry"),
         "physics": "physx",
         "closed_loop": "passive revolute rod-to-bucket; excluded from reduced-coordinate articulation",
         "fixed_base": fixed,
         "mass_kg": p["vehicle"]["mass"],
-        "hydraulics": "not modeled; equivalent rotary drives are estimated",
+        "hydraulics": "external first-order force-limited cylinder proxy; gains estimated"
+        if "actuators" in p
+        else "not modeled; equivalent rotary drives are estimated",
         "physical_accuracy": "unvalidated",
         "usd_file": portable.name,
     }

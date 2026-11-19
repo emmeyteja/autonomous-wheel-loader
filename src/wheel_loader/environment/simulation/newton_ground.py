@@ -137,11 +137,21 @@ def run_ground(
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     (output / "validation.json").unlink(missing_ok=True)
+    import hashlib
+
+    parameter_digest = hashlib.sha256(
+        json.dumps(p, sort_keys=True).encode()
+    ).hexdigest()
+    (output / "parameters.json").write_text(json.dumps(p, indent=2) + "\n")
     dt = p["solver"]["dt"]
     profile.validate_timestep(dt)
     usd = prepare_asset(usd, output / "wa320_newton.usda", profile)
     stage = Usd.Stage.Open(str(usd))
-    if any(prim.IsA(UsdPhysics.FixedJoint) for prim in stage.Traverse()):
+    if any(
+        prim.IsA(UsdPhysics.FixedJoint)
+        and not UsdPhysics.FixedJoint(prim).GetBody0Rel().GetTargets()
+        for prim in stage.Traverse()
+    ):
         raise ValueError("Ground diagnostic requires the floating asset")
 
     from pxr import UsdGeom, UsdShade
@@ -178,7 +188,9 @@ def run_ground(
     loader = articulation_config(p, usd)
     loader.spawn.activate_contact_sensors = True
     loader.init_state.pos = (0, 0, p["vehicle"]["articulation_height"] + 0.02)
-    loader.init_state.joint_pos = passive_joint_positions(p, 0.15, -0.3)
+    loader.init_state.joint_pos = passive_joint_positions(
+        p, *p.get("maneuver", {}).get("settle", [0.15, -0.3])
+    )
 
     @configclass
     class SceneCfg(InteractiveSceneCfg):
@@ -227,7 +239,9 @@ def run_ground(
             names = robot.joint_names
             target = torch.zeros((1, len(names)), device=sim.device)
             velocity = torch.zeros_like(target)
-            for name, value in passive_joint_positions(p, 0.15, -0.3).items():
+            for name, value in passive_joint_positions(
+                p, *p.get("maneuver", {}).get("settle", [0.15, -0.3])
+            ).items():
                 target[0, names.index(name)] = value
             # Newton 3's import initializes these joints at zero despite init_state.
             # Write a closed, consistent pose before gravity/contact integration.
@@ -239,13 +253,25 @@ def run_ground(
             )
             if initial_error > 1e-6:
                 raise RuntimeError("Ground initial joint pose was not applied")
+            from wheel_loader.control.cylinder_actuation import (
+                FirstOrderCylinders,
+                joint_efforts,
+                normalized_reference,
+            )
+
+            actuator = (
+                FirstOrderCylinders(p, [0, *p["maneuver"]["settle"]])
+                if "actuators" in p
+                else None
+            )
+            actuator_samples = []
             for step in range(round((scenario.max_duration if scenario else 15) / dt)):
                 t = step * dt
                 command = LoaderCommand(
                     rear_axle_speed=0.6 * min(1.0, max(0.0, (t - 2) / 2)),
                     articulation_angle=0.3 * min(1.0, max(0.0, (t - 8) / 2)),
                     boom_angle=0.15,
-                    tilt_angle=-0.3,
+                    tilt_angle=p.get("maneuver", {}).get("settle", [0.15, -0.3])[1],
                 )
                 if cycle:
                     root = robot.data.root_link_pose_w.torch[0].cpu().numpy()
@@ -254,11 +280,18 @@ def run_ground(
                         np.arctan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z))
                     )
                     phase_index = cycle.phase
+                    observed = robot.data.joint_pos.torch[0]
                     command = cycle.command(
                         t,
                         dt,
                         root[:2],
                         yaw,
+                        attachment=[
+                            float(observed[names.index("boom_joint")]),
+                            float(observed[names.index("tilt_joint")]),
+                        ]
+                        if actuator is not None
+                        else None,
                         articulation=float(
                             robot.data.joint_pos.torch[
                                 0, names.index("articulation_joint")
@@ -295,8 +328,28 @@ def run_ground(
                 )
                 for name, value in rates.items():
                     velocity[0, names.index(name)] = value
-                robot.actuators.target_command.set_position_index(value=target)
-                robot.actuators.target_command.set_velocity_index(value=velocity)
+                if actuator is not None:
+                    q_cpu = q.cpu().numpy()
+                    qd_cpu = qd.cpu().numpy()
+                    measured = [
+                        float(q_cpu[names.index(n)])
+                        for n in ("articulation_joint", "boom_joint", "tilt_joint")
+                    ]
+                    u = normalized_reference(p, command, measured)
+                    effort, actuation = joint_efforts(
+                        p, actuator, u, q_cpu, qd_cpu, names, dt
+                    )
+                    robot.actuators.target_command.set_effort_index(
+                        value=torch.as_tensor(
+                            effort[None, :], dtype=torch.float32, device=sim.device
+                        )
+                    )
+                    actuator_samples.append(
+                        {k: v.tolist() for k, v in actuation.items()}
+                    )
+                else:
+                    robot.actuators.target_command.set_position_index(value=target)
+                    robot.actuators.target_command.set_velocity_index(value=velocity)
                 robot.write_data_to_sim()
                 sim.step(render=False)
                 scene.update(dt)
@@ -403,6 +456,7 @@ def run_ground(
                 },
                 "force_sensor_body_names": scene["wheel_contacts"].body_names,
                 "physical_accuracy": "not established",
+                "parameter_sha256": parameter_digest,
             }
             np.savez_compressed(
                 output / "motion.npz",
@@ -417,6 +471,53 @@ def run_ground(
                 phase_names=np.asarray(PHASES if cycle else []),
                 commands=np.asarray(commands),
             )
+            if actuator_samples:
+                lengths = np.array([row["actual_length_m"] for row in actuator_samples])
+                references = np.array(
+                    [row["reference_length_m"] for row in actuator_samples]
+                )
+                applied = np.array([row["force_N"] for row in actuator_samples])
+                overrun = np.maximum(
+                    np.maximum(actuator.lo - lengths, lengths - actuator.hi), 0
+                )
+                checks["physical_cylinder_lengths"] = bool(overrun.max() < 0.001)
+                checks["bounded_cylinder_references"] = bool(
+                    np.all(references >= actuator.lo)
+                    and np.all(references <= actuator.hi)
+                )
+                checks["cylinder_force_limits"] = bool(
+                    np.all(abs(applied) <= actuator.fmax)
+                )
+                result["actuator_model"] = (
+                    "normalized commands -> first-order stroke reference -> bounded cylinder force -> virtual-work joint effort"
+                )
+                result["maximum_cylinder_length_overrun_m"] = overrun.max(
+                    axis=0
+                ).tolist()
+                result["peak_cylinder_force_N"] = abs(applied).max(axis=0).tolist()
+                result["model_version"] = p.get("model_version")
+                (output / "parameters.json").write_text(json.dumps(p, indent=2) + "\n")
+            if actuator_samples:
+                np.savez_compressed(
+                    output / "actuation.npz",
+                    **{
+                        key: np.array([row[key] for row in actuator_samples])
+                        for key in actuator_samples[0]
+                    },
+                )
+            if cycle and actuator_samples:
+                from wheel_loader.evaluation.actuation import check_workspace
+
+                result["workspace"] = check_workspace(
+                    p,
+                    {
+                        "joint_names": np.asarray(names),
+                        "positions": positions,
+                        "root_poses_xyzw": roots,
+                        "phase_ids": np.asarray(phase_ids),
+                    },
+                )
+                checks.update(result["workspace"]["checks"])
             (output / "validation.json").write_text(json.dumps(result, indent=2) + "\n")
             print(json.dumps(result, indent=2), flush=True)
             if not all(checks.values()):

@@ -6,8 +6,31 @@ from pathlib import Path
 import yaml
 
 
+def resolve_values(value):
+    """Resolve annotated SI values at the configuration boundary; never infer sources."""
+    if isinstance(value, dict):
+        if "value" in value:
+            if not {"unit", "source", "confidence", "notes"} <= set(value):
+                raise ValueError("Physical parameter lacks units/source/confidence")
+            if value["source"] not in {
+                "MANUFACTURER",
+                "SERVICE_MANUAL",
+                "BROCHURE",
+                "MEASURED",
+                "DERIVED",
+                "ESTIMATED",
+                "CALIBRATED",
+            }:
+                raise ValueError("Unknown physical parameter source")
+            return value["value"]
+        return {k: resolve_values(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [resolve_values(v) for v in value]
+    return value
+
+
 def load_parameters(path: str | Path) -> dict:
-    parameters = yaml.safe_load(Path(path).read_text())
+    parameters = resolve_values(yaml.safe_load(Path(path).read_text()))
     required = {
         "vehicle",
         "articulation",
@@ -20,7 +43,20 @@ def load_parameters(path: str | Path) -> dict:
         "wheels",
         "solver",
     }
-    if not isinstance(parameters, dict) or set(parameters) != required:
+    if (
+        not isinstance(parameters, dict)
+        or not required <= set(parameters)
+        or set(parameters)
+        - required
+        - {
+            "model_version",
+            "bodies",
+            "cylinders",
+            "maneuver",
+            "actuators",
+            "collision_geometry",
+        }
+    ):
         raise ValueError("Vehicle parameter sections differ from the WA320 schema")
 
     def finite(value):
@@ -37,7 +73,10 @@ def load_parameters(path: str | Path) -> dict:
         ):
             raise ValueError("Every vehicle parameter must be finite numeric SI data")
 
-    finite(parameters)
+    for section in required:
+        finite(parameters[section])
+    if "cylinders" in parameters:
+        finite(parameters["cylinders"])
     v, m = parameters["vehicle"], parameters["masses"]
     if any(value <= 0 for value in v.values()) or any(
         value <= 0 for value in m.values()
@@ -87,4 +126,8 @@ def load_parameters(path: str | Path) -> dict:
     sides = parameters["wheels"]["collision_sides"]
     if not isinstance(sides, int) or not 16 <= sides <= 128:
         raise ValueError("Tire hull resolution must be an integer from 16 to 128")
+    if "bodies" in parameters:
+        from .mass_properties import body_properties
+
+        body_properties(parameters)  # Reject invalid allocations/inertia before export.
     return parameters

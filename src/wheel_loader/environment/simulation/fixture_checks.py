@@ -207,7 +207,9 @@ def ground_reset_check(robot, scene, sim, p, dt):
     import torch
 
     target = torch.zeros((1, len(robot.joint_names)), device=sim.device)
-    for name, value in passive_joint_positions(p, 0.15, -0.3).items():
+    for name, value in passive_joint_positions(
+        p, *p.get("maneuver", {}).get("settle", [0.15, -0.3])
+    ).items():
         target[0, robot.joint_names.index(name)] = value
     root = torch.tensor(
         [[0.0, 0, p["vehicle"]["articulation_height"] + 0.02, 0, 0, 0, 1]],
@@ -230,8 +232,39 @@ def ground_reset_check(robot, scene, sim, p, dt):
             float(torch.max(torch.abs(robot.data.joint_pos.torch - target))),
         )
         trajectory = []
+        if "actuators" in p:
+            from wheel_loader.control.commands import LoaderCommand
+            from wheel_loader.control.cylinder_actuation import (
+                FirstOrderCylinders,
+                joint_efforts,
+                normalized_reference,
+            )
+
+            actuator = FirstOrderCylinders(p, [0, *p["maneuver"]["settle"]])
+            reference = LoaderCommand(
+                boom_angle=p["maneuver"]["settle"][0],
+                tilt_angle=p["maneuver"]["settle"][1],
+            )
         for _ in range(round(2 / dt)):
-            advance(robot, scene, sim, target, dt)
+            if "actuators" in p:
+                q = robot.data.joint_pos.torch[0].cpu().numpy()
+                qd = robot.data.joint_vel.torch[0].cpu().numpy()
+                angles = [
+                    float(q[robot.joint_names.index(n)])
+                    for n in ("articulation_joint", "boom_joint", "tilt_joint")
+                ]
+                u = normalized_reference(p, reference, angles)
+                force, _ = joint_efforts(p, actuator, u, q, qd, robot.joint_names, dt)
+                robot.actuators.target_command.set_effort_index(
+                    value=torch.as_tensor(
+                        force[None, :], dtype=torch.float32, device=sim.device
+                    )
+                )
+                robot.write_data_to_sim()
+                sim.step(render=False)
+                scene.update(dt)
+            else:
+                advance(robot, scene, sim, target, dt)
             q = robot.data.joint_pos.torch[0].cpu().numpy()
             pose = robot.data.root_link_pose_w.torch[0].cpu().numpy()
             trajectory.append(np.concatenate([q, pose]))

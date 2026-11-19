@@ -92,6 +92,11 @@ def render_replay(
             model.geom_rgba[i] = [0.45, 0.47, 0.50, 1]
         else:
             model.geom_rgba[i] = [0.95, 0.58, 0.08, 1]
+    actuation=None
+    if (folder/"actuation.npz").exists():
+        with np.load(folder/"actuation.npz") as recorded:
+            actuation=recorded["force_N"].copy()
+        if actuation.shape!=(len(times),3):raise ValueError("Actuation recording does not match motion")
     telemetry = ReplayState(model, names, positions, roots, times, parameters)
     data = telemetry.data
     # The original box remains in the recorded physics model, but the replay
@@ -114,7 +119,7 @@ def render_replay(
     )
     camera = mujoco.MjvCamera()
     camera.distance, camera.azimuth, camera.elevation = (
-        (17 if has_pile else 13),
+        (17 if has_pile else 15 if "actuators" in parameters else 13),
         135,
         -22,
     )
@@ -179,6 +184,7 @@ def render_replay(
                 for index in indices:
                     root = roots[index]
                     state = telemetry.sample(index)
+                    if actuation is not None:state["estimated_cylinder_force_N"]=actuation[index]
                     if peak_bucket_force is not None:
                         state["bucket_contact_force_w_N"] = (
                             bucket_forces[index].reshape(-1, 3).sum(axis=0)

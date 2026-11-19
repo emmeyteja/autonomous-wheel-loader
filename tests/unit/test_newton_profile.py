@@ -35,6 +35,8 @@ def test_control_rate_is_preserved_by_solver_substeps():
         ("stop_time_constant", float("inf")),
         ("stop_impedance", 1.0),
         ("stop_impedance", 0.0),
+        ("loop_impedance", 1.0),
+        ("loop_impedance", 0.0),
         ("stop_time_constant", True),
     ],
 )
@@ -89,3 +91,12 @@ def test_import_audit_understands_mujoco_shorthand_and_detects_missing_settings(
         )
     )
     assert not audit_import(path, NewtonProfile())["passive_links_unactuated"]
+
+
+def test_archived_v0_numerical_profile_preserves_soft_pin_settings():
+    p = load_profile(ROOT / "configs/simulation/archive/wa320_estimated_v0_newton.yaml")
+    assert p.loop_impedance == 0.95
+    assert p.loop_time_constant == 0.002
+    assert (
+        load_profile(ROOT / "configs/simulation/newton.yaml").loop_impedance == 0.9999
+    )

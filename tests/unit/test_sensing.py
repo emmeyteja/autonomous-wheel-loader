@@ -112,7 +112,9 @@ def test_cylinder_force_uses_both_chambers_and_rejects_unknown_areas():
 
 
 def test_measurement_ledger_covers_all_active_parameters_and_no_false_accuracy():
-    p = yaml.safe_load((ROOT / "configs/vehicle/wa320.yaml").read_text())
+    from wheel_loader.vehicle.parameters import load_parameters
+
+    p = load_parameters(ROOT / "configs/vehicle/wa320.yaml")
     ledger = yaml.safe_load((ROOT / "configs/measurements/wa320_7.yaml").read_text())
     result = audit_parameters(p, ledger)
     assert result["active"]["vehicle.mass"]["status"] == "published_nominal"

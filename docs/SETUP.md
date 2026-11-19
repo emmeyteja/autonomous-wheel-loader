@@ -26,7 +26,15 @@ python scripts/convert_wa320.py --fixed --output outputs/wa320/usd_fixed
 
 The converter adds the mandatory passive loop closure and exports a portable single-layer PhysX asset. Bare URDF import alone leaves the mechanism open. Output paths printed by conversion are authoritative. See [kinematics](models/LOADER_KINEMATICS.md).
 
-## Optional physical checks
+## Reconstructed v1 checks
+
+- Active assets/configuration are `WA320_reconstructed_v1`; [assumptions and acceptance status](calibration/WA320_RECONSTRUCTION_STATUS.md) are authoritative.
+- V1 uses external normalized first-order force actuation. Run `scripts/check_wa320_v_cycle.py --case nominal` in Isaac Lab/Newton for the complete unloaded cycle. CPU dynamics diagnostics are documented in the reconstruction status.
+- The older fixed-base position-drive probes below are v0 diagnostics; use archived configuration/assets. They do not validate v1 force-driven dynamics. PhysX position-drive scripts also require separate adaptation before v1 use.
+- V0 configuration/assets are preserved under `configs/vehicle/archive/` and `assets/wheel_loader/wa320_estimated_v0/`.
+
+## Optional physical checks (legacy v0)
+
 
 In a separate full Isaac Sim 6.2 Python environment, install this project, accept NVIDIA's license on first use, then run:
 

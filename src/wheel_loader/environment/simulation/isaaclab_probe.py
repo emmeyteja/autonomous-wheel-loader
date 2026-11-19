@@ -18,8 +18,8 @@ def articulation_config(p, usd):
             joint_names_expr=names,
             joint_effort_limit=p[section]["max_torque"],
             joint_velocity_limit=p[section]["max_velocity"],
-            stiffness=p["solver"]["joint_stiffness"],
-            damping=p["solver"]["joint_damping"],
+            stiffness=0.0 if "actuators" in p else p["solver"]["joint_stiffness"],
+            damping=0.0 if "actuators" in p else p["solver"]["joint_damping"],
         )
 
     return ArticulationCfg(
@@ -37,7 +37,7 @@ def articulation_config(p, usd):
                 joint_effort_limit=p["wheels"]["max_torque"],
                 joint_velocity_limit=p["wheels"]["max_velocity"],
                 stiffness=0.0,
-                damping=p["solver"]["wheel_damping"],
+                damping=0.0 if "actuators" in p else p["solver"]["wheel_damping"],
             ),
             "steering": drive(["articulation_joint"], "articulation"),
             "boom": drive(["boom_joint"], "boom"),
@@ -56,6 +56,10 @@ def articulation_config(p, usd):
 
 
 def run_probe(p, usd, output, *, profile=None):
+    if "actuators" in p:
+        raise ValueError(
+            "Legacy position-drive fixture requires the archived v0 config; use the v1 force-driven V-cycle"
+        )
     import isaaclab.sim as sim_utils
     import torch
     from isaaclab.app import launch_simulation
@@ -285,6 +289,10 @@ def run_probe(p, usd, output, *, profile=None):
 
 def run_batch_reset(p, usd, output, *, profile):
     """Two fixed articulations: resetting environment zero must not overwrite one."""
+    if "actuators" in p:
+        raise ValueError(
+            "Legacy position-drive batch fixture requires the archived v0 config"
+        )
     import isaaclab.sim as sim_utils
     import torch
     from isaaclab.app import launch_simulation

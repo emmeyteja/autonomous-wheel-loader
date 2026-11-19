@@ -1,84 +1,3203 @@
-# WA320-7-like original parametric model; NOT manufacturer CAD.
-# Units: m, kg, s, rad, N m. X forward, Y left, Z up.
 vehicle:
-  mass: 15175.0  # SOURCE: Aoshima 2024, section 4.1; Japanese WA320-7 specification
-  wheelbase: 3.03  # SOURCE: Komatsu specification; Aoshima 2024
-  track_width: 2.05  # SOURCE: Komatsu specification; Aoshima 2024
-  wheel_radius: 0.695  # SOURCE: Aoshima 2024, wheel diameter 1.39 m / 2
-  bucket_width: 2.685  # SOURCE: Aoshima 2024; Komatsu specification
-  bucket_volume: 3.0  # SOURCE: Aoshima 2024; capacity metadata, NOT generated shell volume
-  wheel_width: 0.5  # SOURCE: estimated; no tire/contact calibration
-  articulation_height: 1.1  # SOURCE: estimated; root frame height above ground at nominal tire radius
+  mass:
+    value: 15175.0
+    unit: kg
+    source: BROCHURE
+    confidence: documented
+    notes: Operating configuration reference; not measured accuracy.
+  wheelbase:
+    value: 3.03
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: Operating configuration reference; not measured accuracy.
+  track_width:
+    value: 2.05
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: Operating configuration reference; not measured accuracy.
+  wheel_radius:
+    value: 0.695
+    unit: m
+    source: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+  bucket_width:
+    value: 2.685
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: Operating configuration reference; not measured accuracy.
+  bucket_volume:
+    value: 3.0
+    unit: m^3
+    source: BROCHURE
+    confidence: documented
+    notes: Operating configuration reference; not measured accuracy.
+  wheel_width:
+    value: 0.54
+    unit: m
+    source: DERIVED
+    confidence: derived
+    notes: Outside tire width minus track, symmetric tire assumption.
+  articulation_height:
+    value: 1.1
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  overall_width:
+    value: 2.59
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+  ground_clearance:
+    value: 0.425
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+  overall_length:
+    value: 7.72
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+  overall_height:
+    value: 3.2
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+  hinge_pin_height:
+    value: 4.005
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+  bucket_max_height:
+    value: 5.59
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+  dump_clearance:
+    value: 2.835
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
+  dump_reach:
+    value: 1.165
+    unit: m
+    source: BROCHURE
+    confidence: documented
+    notes: See reference provenance ledger.
 articulation:
-  min_angle: -0.6719517620178169  # SOURCE: derived, Komatsu specification -38.5 degrees
-  max_angle: 0.6719517620178169  # SOURCE: derived, Komatsu specification +38.5 degrees
-  max_velocity: 0.2  # SOURCE: estimated, diagnostic rate
-  max_torque: 120000.0  # SOURCE: estimated, equivalent rotary drive; NOT cylinder force
+  min_angle:
+    value: -0.6719517620178169
+    unit: rad
+    source: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+  max_angle:
+    value: 0.6719517620178169
+    unit: rad
+    source: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+  max_velocity:
+    value: 0.2
+    unit: rad/s
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  max_torque:
+    value: 97673.11138159224
+    unit: N*m
+    source: DERIVED
+    confidence: low
+    notes: Conservative virtual-work upper bound from estimated per-cylinder force
+      caps and maximum geometric moment arm; replaces the legacy rotary-motor proxy
+      cap in v1. Not a manufacturer joint rating.
 boom:
-  pivot: [0.55, 0.5]  # SOURCE: estimated, front-frame X/Z relative to articulation
-  length: 2.7  # SOURCE: estimated, boom pivot to bucket pin
-  initial_elevation: -0.25  # SOURCE: estimated, X/Z angle above forward
-  min_angle: 0.0  # SOURCE: estimated, displacement from initial elevation
-  max_angle: 1.25  # SOURCE: estimated, NOT measured mechanical stop
-  max_velocity: 0.12  # SOURCE: estimated, diagnostic rate
-  max_torque: 180000.0  # SOURCE: estimated, equivalent rotary drive; NOT breakout/cylinder force
-  rail_spacing: 0.85  # SOURCE: estimated, paired boom arms
-  rail_thickness: 0.18  # SOURCE: estimated, proxy section
+  pivot:
+    value:
+    - 0.8096597798081171
+    - 0.8923063561843947
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    uncertainty_m: 0.03
+    uncertainty_kind: assumed drawing tolerance, not confidence bound
+    notes: Digitized B in articulation/front frame; approx 31 mm visible-pick discrepancy.
+  length:
+    value: 2.709550175780557
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    uncertainty_m: 0.03
+    uncertainty_kind: assumed drawing tolerance, not confidence bound
+    notes: Brochure rigid fit, not CAD.
+  initial_elevation:
+    value: -0.7257527749354153
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Digitized lower boom pose.
+  min_angle:
+    value: 0.0
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  max_angle:
+    value: 1.5647716097895954
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  max_velocity:
+    value: 0.12
+    unit: rad/s
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  max_torque:
+    value: 1729644.6023486396
+    unit: N*m
+    source: DERIVED
+    confidence: low
+    notes: Conservative virtual-work upper bound from estimated per-cylinder force
+      caps and maximum geometric moment arm; replaces the legacy rotary-motor proxy
+      cap in v1. Not a manufacturer joint rating.
+  rail_spacing:
+    value: 0.85
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  rail_thickness:
+    value: 0.18
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
 linkage:
-  bellcrank_pivot_fraction: 0.55  # SOURCE: estimated, position along boom
-  bellcrank_upper_length: 0.6  # SOURCE: estimated, upper arm to tilt cylinder pin
-  bellcrank_lower_length: 0.45  # SOURCE: estimated, opposite arm to connecting rod pin
-  initial_bellcrank_angle: 1.1  # SOURCE: estimated, relative to boom
-  rod_length: 1.59  # SOURCE: estimated, fixed Z-bar rod pin distance
-  bucket_anchor: [-0.12, 0.5]  # SOURCE: estimated, bucket X/Z relative to bucket pin
-  tilt_cylinder_base: [-0.25, 0.1]  # SOURCE: estimated, X/Z relative to boom pivot; geometry only
-  min_angle: -0.8  # SOURCE: estimated, bellcrank displacement from initial angle
-  max_angle: 0.8  # SOURCE: estimated, feasible branch; NOT hydraulic stroke limit
-  max_velocity: 0.15  # SOURCE: estimated, diagnostic bellcrank rate
-  max_torque: 100000.0  # SOURCE: estimated, equivalent bellcrank drive; hydraulics not modeled
-  rod_min_angle: -3.141592653589793  # SOURCE: estimated, passive rod envelope
-  rod_max_angle: 3.141592653589793  # SOURCE: estimated, passive rod envelope
-  passive_max_velocity: 3.0  # SOURCE: estimated, passive joint diagnostic bound
-  bar_thickness: 0.08  # SOURCE: estimated, visual/collision proxy
+  bellcrank_pivot_fraction:
+    value: 0.55
+    unit: '1'
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  bellcrank_upper_length:
+    value: 0.7187040431891034
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  bellcrank_lower_length:
+    value: 0.843012869193059
+    unit: m
+    source: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+  initial_bellcrank_angle:
+    value: 2.0637352886235774
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  rod_length:
+    value: 0.7438504309960036
+    unit: m
+    source: DERIVED
+    confidence: derived
+    notes: See reference provenance ledger.
+  bucket_anchor:
+    value:
+    - 0.012250581019750371
+    - 0.39039741111415094
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    uncertainty_m: 0.03
+    uncertainty_kind: assumed sensitivity range; pin identification/model error can
+      be larger
+    notes: Estimated geometry/COM/inertia primitive.
+  tilt_cylinder_base:
+    value:
+    - 0.21359797675512865
+    - 0.03251464620223987
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  min_angle:
+    value: -0.15
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  max_angle:
+    value: 0.624
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated assembly-branch travel envelope, inside the geometric toggle;
+      not a measured mechanical stop.
+  max_velocity:
+    value: 0.15
+    unit: rad/s
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  max_torque:
+    value: 287481.61727564136
+    unit: N*m
+    source: DERIVED
+    confidence: low
+    notes: Conservative virtual-work upper bound from estimated per-cylinder force
+      caps and maximum geometric moment arm; replaces the legacy rotary-motor proxy
+      cap in v1. Not a manufacturer joint rating.
+  rod_min_angle:
+    value: -3.141592653589793
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  rod_max_angle:
+    value: 3.141592653589793
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  passive_max_velocity:
+    value: 3.0
+    unit: rad/s
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  bar_thickness:
+    value: 0.08
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  bellcrank_pivot:
+    value:
+    - 1.7006033455061176
+    - 0.5873284823057583
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    uncertainty_m: 0.03
+    uncertainty_kind: assumed sensitivity range; pin identification/model error can
+      be larger
+    notes: Estimated geometry/COM/inertia primitive.
+  rod_pin_local:
+    value:
+    - -0.8234704915356219
+    - 0.18046342342755994
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    uncertainty_m: 0.2
+    uncertainty_kind: assumed sensitivity range; pin identification/model error can
+      be larger
+    notes: Estimated point on two-pose equal-length locus; not uniquely identified.
+      Old D pick rejected.
 bucket:
-  lip: [1.25, -0.55]  # SOURCE: estimated, bucket-local X/Z to cutting lip
-  back_bottom: [-0.15, -0.55]  # SOURCE: estimated, bucket-local X/Z
-  back_top: [-0.15, 0.45]  # SOURCE: estimated, bucket-local X/Z
-  plate_thickness: 0.06  # SOURCE: estimated, original compound-box shell
-  min_angle: -1.5  # SOURCE: estimated, passive bucket displacement safety envelope
-  max_angle: 0.5  # SOURCE: estimated, passive bucket displacement safety envelope
+  lip:
+    value:
+    - 1.363313364132233
+    - -0.29581203585432153
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated local lip fitted to hard published 45-degree dump reach/clearance;
+      not independent validation and not the earlier pixel-average lip.
+  back_bottom:
+    value:
+    - -0.09
+    - -0.19
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  back_top:
+    value:
+    - 1.222427415184632
+    - 1.143438080409895
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated mouth top constrained by published bucket maximum height at 66
+      degree rollback.
+  plate_thickness:
+    value: 0.06
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  min_angle:
+    value: -3.0
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  max_angle:
+    value: 1.5
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  profile:
+    value:
+    - - 1.363313364132233
+      - -0.29581203585432153
+    - - 0.33988066825775665
+      - -0.18801909307875894
+    - - 0.12293556085918866
+      - -0.12293556085918854
+    - - -0.014463007159904562
+      - 0.007231503579952253
+    - - -0.08677804295942715
+      - 0.216945107398568
+    - - -0.043389021479713685
+      - 0.4266587112171837
+    - - 0.03615751789976129
+      - 0.4917422434367541
+    - - 0.1446300715990454
+      - 0.6291408114558472
+    - - 0.17355608591885452
+      - 0.759307875894988
+    - - 0.13016706443914083
+      - 0.8894749403341288
+    - - 0.23140811455847254
+      - 0.9762529832935559
+    - - 0.8099284009546539
+      - 1.1136515513126493
+    - - 1.222427415184632
+      - 1.143438080409895
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Approximate digitized side outline, lip and upper mouth adjusted to published
+      workspace targets. Not measured profile.
 geometry:
-  rear_box_size: [2.95, 1.55, 0.9]  # SOURCE: estimated, counterweight/engine proxy
-  rear_box_center: [-1.475, 0.0, 0.1]  # SOURCE: estimated, rear-frame XYZ
-  front_box_size: [1.5, 1.3, 0.5]  # SOURCE: estimated, front-frame proxy
-  front_rail_spacing: 0.9  # SOURCE: estimated, open central channel for Z-bar
-  front_rail_width: 0.2  # SOURCE: estimated, forked front frame
-  front_axle_box_size: [0.4, 1.3, 0.2]  # SOURCE: estimated, low axle crossmember
-  front_box_center: [1.05, 0.0, -0.2]  # SOURCE: estimated, front-frame XYZ
-  lift_cylinder_base: [0.78, 0.68, -0.05]  # SOURCE: provisional visual mount, front-frame XYZ; mirrored Y
-  lift_cylinder_rod_pin: [1.20, 0.57, -0.10]  # SOURCE: provisional visual mount, boom-local XYZ; mirrored Y
-  cab_size: [1.3, 1.35, 1.7]  # SOURCE: estimated, total nominal cab top 3.2 m
-  cab_center: [-0.9, 0.0, 1.25]  # SOURCE: estimated, rear-frame XYZ
+  rear_box_size:
+    value:
+    - 2.7
+    - 1.55
+    - 0.9
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  rear_box_center:
+    value:
+    - -1.6
+    - 0
+    - 0.1
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  front_box_size:
+    value:
+    - 1.5
+    - 1.3
+    - 0.5
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  front_rail_spacing:
+    value: 0.9
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  front_rail_width:
+    value: 0.2
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  front_axle_box_size:
+    value:
+    - 0.4
+    - 1.3
+    - 0.2
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  front_box_center:
+    value:
+    - 1.05
+    - 0.0
+    - -0.2
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  lift_cylinder_base:
+    value:
+    - 0.32327996
+    - 0.4
+    - 0.17865272
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated from circle intersection satisfying manual length endpoints at
+      brochure boom elevations; not measured mounting coordinates.
+  lift_cylinder_rod_pin:
+    value:
+    - 1.2
+    - 0.4
+    - -0.1
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  cab_size:
+    value:
+    - 1.3
+    - 1.35
+    - 1.7
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  cab_center:
+    value:
+    - -0.9
+    - 0.0
+    - 1.25
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  steering_base:
+    value:
+    - -0.5531787667467207
+    - 0.3435038319322999
+    - -0.35
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated symmetric pin arrangement constrained by manual end lengths;
+      not digitized.
+  steering_front_pin:
+    value:
+    - 0.5531787667467207
+    - 0.3435038319322999
+    - -0.35
+    unit: m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated symmetric pin arrangement; right side mirrors Y.
 masses:
-  rear_frame: 7000.0  # SOURCE: estimated mass allocation; includes cab/counterweight
-  front_frame: 3500.0  # SOURCE: estimated mass allocation
-  wheel: 400.0  # SOURCE: estimated, each of four wheels
-  boom: 1500.0  # SOURCE: estimated, paired arms lumped
-  bucket: 1400.0  # SOURCE: estimated, NOT a verified bucket option
-  bellcrank: 100.0  # SOURCE: estimated
-  rod: 75.0  # SOURCE: estimated; allocation sums to nominal machine mass
+  rear_frame:
+    value: 3271.0
+    unit: kg
+    source: ESTIMATED
+    confidence: low
+    notes: 1206 kg bare frame + 1815 kg counterweight + estimated 250 kg guards/steps/structural
+      attachments. COM uses three separate primitives.
+  engine_powertrain:
+    value: 2400.0
+    unit: kg
+    source: ESTIMATED
+    confidence: low
+    notes: 'Estimated installed powertrain group: engine, transmission/HST, cooling,
+      mounts, exhaust and omitted housings. Manual dry component subtotal is not a
+      complete installed group.'
+  cab:
+    value: 888.0
+    unit: kg
+    source: DERIVED
+    confidence: documented_reference
+    notes: 838 kg cab/floor + 50 kg seat from manual; no duplicated cab mass in rear_frame.
+  hydraulic_system:
+    value: 1166.0
+    unit: kg
+    source: ESTIMATED
+    confidence: low
+    notes: 'Explicit estimated rear equipment group: tanks, fluids, fuel, pumps, valves,
+      hoses, electrical equipment and miscellaneous service equipment. Large uncertainty;
+      independent measurements required.'
+  rear_axle:
+    value: 677.0
+    unit: kg
+    source: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
+  front_frame:
+    value: 1226.0
+    unit: kg
+    source: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
+  front_axle:
+    value: 714.0
+    unit: kg
+    source: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
+  boom:
+    value: 1313.0
+    unit: kg
+    source: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
+  bellcrank:
+    value: 300.0
+    unit: kg
+    source: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
+  rod:
+    value: 68.0
+    unit: kg
+    source: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
+  bucket:
+    value: 1328.0
+    unit: kg
+    source: ESTIMATED
+    confidence: low
+    notes: Manual 2.8 m3 bucket with BOC/hinge pin is a proxy for selected 3.0 m3
+      bucket; this mass is ESTIMATED for that option.
+  lift_cylinders:
+    value: 222.0
+    unit: kg
+    source: DERIVED
+    confidence: documented_reference
+    notes: Two 111 kg manual cylinders; fixed barrel/rod mass proxies split 60/40,
+      not a full cylinder dynamic mechanism.
+  bucket_cylinder:
+    value: 196.0
+    unit: kg
+    source: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
+  steering_cylinders:
+    value: 42.0
+    unit: kg
+    source: DERIVED
+    confidence: documented_reference
+    notes: Two 21 kg manual cylinders; split between rear/front fixed proxies.
+  wheel:
+    value: 341.0
+    unit: kg
+    source: SERVICE_MANUAL
+    confidence: documented_reference
+    notes: SEN06202-03 component reference; inertia/COM remain estimated.
 contact:
-  static_friction: 0.8  # SOURCE: estimated, rigid ground test only
-  dynamic_friction: 0.7  # SOURCE: estimated, rigid ground test only
-  restitution: 0.0  # SOURCE: estimated, rigid ground test only
+  static_friction:
+    value: 0.8
+    unit: '1'
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  dynamic_friction:
+    value: 0.7
+    unit: '1'
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  restitution:
+    value: 0.0
+    unit: '1'
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
 wheels:
-  collision_sides: 64  # SOURCE: estimated numerical contact mesh resolution; not tire tread
-  max_velocity: 4.0  # SOURCE: estimated, low-speed diagnostic rad/s
-  max_torque: 12000.0  # SOURCE: estimated, per wheel; driveline/power sharing not modeled
+  collision_sides:
+    value: 64
+    unit: '1'
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  max_velocity:
+    value: 4.0
+    unit: rad/s
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  max_torque:
+    value: 12000.0
+    unit: N*m
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
 solver:
-  dt: 0.004166666666666667  # SOURCE: estimated, 240 Hz starting point; validate loop residual
-  position_iterations: 64  # SOURCE: estimated, PhysX diagnostic setting
-  velocity_iterations: 4  # SOURCE: estimated, PhysX diagnostic setting
-  wheel_damping: 2000.0  # SOURCE: estimated, N m s / rad
-  joint_stiffness: 1000000.0  # SOURCE: estimated, N m / rad, diagnostic position drives
-  joint_damping: 100000.0  # SOURCE: estimated, N m s / rad
+  dt:
+    value: 0.004166666666666667
+    unit: s
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  position_iterations:
+    value: 64
+    unit: '1'
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  velocity_iterations:
+    value: 4
+    unit: '1'
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  wheel_damping:
+    value: 2000.0
+    unit: N*m*s/rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  joint_stiffness:
+    value: 1000000.0
+    unit: N*m/rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+  joint_damping:
+    value: 100000.0
+    unit: N*m*s/rad
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated geometry/COM/inertia primitive.
+model_version: WA320_reconstructed_v1
+cylinders:
+  lift:
+    bore:
+      value: 0.12
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    rod_diameter:
+      value: 0.075
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    stroke:
+      value: 0.729
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    pin_distance_min:
+      value: 1.327
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    pin_distance_max:
+      value: 2.056
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+  bucket:
+    bore:
+      value: 0.15
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    rod_diameter:
+      value: 0.11
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    stroke:
+      value: 0.558
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    pin_distance_min:
+      value: 1.354
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    pin_distance_max:
+      value: 1.912
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+  steering:
+    bore:
+      value: 0.07
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    rod_diameter:
+      value: 0.04
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    stroke:
+      value: 0.453
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    pin_distance_min:
+      value: 0.818
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+    pin_distance_max:
+      value: 1.271
+      unit: m
+      source: SERVICE_MANUAL
+      confidence: documented_reference
+      notes: SEN06202-03 01-11; accepted nominal reference for v1, not measured cylinder.
+bodies:
+  rear_frame:
+    mass_key: rear_frame
+    parent: world
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 0.3686945888107612
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - -1.15
+        - 0
+        - -0.1
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 1.8
+        - 1.35
+        - 0.55
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.5548761846530114
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - -3.195283275269631
+        - 0
+        - -0.1
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated counterweight location constrained by nominal overall length;
+          no mass correction.
+      size:
+        value:
+        - 0.65
+        - 1.8
+        - 0.65
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.07642922653622745
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - -1.5
+        - 0
+        - 0.25
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 2.8
+        - 1.6
+        - 0.15
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  engine_powertrain:
+    mass_key: engine_powertrain
+    parent: rear_frame
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 0.65
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - -2.0
+        - 0
+        - -0.1
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 1.25
+        - 1.1
+        - 0.65
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.35
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - -1.15
+        - 0
+        - -0.25
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.8
+        - 1.0
+        - 0.5
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  cab:
+    mass_key: cab
+    parent: rear_frame
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - -0.9
+        - 0
+        - 1.25
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 1.3
+        - 1.35
+        - 1.7
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  hydraulic_system:
+    mass_key: hydraulic_system
+    parent: rear_frame
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 0.55
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - -0.7
+        - 0
+        - -0.15
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.7
+        - 1.0
+        - 0.55
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.45
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - -1.55
+        - 0
+        - 0.35
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 1.1
+        - 1.1
+        - 0.5
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  rear_axle:
+    mass_key: rear_axle
+    parent: rear_frame
+    origin:
+      value:
+      - -1.515
+      - 0
+      - -0.405
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0
+        - 0
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.35
+        - 1.8
+        - 0.54
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  front_frame:
+    mass_key: front_frame
+    parent: rear_frame
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 0.5
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.85
+        - -0.45
+        - -0.2
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 1.3
+        - 0.2
+        - 0.5
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.5
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.85
+        - 0.45
+        - -0.2
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 1.3
+        - 0.2
+        - 0.5
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  front_axle:
+    mass_key: front_axle
+    parent: front_frame
+    origin:
+      value:
+      - 1.515
+      - 0
+      - -0.405
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0
+        - 0
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.35
+        - 1.8
+        - 0.54
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  boom:
+    mass_key: boom
+    parent: front_frame
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 0.4
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 1.35
+        - -0.425
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 2.7
+        - 0.18
+        - 0.18
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.4
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 1.35
+        - 0.425
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 2.7
+        - 0.18
+        - 0.18
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.1
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 1.5503016727530587
+        - -0.425
+        - 0.29366424115287915
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.6597856602390323
+        - 0.18
+        - 0.18
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0
+        - -1.0977417004434233
+        - 0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.1
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 1.5503016727530587
+        - 0.425
+        - 0.29366424115287915
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.6597856602390323
+        - 0.18
+        - 0.18
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0
+        - -1.0977417004434233
+        - 0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  bellcrank:
+    mass_key: bellcrank
+    parent: boom
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 0.5
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.25
+        - 0
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.9
+        - 0.22
+        - 0.2
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.5
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - -0.41173524576781095
+        - 0
+        - 0.09023171171377997
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.843012869193059
+        - 0.2
+        - 0.2
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0
+        - -2.9258534085138135
+        - 0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  rod:
+    mass_key: rod
+    parent: bellcrank
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.42176182957844816
+        - 0
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.8435236591568963
+        - 0.15
+        - 0.15
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  bucket:
+    mass_key: bucket
+    parent: boom
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 0.45
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.65
+        - 0
+        - -0.16
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 1.55
+        - 2.685
+        - 0.06
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.35
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.0
+        - 0
+        - 0.45
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.12
+        - 2.685
+        - 1.1
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.1
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.65
+        - -1.31
+        - 0.4
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 1.4
+        - 0.065
+        - 1.1
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+    - shape: box
+      fraction:
+        value: 0.1
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.65
+        - 1.31
+        - 0.4
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 1.4
+        - 0.065
+        - 1.1
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  rear_left_wheel:
+    mass_key: wheel
+    parent: rear_axle
+    origin:
+      value:
+      - 0
+      - 1.025
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: cylinder
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0
+        - 0
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.695
+        - 0.54
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 1.5707963267948966
+        - 0
+        - 0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  rear_right_wheel:
+    mass_key: wheel
+    parent: rear_axle
+    origin:
+      value:
+      - 0
+      - -1.025
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: cylinder
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0
+        - 0
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.695
+        - 0.54
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 1.5707963267948966
+        - 0
+        - 0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  front_left_wheel:
+    mass_key: wheel
+    parent: front_axle
+    origin:
+      value:
+      - 0
+      - 1.025
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: cylinder
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0
+        - 0
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.695
+        - 0.54
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 1.5707963267948966
+        - 0
+        - 0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  front_right_wheel:
+    mass_key: wheel
+    parent: front_axle
+    origin:
+      value:
+      - 0
+      - -1.025
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 1.0
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: cylinder
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0
+        - 0
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.695
+        - 0.54
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 1.5707963267948966
+        - 0
+        - 0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  lift_barrel_left:
+    mass_key: lift_cylinders
+    parent: front_frame
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 0.3
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 1.05
+        - 0.68
+        - 0.2
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.25
+        - 0.25
+        - 1.0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  lift_rod_left:
+    mass_key: lift_cylinders
+    parent: boom
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 0.2
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.8
+        - 0.57
+        - -0.12
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.8
+        - 0.1
+        - 0.1
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  lift_barrel_right:
+    mass_key: lift_cylinders
+    parent: front_frame
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 0.3
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 1.05
+        - -0.68
+        - 0.2
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.25
+        - 0.25
+        - 1.0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  lift_rod_right:
+    mass_key: lift_cylinders
+    parent: boom
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 0.2
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.8
+        - -0.57
+        - -0.12
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.8
+        - 0.1
+        - 0.1
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  bucket_barrel:
+    mass_key: bucket_cylinder
+    parent: front_frame
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 0.6
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 1.55
+        - 0
+        - 1.0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 1.0
+        - 0.26
+        - 0.26
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  bucket_piston:
+    mass_key: bucket_cylinder
+    parent: bellcrank
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 0.4
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.4
+        - 0
+        - 0
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.7
+        - 0.13
+        - 0.13
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  steering_rear:
+    mass_key: steering_cylinders
+    parent: rear_frame
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 0.5
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - -0.45
+        - 0
+        - -0.35
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.8
+        - 0.8
+        - 0.12
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+  steering_front:
+    mass_key: steering_cylinders
+    parent: front_frame
+    origin:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated geometry/COM/inertia primitive.
+    mass_fraction:
+      value: 0.5
+      unit: '1'
+      source: DERIVED
+      confidence: derived
+      notes: See reference provenance ledger.
+    primitives:
+    - shape: box
+      fraction:
+        value: 1.0
+        unit: '1'
+        source: DERIVED
+        confidence: derived
+        notes: See reference provenance ledger.
+      center:
+        value:
+        - 0.45
+        - 0
+        - -0.35
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      size:
+        value:
+        - 0.8
+        - 0.8
+        - 0.12
+        unit: m
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+      rpy:
+        value:
+        - 0.0
+        - 0.0
+        - 0.0
+        unit: rad
+        source: ESTIMATED
+        confidence: low
+        notes: Estimated geometry/COM/inertia primitive.
+maneuver:
+  settle:
+    value:
+    - 0.15
+    - -0.05
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  forward_right:
+    value:
+    - 0.15
+    - -0.05
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  lower_attack:
+    value:
+    - 0.06
+    - 0.0
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  push:
+    value:
+    - 0.06
+    - 0.0
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  curl_lift:
+    value:
+    - 0.45
+    - -0.1
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  reverse_loaded:
+    value:
+    - 0.45
+    - -0.1
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  forward_left:
+    value:
+    - 0.45
+    - -0.1
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  raise_dump:
+    value:
+    - 1.5647716097895954
+    - 0.2
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  dump:
+    value:
+    - 1.5647716097895954
+    - 0.6232627100544335
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  rack_back:
+    value:
+    - 0.45
+    - -0.05
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  reverse_home:
+    value:
+    - 0.45
+    - -0.05
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  lower_finish:
+    value:
+    - 0.15
+    - -0.05
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+  stop:
+    value:
+    - 0.15
+    - -0.05
+    unit: rad
+    source: ESTIMATED
+    confidence: low
+    notes: Scripted boom/bellcrank displacement; no material load implied.
+actuators:
+  reference_gain:
+    value: 1.5
+    unit: 1/s
+    source: ESTIMATED
+    confidence: low
+    notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+  drive:
+    tau:
+      value: 0.25
+      unit: s
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    vmax:
+      value: 1.2
+      unit: m/s
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+  steering:
+    tau:
+      value: 0.15
+      unit: s
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    vmax:
+      value: 0.08
+      unit: m/s
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    fmax:
+      value: 75000.0
+      unit: N
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    stiffness:
+      value: 3000000.0
+      unit: N/m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    damping:
+      value: 600000.0
+      unit: N*s/m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    integral_gain:
+      value: 2000000.0
+      unit: N/(m*s)
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated force-servo integral gain for load holding; bounded within
+        the same per-cylinder force cap, not an extra corrective force.
+  lift:
+    tau:
+      value: 0.15
+      unit: s
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    vmax:
+      value: 0.14
+      unit: m/s
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    fmax:
+      value: 300000.0
+      unit: N
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    stiffness:
+      value: 3000000.0
+      unit: N/m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    damping:
+      value: 600000.0
+      unit: N*s/m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    integral_gain:
+      value: 2000000.0
+      unit: N/(m*s)
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated force-servo integral gain for load holding; bounded within
+        the same per-cylinder force cap, not an extra corrective force.
+  bucket:
+    tau:
+      value: 0.12
+      unit: s
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    vmax:
+      value: 0.16
+      unit: m/s
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    fmax:
+      value: 400000.0
+      unit: N
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    stiffness:
+      value: 3000000.0
+      unit: N/m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    damping:
+      value: 600000.0
+      unit: N*s/m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated first-order proxy; not a hydraulic circuit calibration.
+    integral_gain:
+      value: 2000000.0
+      unit: N/(m*s)
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated force-servo integral gain for load holding; bounded within
+        the same per-cylinder force cap, not an extra corrective force.
+collision_geometry:
+  rear_frame:
+  - shape: box
+    center:
+      value:
+      - -1.15
+      - 0
+      - -0.1
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 1.8
+      - 1.35
+      - 0.55
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  - shape: box
+    center:
+      value:
+      - -3.195283275269631
+      - 0
+      - -0.1
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 0.65
+      - 1.8
+      - 0.65
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  - shape: box
+    center:
+      value:
+      - -1.5
+      - 0
+      - 0.25
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 2.8
+      - 1.6
+      - 0.15
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  engine_powertrain:
+  - shape: box
+    center:
+      value:
+      - -2.0
+      - 0
+      - -0.1
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 1.25
+      - 1.1
+      - 0.65
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  - shape: box
+    center:
+      value:
+      - -1.15
+      - 0
+      - -0.25
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 0.8
+      - 1.0
+      - 0.5
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  cab:
+  - shape: box
+    center:
+      value:
+      - -0.9
+      - 0
+      - 1.25
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 1.3
+      - 1.35
+      - 1.7
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  hydraulic_system:
+  - shape: box
+    center:
+      value:
+      - -0.7
+      - 0
+      - -0.15
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 0.7
+      - 1.0
+      - 0.55
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  - shape: box
+    center:
+      value:
+      - -1.55
+      - 0
+      - 0.35
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 1.1
+      - 1.1
+      - 0.5
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  rear_axle:
+  - shape: box
+    center:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 0.35
+      - 1.8
+      - 0.54
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  front_frame:
+  - shape: box
+    center:
+      value:
+      - 0.85
+      - -0.45
+      - -0.2
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 1.3
+      - 0.2
+      - 0.5
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  - shape: box
+    center:
+      value:
+      - 0.85
+      - 0.45
+      - -0.2
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 1.3
+      - 0.2
+      - 0.5
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  front_axle:
+  - shape: box
+    center:
+      value:
+      - 0
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 0.35
+      - 1.8
+      - 0.54
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  boom:
+  - shape: box
+    center:
+      value:
+      - 1.35
+      - -0.425
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 2.7
+      - 0.18
+      - 0.18
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  - shape: box
+    center:
+      value:
+      - 1.35
+      - 0.425
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 2.7
+      - 0.18
+      - 0.18
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  - shape: box
+    center:
+      value:
+      - 1.5503016727530587
+      - -0.425
+      - 0.29366424115287915
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 0.6597856602390323
+      - 0.18
+      - 0.18
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0
+      - -1.0977417004434233
+      - 0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  - shape: box
+    center:
+      value:
+      - 1.5503016727530587
+      - 0.425
+      - 0.29366424115287915
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 0.6597856602390323
+      - 0.18
+      - 0.18
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0
+      - -1.0977417004434233
+      - 0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  bellcrank:
+  - shape: box
+    center:
+      value:
+      - 0.25
+      - 0
+      - 0
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 0.9
+      - 0.22
+      - 0.2
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0.0
+      - 0.0
+      - 0.0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+  - shape: box
+    center:
+      value:
+      - -0.41173524576781095
+      - 0
+      - 0.09023171171377997
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    size:
+      value:
+      - 0.843012869193059
+      - 0.2
+      - 0.2
+      unit: m
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.
+    rpy:
+      value:
+      - 0
+      - -2.9258534085138135
+      - 0
+      unit: rad
+      source: ESTIMATED
+      confidence: low
+      notes: Estimated exterior/contact geometry, configurable independently of inertia
+        primitives.

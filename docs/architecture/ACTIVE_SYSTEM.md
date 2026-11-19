@@ -13,10 +13,10 @@
 
 - M0: kinematic frames, four wheels, central articulation, boom, bucket and closed Z-bar geometry; joint ranges and geometry validation.
 - M1: identified masses, COMs, inertias, contact parameters and actuator limits. Estimated test values are provisional, not calibrated dynamics.
-- M2: rigid-ground driving, steering, approach and linkage motion; rigid-pile contact and repeatable resets in the simulator.
+- M2: deterministic scripted scoop using WA320_reconstructed_v1: approach → pile entry → coordinated lift/curl → breakout → loaded withdrawal; repeatable resets, bounded actuation and material accounting. The unloaded rigid-ground V-cycle is a prerequisite, not scoop completion.
 - M3: validated granular terrain; gravel benchmarking first, with dry sand retained as a separate calibration target; DEM and multiscale are separate interchangeable backends.
-- M4: scripted approach → penetrate → lift → curl → breakout → reverse, with material accounting.
-- M5: PPO only after M4 works.
+- M4: extend the accepted scripted scoop to complete loading/transport/dump cycles and configurable dump zones.
+- M5: PPO deferred until the deterministic scoop and material-validation prerequisites pass; no PPO in M2.
 - M6: world model only after stable physics and PPO baseline.
 
 The first integrated physical foundation combines M0–M2 in Isaac Sim/Isaac Lab. Successful USD conversion does not complete these gates. Full-cycle travel, configurable dump zones/poses and repeated attack selection remain the mission goal; see [mission scope](../PROJECT_GOALS.md). No hardware actuation.

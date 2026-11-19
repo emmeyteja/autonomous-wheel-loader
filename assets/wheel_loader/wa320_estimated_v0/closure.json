@@ -1,0 +1,19 @@
+{
+  "joint": "zbar_closure",
+  "type": "revolute",
+  "body0": "rod",
+  "body1": "bucket",
+  "local_pos0": [
+    1.59,
+    0,
+    0
+  ],
+  "local_pos1": [
+    -0.12,
+    0,
+    0.5
+  ],
+  "axis": "Y",
+  "exclude_from_articulation": true,
+  "warning": "Required loop joint. Bare URDF omits it; passive rod/bucket must NOT be driven."
+}

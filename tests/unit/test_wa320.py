@@ -36,7 +36,7 @@ def test_closed_linkage_through_entire_configured_envelope(p):
     assert result["samples"] == 693
     assert result["max_loop_residual_m"] < 1e-12
     assert not result["physics_validated"]
-    for tilt in np.linspace(-0.8, 0.8, 25):
+    for tilt in np.linspace(p["linkage"]["min_angle"], p["linkage"]["max_angle"], 25):
         pose = solve_linkage(p, 0.4, float(tilt))
         # Independently reconstruct the attachment using the passive bucket angle.
         expected = pose.bucket_pin + rotate(
@@ -53,7 +53,7 @@ def test_closed_linkage_through_entire_configured_envelope(p):
 
 def test_bucket_is_passive_and_coupled_to_tilt_not_an_independent_action(p):
     neutral = passive_joint_positions(p)
-    dump = passive_joint_positions(p, tilt_angle=0.7)
+    dump = passive_joint_positions(p, tilt_angle=p["linkage"]["max_angle"])
     assert neutral["bucket_joint"] == pytest.approx(0)
     assert dump["bucket_joint"] < -0.4
     assert dump["rod_joint"] != pytest.approx(0)
@@ -63,7 +63,7 @@ def test_bucket_is_passive_and_coupled_to_tilt_not_an_independent_action(p):
     )
 
 
-@pytest.mark.parametrize("args", [(0, 1.01), (1.26, 0), (float("nan"), 0)])
+@pytest.mark.parametrize("args", [(0, 1.01), (2.0, 0), (float("nan"), 0)])
 def test_linkage_rejects_invalid_commands(p, args):
     with pytest.raises(ValueError):
         solve_linkage(p, *args)
@@ -122,7 +122,8 @@ def test_generated_asset_is_repeatable_and_includes_passive_closure(p, tmp_path)
     )
     tree = ET.parse(asset)
     joints = {j.attrib["name"]: j for j in tree.findall("joint")}
-    assert len(joints) == 9
+    assert sum(j.attrib["type"] != "fixed" for j in joints.values()) == 9
+    assert len(tree.findall("link")) == len(p["bodies"])
     assert joints["articulation_joint"].find("axis").attrib["xyz"] == "0 0 1"
     assert joints["boom_joint"].find("axis").attrib["xyz"] == "0 -1 0"
     assert joints["bucket_joint"].find("limit").attrib["effort"] == "0"

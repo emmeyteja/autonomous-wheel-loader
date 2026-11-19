@@ -109,7 +109,13 @@ def draw_state_panel(frame, state, names, angles):
         line("  rod pin_W " + vector(tip))
         y += 3
     y += 7
-    line("Pressure / flow / cylinder force: NOT MODELED", accent)
-    line("Absolute piston stroke / limits: UNKNOWN", accent)
-    line("Actuation: equivalent rotary joint drives")
-    line("Rigid connecting rod is NOT a piston")
+    if "estimated_cylinder_force_N" in state:
+        line("Pressure / flow: NOT MODELED", accent)
+        line("Estimated force S/L/B [kN]: "+vector(state["estimated_cylinder_force_N"]/1000))
+        line("Manual length limits; mounts / gains estimated")
+        line("Normalized command -> lag -> bounded force")
+    else:
+        line("Pressure / flow / cylinder force: NOT MODELED", accent)
+        line("Absolute piston stroke / limits: UNKNOWN", accent)
+        line("Actuation: equivalent rotary joint drives")
+        line("Rigid connecting rod is NOT a piston")
