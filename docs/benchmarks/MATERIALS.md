@@ -8,6 +8,7 @@
 - Fit material parameters on calibration experiments, then validate against held-out shapes, depths, speeds and loading cycles. Numerical stability, timestep agreement and matching one repose angle are separate from physical accuracy.
 
 - [Selected gravel heap protocol, open scans and geometric measurement check](GRAVEL_HEAP_PROTOCOL.md).
+- [Zhang gravel calibration: stationary slope, rotating drum and independent cylinder test](ZHANG_GRAVEL.md).
 
 ## References and suitable uses
 
