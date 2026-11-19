@@ -22,7 +22,7 @@ picks:
     bucket_pin_px: [2123, 1683]
     crank_pivot_px: [2275, 1732]
     tilt_pin_px: [2374, 1728]
-    rod_pin_px: [2343, 1805]  # D; provisional triangular crank interpretation
+    rod_pin_px: [2343, 1805]  # D; retained hypothesis; bucket rod audit rejects promotion
     bucket_anchor_hypotheses_px: [[2169, 1661], [2186, 1679]]  # F, overlapping bucket outlines
 uncertainty:
   visible_pin_pick_bound_px: 3.0  # Assumed sensitivity bound, not measurement confidence

@@ -29,6 +29,10 @@
 - Relative to this drawing, the active model's nominal base differs by about 0.470 m and lowered bucket hinge by 0.813 m, assuming the active equal hinge-to-axle split for frame conversion. That flags an approximation mismatch, not an independently measured real-machine error.
 - Equal axle offsets and no-slip articulation predict an outer wheel-centre radius of 5.363 m and inner tire-envelope radius of 3.043 m, versus 5.380/3.060 m illustrated. Derived nominal tire width is 2.590−2.050=0.540 m under symmetric tire assumptions. R3060 denotes the illustrated inner tire envelope, **not** an inner wheel-centre constraint; all drawing dimensions are mm.
 
+## Bucket audit update
+
+- The subsequent [bucket registration and rod audit](WA320_BUCKET_GEOMETRY.md) prefers F hypothesis 1 but rejects promoting the original D/49.3° crank interpretation: it requires a 121 mm connecting-rod length change between the assumed corresponding poses. The values above remain a documented provisional hypothesis, not a resolved crank geometry. The bucket outline and full linkage have different validation status.
+
 ## Remaining identifiability limits
 
 - The two F interpretations imply rod lengths of roughly 1.633 m or 1.456 m. These are competing attachment interpretations, not a measured tolerance range. Do not tune one until it appears to match or silently promote it to a physical model.

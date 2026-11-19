@@ -61,3 +61,5 @@ The former rail-constrained model and its kinematics are archived in `extras/leg
 ## Brochure-derived candidate
 
 - [WA320-7 drawing reconstruction](WA320_BROCHURE_GEOMETRY.md) identifies a nonzero crank-pivot offset and a provisional triangular bellcrank. The opt-in reconstruction records explicit picks, residuals and ambiguity; it does not replace the active straight-bar closed loop or validate its forces.
+
+- [Bucket outline registration](WA320_BUCKET_GEOMETRY.md) adds rigid profile/curl replay and a held-out dump check. It rejects the previous provisional D pin under the tested one-rod pose correspondence; it does not add an independently driven bucket to the active physics model.

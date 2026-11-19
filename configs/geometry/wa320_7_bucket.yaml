@@ -1,0 +1,50 @@
+# Same source raster and axle/ground frame as wa320_7_brochure.yaml.
+source_geometry: configs/geometry/wa320_7_brochure.yaml
+# Floor angles are drawing interpretations, not verified mechanical stops.
+# Lip denotes the bolt-on cutting edge (BOC); endpoint ambiguity is retained.
+poses:
+  ground:
+    boom_fraction: 0
+    floor_angle_deg: 0
+    lip_px: [1885, 2241]
+    mouth_top_px: [1955, 2050]
+    anchor_px: [2090, 2154]
+  raised_rollback:
+    boom_fraction: 1
+    floor_angle_deg: 66
+    lip_px: [2013, 1521]
+    mouth_top_px: [2207, 1490]
+    anchor_px: [2169, 1661]  # Previous F hypothesis 1
+  raised_dump:
+    boom_fraction: 1
+    floor_angle_deg: -45
+    lip_px: [2010, 1845]
+    mouth_top_px: [1917, 1665]
+    anchor_px: [2085, 1648]
+fit_poses: [ground, raised_rollback]
+held_out_pose: raised_dump  # Same drawing; not independent machine validation.
+anchor_alternatives_raised_px:
+  hypothesis_1: [2169, 1661]
+  hypothesis_2: [2186, 1679]
+# Approximate outside side-wall trace in ground pose, from BOC lip to mouth top.
+# Mouth closure is virtual; this is not a watertight shell or collision asset.
+ground_profile_px:
+  - [1885, 2241]
+  - [2045, 2237]
+  - [2075, 2228]
+  - [2094, 2210]
+  - [2104, 2181]
+  - [2098, 2152]
+  - [2087, 2143]
+  - [2072, 2124]
+  - [2068, 2106]
+  - [2074, 2088]
+  - [2060, 2076]
+  - [1980, 2057]
+  - [1955, 2050]
+uncertainty:
+  pin_pick_bound_px: 6
+  feature_pick_bound_px: 6
+  angle_bound_deg: 1
+  monte_carlo_samples: 400
+  seed: 42
