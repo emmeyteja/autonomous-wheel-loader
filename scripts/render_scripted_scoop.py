@@ -33,6 +33,46 @@ def artifacts(folder):
     t = d["time_s"]
     columns = list(d["accounting_columns"])
     acc = d["accounting"]
+    funnel = report.get("acquisition_funnel")
+    if funnel:
+        stages = [
+            "initial_material",
+            "contacted_by_bucket",
+            "entered_mouth",
+            "retained_after_breakout",
+            "spilled_during_extraction_unique",
+            "final_payload",
+        ]
+        labels = [
+            "Initial material",
+            "Bucket contact",
+            "Mouth entry",
+            "Retained at breakout",
+            "Spilled during extraction",
+            "Final payload",
+        ]
+        fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
+        for ax, field, unit in zip(
+            axes, ("count", "mass_kg"), ("Particle count", "Material mass [kg]")
+        ):
+            values = [funnel[s][field] for s in stages]
+            ax.barh(labels, values)
+            ax.set_xlabel(unit)
+            for i, value in enumerate(values):
+                ax.text(
+                    value,
+                    i,
+                    f" {value:.1f}" if field == "mass_kg" else f" {value}",
+                    va="center",
+                )
+            ax.margins(x=0.18)
+        axes[0].invert_yaxis()
+        fig.suptitle(
+            "Acquisition funnel — unique IDs; spillage is a subset of acquired material"
+        )
+        fig.tight_layout()
+        fig.savefig(folder / "acquisition_funnel.png", dpi=150)
+        plt.close(fig)
     fig, axes = plt.subplots(4, 1, figsize=(10, 12), sharex=True)
     for name in (
         "remaining_mass_kg",
@@ -124,7 +164,7 @@ def artifacts(folder):
     model.vis.headlight.ambient[:] = [0.65] * 3
     model.vis.headlight.diffuse[:] = [0.7] * 3
     camera = mujoco.MjvCamera()
-    camera.distance = 13
+    camera.distance = 14
     camera.azimuth = 120
     camera.elevation = -23
     vehicle = load_parameters("configs/vehicle/wa320.yaml")
@@ -140,7 +180,7 @@ def artifacts(folder):
         for b in d["grain_body_ids"]
     ]
     initial = d["initial_pile_xyz"]
-    camera.lookat[:] = [1.5 + initial[:, 0].min() / 2, 0, 1]
+    camera.lookat[:] = [1.5 + initial[:, 0].min() / 2, 0, 1.6]
     font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 23)
     output = folder / "scripted_scoop_replay.mp4"
     proc = subprocess.Popen(
@@ -198,6 +238,16 @@ def artifacts(folder):
                 draw.rectangle((0, 0, 1600, 150), fill=(19, 24, 30))
                 payload = acc[i, columns.index("bucket_mass_kg")]
                 spilled = acc[i, columns.index("bucket_exit_mass_kg")]
+                exited_ids = {
+                    event["id"]
+                    for event in (funnel or {}).get("mouth_crossing_events", [])
+                    if event["event"] == "mouth_exit_after_acquisition"
+                    and event["time_s"] is not None
+                    and event["time_s"] <= t[i]
+                }
+                verified_exits = (
+                    float(d["masses_kg"][list(exited_ids)].sum()) if exited_ids else 0.0
+                )
                 draw.text(
                     (20, 10),
                     f"M2 recorded CPU physics | {t[i]:.1f}s | {d['phase'][i]} | {report['element_count']} free grains",
@@ -206,7 +256,7 @@ def artifacts(folder):
                 )
                 draw.text(
                     (20, 43),
-                    f"Bucket {payload:.1f} kg | left bucket {spilled:.1f} kg | coarse contact trial, not calibrated gravel/sand",
+                    f"Bucket {payload:.1f} kg | outside classifier {spilled:.1f} kg | verified mouth exits {verified_exits:.1f} kg",
                     font=font,
                     fill="white",
                 )
@@ -220,7 +270,7 @@ def artifacts(folder):
                         "Single-run checks pass"
                         if report["single_run_passed"]
                         else "THIS RUN FAILED"
-                    ) + " | M2 SUITE INCOMPLETE: shallow acquisition / spillage"
+                    ) + " | M2 SUITE INCOMPLETE: see suite.json"
                 draw.text(
                     (20, 76),
                     status,
@@ -229,7 +279,7 @@ def artifacts(folder):
                 )
                 draw.text(
                     (20, 110),
-                    "Green = measured bucket grains | off-road appearance; rigid floor | replay only",
+                    "Uncalibrated coarse grains | green = payload | rigid floor | replay only",
                     font=font,
                     fill="white",
                 )

@@ -6,6 +6,7 @@ loader. This extends existing CPU material/mechanics diagnostics, not training.
 
 import hashlib
 import json
+import resource
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -19,16 +20,21 @@ from wheel_loader.control.cylinder_actuation import (
 )
 from wheel_loader.control.scripted_scoop import ScriptedScoop
 from wheel_loader.evaluation.material_accounting import (
+    AcquisitionFunnel,
     MaterialAccounting,
     bucket_payload_mask,
 )
+from wheel_loader.evaluation.pile_geometry import sampled_swept_volume, settled_envelope
 from wheel_loader.terrain.bed import ScoopPile
 from wheel_loader.vehicle.kinematics import passive_joint_positions, solve_linkage
 
 
-def run_scoop(p, config, source, output, scenario="nominal"):
+def run_scoop(p, config, source, output, scenario=None):
     import mujoco
 
+    wall_started = time.monotonic()
+    cpu_started = time.process_time()
+    scenario = scenario or config.get("default_scenario", "nominal")
     provenance = json.loads((Path(source).parent / "validation.json").read_text())
     parameter_digest = hashlib.sha256(
         json.dumps(p, sort_keys=True).encode()
@@ -44,13 +50,22 @@ def run_scoop(p, config, source, output, scenario="nominal"):
     (output / "report.json").unlink(missing_ok=True)
     case = dict(config["scenarios"][scenario])
     controller_cfg = dict(config["controller"])
-    for key in ("attack_angle_deg", "attack_lip_height_m", "penetration_depth_m"):
+    for key in (
+        "attack_angle_deg",
+        "attack_lip_height_m",
+        "penetration_depth_m",
+        "demonstrate_spillage",
+    ):
         if key in case:
             controller_cfg[key] = case.pop(key)
     if not (
         config["settle_s"] >= 4
         and config["max_duration_s"] > config["settle_s"]
         and 0 < config["sample_hz"] <= 240
+        and np.isfinite(config.get("wall_budget_s", 900))
+        and config.get("wall_budget_s", 900) > 0
+        and isinstance(config.get("granular_memory_mb", 512), int)
+        and config.get("granular_memory_mb", 512) > 0
     ):
         raise ValueError("Invalid M2 experiment timing")
     material = dict(config["material"])
@@ -59,13 +74,34 @@ def run_scoop(p, config, source, output, scenario="nominal"):
     )
     if not all(np.isfinite(x) and x > 0 for x in material.values()):
         raise ValueError("Material trial values must be finite and positive")
+    particle_budget = case.pop("particle_budget", config["max_particles"])
     pile = ScoopPile(
         **case,
         radius_m=config["radius_m"],
         seed=config["seed"],
-        max_particles=config["max_particles"],
+        max_particles=particle_budget,
+        particle_density_kg_m3=material["particle_density_kg_m3"],
     )
     xyz, radii = pile.generate()
+    (output / "preparation.json").write_text(
+        json.dumps(
+            {
+                "scenario": scenario,
+                "prepared_particle_count": len(radii),
+                "prepared_material_mass_kg": float(
+                    np.sum(
+                        4 / 3 * np.pi * radii**3 * material["particle_density_kg_m3"]
+                    )
+                ),
+                "requested_pile_volume_m3": float(pile.volume_m3),
+                "material_design": pile.material_design(),
+                "pile_preparation": vars(pile),
+                "status": "PREPARED_ONLY: settling and scoop not yet verified",
+            },
+            indent=2,
+        )
+        + "\n"
+    )
     controller = ScriptedScoop(p, controller_cfg, config["settle_s"])
     lip = solve_linkage(p, *controller.attack_pose).lip + [
         0,
@@ -74,6 +110,10 @@ def run_scoop(p, config, source, output, scenario="nominal"):
     xyz += [lip[0] + controller_cfg["approach_distance_m"] + 0.1, 0, 0.01]
     tree = ET.parse(source)
     root = tree.getroot()
+    size = root.find("size")
+    if size is None:
+        size = ET.SubElement(root, "size")
+    size.set("memory", f"{int(config.get('granular_memory_mb', 512))}M")
     world = root.find("worldbody")
     # Preserve the loader's complete body/contact/constraint model. Grains are
     # independent free bodies: no welds, kinematic trajectories or payload writes.
@@ -134,6 +174,11 @@ def run_scoop(p, config, source, output, scenario="nominal"):
         if name.endswith(("wheel_joint", "_slider_joint")):
             ET.SubElement(drives, "motor", joint=name)
     model = mujoco.MjModel.from_xml_string(ET.tostring(root, encoding="unicode"))
+    compilation_wall_s = time.monotonic() - wall_started
+    print(
+        f"{scenario}: compiled {len(radii)} particles in {compilation_wall_s:.2f}s",
+        flush=True,
+    )
     dt = p["solver"]["dt"]
     model.opt.timestep = dt / 8
     model.opt.integrator = mujoco.mjtIntegrator.mjINT_IMPLICITFAST
@@ -186,6 +231,9 @@ def run_scoop(p, config, source, output, scenario="nominal"):
     if not np.isclose(model.body_mass[list(vehicle_bodies)].sum(), 15175):
         raise ValueError("M2 must preserve v1 vehicle mass")
     accounting = MaterialAccounting(masses)
+    funnel = AcquisitionFunnel(masses, p)
+    grain_index_by_body = np.full(model.nbody, -1, dtype=int)
+    grain_index_by_body[grain_bodies] = np.arange(len(grain_bodies))
     wheels = [n for n in names if n.endswith("wheel_joint")]
     wheel_bodies = [int(model.jnt_bodyid[joints[n]]) for n in wheels]
     actuator_indices = [
@@ -239,6 +287,13 @@ def run_scoop(p, config, source, output, scenario="nominal"):
     mujoco.mj_saveLastXML(str(folder_model), model)
     source_bounds = [xyz.min(axis=0) - radii.max(), xyz.max(axis=0) + radii.max()]
     stop_reason = None
+    bucket_poses = []
+    lip_trace = []
+    contact_ids_by_bucket_geom = {}
+    contact_peak_N_by_bucket_geom = {}
+    bucket_resultant_trace = []
+    peak_bucket_resultant_N = 0.0
+    peak_contacts = 0
     for step in range(round(config["max_duration_s"] / dt)):
         t = step * dt
         actual, velocity = data.qpos[qa].copy(), data.qvel[va].copy()
@@ -268,7 +323,21 @@ def run_scoop(p, config, source, output, scenario="nominal"):
             forward += max(dx, 0)
             reverse += max(-dx, 0)
         last_x = float(data.xpos[rear, 0])
-        if step % sample_steps and not controller.done:
+        # Observe every control tick, independently of the lower-rate recording.
+        positions = data.xpos[grain_bodies].copy()
+        local = (positions - data.xpos[bucket]) @ data.xmat[bucket].reshape(3, 3)
+        in_bucket = bucket_payload_mask(local, p)
+        contact_bodies = model.geom_bodyid[data.contact.geom[: data.ncon]]
+        contacting = np.zeros(len(radii), bool)
+        bucket_contacts = np.any(contact_bodies == bucket, axis=1)
+        contact_grains = grain_index_by_body[contact_bodies[bucket_contacts].ravel()]
+        contacting[contact_grains[contact_grains >= 0]] = True
+        funnel.sample(local, in_bucket, contacting, phase, float(data.time))
+        accounting.ever_acquired |= in_bucket
+        peak_contacts = max(peak_contacts, data.ncon)
+        if time.monotonic() - wall_started >= config.get("wall_budget_s", 900):
+            stop_reason = "cpu_wall_budget_exhausted_incomplete_scoop"
+        if step % sample_steps and not controller.done and stop_reason is None:
             continue
         mujoco.mj_forward(model, data)
         positions = data.xpos[grain_bodies].copy()
@@ -299,6 +368,7 @@ def run_scoop(p, config, source, output, scenario="nominal"):
         if initial_bucket_mass is None and t >= config["settle_s"]:
             initial_bucket_mass = record["bucket_mass_kg"]
         bucket_force = 0.0
+        bucket_resultant = np.zeros(3)
         traction = np.zeros(4)
         normals = np.zeros(4)
         for ci, c in enumerate(data.contact[: data.ncon]):
@@ -310,7 +380,20 @@ def run_scoop(p, config, source, output, scenario="nominal"):
                 max_overlap = max(max_overlap, -float(c.dist))
                 if bucket in bs:
                     bucket_force += float(np.linalg.norm(force[:3]))
+                    bucket_resultant += (1 if bs[1] == bucket else -1) * force_world
                     bucket_touched.update(b for b in bs if b in grain_set)
+                    bucket_geom = next(
+                        int(g) for g, b in zip(c.geom, bs) if b == bucket
+                    )
+                    name = mujoco.mj_id2name(
+                        model, mujoco.mjtObj.mjOBJ_GEOM, bucket_geom
+                    )
+                    ids = [int(grain_index_by_body[b]) for b in bs if b in grain_set]
+                    contact_ids_by_bucket_geom.setdefault(name, set()).update(ids)
+                    contact_peak_N_by_bucket_geom[name] = max(
+                        contact_peak_N_by_bucket_geom.get(name, 0),
+                        float(np.linalg.norm(force[:3])),
+                    )
             elif 0 in bs and bucket in bs:
                 max_bucket_ground_overlap = max(
                     max_bucket_ground_overlap, -float(c.dist)
@@ -323,6 +406,9 @@ def run_scoop(p, config, source, output, scenario="nominal"):
                         traction[k] += float(np.linalg.norm(force_world[:2]))
                         normals[k] += (1 if bs[1] == b else -1) * force_world[2]
         peak_bucket_force = max(peak_bucket_force, bucket_force)
+        peak_bucket_resultant_N = max(
+            peak_bucket_resultant_N, float(np.linalg.norm(bucket_resultant))
+        )
         peak_traction = max(peak_traction, float(traction.max()))
         r = data.xmat[rear].reshape(3, 3)
         pitch = np.arcsin(np.clip(-r[2, 0], -1, 1))
@@ -377,8 +463,32 @@ def run_scoop(p, config, source, output, scenario="nominal"):
                 f"{scenario}: t={t:.1f}s x={data.xpos[rear, 0]:.3f} payload={record['bucket_mass_kg']:.2f}kg force={bucket_force:.0f}N",
                 flush=True,
             )
-            next_progress += 5
+            next_progress += 1
+            (output / "runtime_progress.json").write_text(
+                json.dumps(
+                    {
+                        "simulated_s": float(data.time),
+                        "wall_s": time.monotonic() - wall_started,
+                        "phase": phase,
+                        "particle_count": len(radii),
+                        "peak_process_rss_mb": resource.getrusage(
+                            resource.RUSAGE_SELF
+                        ).ru_maxrss
+                        / 1024,
+                        "peak_contacts": peak_contacts,
+                        "solver_warning_count": int(data.warning.number.sum()),
+                        "status": "IN_PROGRESS, not a completed scoop",
+                    },
+                    indent=2,
+                )
+                + "\n"
+            )
         records.append(data.qpos.copy())
+        rotation = data.xmat[bucket].reshape(3, 3).copy()
+        if phase in ("penetrate", "curl_advance"):
+            bucket_poses.append((data.xpos[bucket].copy(), rotation))
+        edge = np.array([p["bucket"]["profile"][0][0], 0, p["bucket"]["profile"][0][1]])
+        lip_trace.append(edge @ rotation.T + data.xpos[bucket])
         reports.append(record)
         times.append(float(data.time))
         phases.append(phase)
@@ -390,11 +500,16 @@ def run_scoop(p, config, source, output, scenario="nominal"):
         work_trace.append([work, positive_work])
         pitch_trace.append([pitch, roll, yaw])
         contact_trace.append([bucket_force, *traction, *normals])
+        bucket_resultant_trace.append(bucket_resultant)
         if abs(pitch) > np.deg2rad(25) or abs(roll) > np.deg2rad(25):
             stop_reason = "vehicle_tilt_safety_stop"
             break
-        if controller.done:
+        if controller.done or stop_reason:
             break
+    if stop_reason is None and not controller.done:
+        stop_reason = "simulation_duration_exhausted_incomplete_scoop"
+    if stop_reason is None and controller.failed:
+        stop_reason = "controller_phase_timeout"
     if initial is None:
         initial = xyz
     positions = data.xpos[grain_bodies].copy()
@@ -439,6 +554,40 @@ def run_scoop(p, config, source, output, scenario="nominal"):
             retained_mask & np.array([int(b) in supported for b in grain_bodies])
         ].sum()
     )
+    actual_initial_mass = float(masses.sum())
+    envelope = settled_envelope(
+        initial, radii, actual_initial_mass, material["particle_density_kg_m3"]
+    )
+    sweep = sampled_swept_volume(bucket_poses, p)
+    acquisition = funnel.report(
+        in_bucket & ~lost, at_source, initial, positions, radii, source_bounds
+    )
+    if initial_bucket_mass is None:
+        envelope["status"] = (
+            "UNSETTLED: CPU budget exhausted before settled initial state"
+        )
+    # Envelope and estimated sweep are geometric diagnostics, not a soil law.
+    lips = np.asarray(lip_trace)
+    source_lo = initial.min(axis=0) - radii.max()
+    source_hi = initial.max(axis=0) + radii.max()
+    relevant = np.array([phase in ("penetrate", "curl_advance") for phase in phases])
+    cut = lips[relevant] if relevant.any() else None
+    margins = {
+        "method": "Global initial bounding-envelope margins; not local material occupancy beneath the cutting edge",
+        "lateral_margin_outside_bucket_m": float(
+            min(-source_lo[1], source_hi[1]) - p["vehicle"]["bucket_width"] / 2
+        ),
+        "bottom_material_below_cutting_edge_m": float(cut[:, 2].min() - source_lo[2])
+        if cut is not None
+        else None,
+        "material_ahead_of_final_cutting_edge_m": float(source_hi[0] - cut[:, 0].max())
+        if cut is not None
+        else None,
+        "full_nominal_particle_diameter_below_cutting_edge": bool(
+            cut is not None and cut[:, 2].min() - source_lo[2] >= 2 * config["radius_m"]
+        ),
+        "full_scoop_observed": controller.done and stop_reason is None,
+    }
     checks = {
         "pile_settled_before_approach": settled_speed_rms is not None
         and settled_speed_rms < 0.03,
@@ -478,7 +627,14 @@ def run_scoop(p, config, source, output, scenario="nominal"):
         "bucket_ground_overlap": max_bucket_ground_overlap < 0.005,
         "vehicle_self_collision": max_self < 0.005,
         "no_solver_warnings": int(data.warning.number.sum()) == 0,
+        "mouth_entry_explains_payload": not funnel.unverified_entry.any(),
+        "physical_spillage_if_requested": not controller_cfg.get(
+            "demonstrate_spillage", False
+        )
+        or acquisition["spilled_during_extraction_unique"]["mass_kg"]
+        >= thresholds["spilled_mass_min_kg"],
     }
+    checks = {name: bool(value) for name, value in checks.items()}
     result = {
         "scenario": scenario,
         "backend": "native MuJoCo CPU diagnostic of Newton-exported v1; NOT Isaac Lab/Newton GPU execution",
@@ -487,6 +643,28 @@ def run_scoop(p, config, source, output, scenario="nominal"):
         "vehicle_commit": "97ae4e5",
         "experiment_sha256": hashlib.sha256(
             json.dumps(config, sort_keys=True).encode()
+        ).hexdigest(),
+        "physical_configuration_sha256": hashlib.sha256(
+            json.dumps(
+                {k: v for k, v in config.items() if k != "wall_budget_s"},
+                sort_keys=True,
+            ).encode()
+        ).hexdigest(),
+        "controlled_factors_sha256": hashlib.sha256(
+            json.dumps(
+                {
+                    "vehicle": p,
+                    "controller": controller_cfg,
+                    "material": material,
+                    "bucket_contact": wall,
+                    "radius_m": config["radius_m"],
+                    "seed": config["seed"],
+                    "settle_s": config["settle_s"],
+                    "solver": config["solver"],
+                    "iterations": config["solver_iterations"],
+                },
+                sort_keys=True,
+            ).encode()
         ).hexdigest(),
         "parameter_sha256": hashlib.sha256(
             json.dumps(p, sort_keys=True).encode()
@@ -504,13 +682,48 @@ def run_scoop(p, config, source, output, scenario="nominal"):
         "settled_envelope_width_m": float(
             np.max(initial[:, 1] + radii) - np.min(initial[:, 1] - radii)
         ),
+        "settled_envelope_depth_m": float(
+            np.max(initial[:, 0] + radii) - np.min(initial[:, 0] - radii)
+        ),
         "material_parameters": material,
         "bucket_contact_parameters": wall,
         "controller": controller_cfg,
         "pile_preparation": vars(pile),
+        "pile_material_design": pile.material_design(),
+        "requested_pile_volume_m3": float(pile.volume_m3),
+        "initial_pile_envelope": envelope,
+        "initial_material_mass_kg": actual_initial_mass,
+        "settled_initial_material_mass_kg": actual_initial_mass
+        if initial_bucket_mass is not None
+        else None,
+        "mass_equations": "N * mean_compiled_particle_mass = actual_initial_material_mass; effective_bulk_density = actual_initial_material_mass / measured_convex_envelope_volume",
+        "mean_particle_mass_kg": float(masses.mean()),
+        "particle_mass_range_kg": [float(masses.min()), float(masses.max())],
+        "retained_particle_count": int(retained_mask.sum()),
+        "bucket_swept_volume_diagnostic": sweep,
+        "bucket_swept_volume_m3": sweep["volume_m3"] if sweep else None,
+        "bucket_swept_volume_over_initial_pile_volume": sweep["volume_m3"]
+        / envelope["volume_m3"]
+        if sweep
+        else None,
+        "pile_over_swept_volume_ratio": envelope["volume_m3"] / sweep["volume_m3"]
+        if sweep and sweep["volume_m3"]
+        else None,
+        "reservoir_margins": margins,
+        "acquisition_funnel": acquisition,
+        "bucket_contact_diagnostics": {
+            name: {
+                "unique_contacting_count_20hz": len(ids),
+                "unique_contacting_mass_kg_20hz": float(masses[list(ids)].sum()),
+                "peak_contact_N_20hz": contact_peak_N_by_bucket_geom[name],
+            }
+            for name, ids in contact_ids_by_bucket_geom.items()
+        },
         "element_count": len(radii),
         "particle_mass_kg": float(masses.sum()),
         "retained_payload_kg": retained,
+        "final_retained_payload_kg": retained if checks["sequence_completed"] else None,
+        "last_observed_bucket_mass_kg": retained,
         "payload_minimum_world_height_m": payload_height,
         "payload_maximum_final_speed_m_s": payload_speed,
         "payload_contact_connected_mass_kg": supported_payload,
@@ -524,10 +737,44 @@ def run_scoop(p, config, source, output, scenario="nominal"):
             (x["bucket_exit_mass_kg"] for x in reports), default=0
         ),
         "solid_volume_fill_factor": retained / material["particle_density_kg_m3"] / 3.0,
-        "bulk_equivalent_fill_factor": None,
+        "uncleared_profile_extrusion_volume_m3": float(
+            abs(
+                np.sum(
+                    np.asarray(p["bucket"]["profile"])[:, 0]
+                    * np.roll(np.asarray(p["bucket"]["profile"])[:, 1], -1)
+                    - np.asarray(p["bucket"]["profile"])[:, 1]
+                    * np.roll(np.asarray(p["bucket"]["profile"])[:, 0], -1)
+                )
+            )
+            / 2
+            * p["vehicle"]["bucket_width"]
+        ),
+        "retained_bulk_equivalent_volume_m3": retained
+        / envelope["effective_bulk_density_kg_m3"],
+        "bulk_equivalent_fill_factor": retained
+        / envelope["effective_bulk_density_kg_m3"]
+        / 3.0,
         "nominal_bucket_capacity_m3": 3.0,
         "cycle_time_s": float(data.time),
         "runtime_wall_s": time.monotonic() - started,
+        "compilation_and_preparation_wall_s": compilation_wall_s,
+        "total_wall_s": time.monotonic() - wall_started,
+        "process_cpu_s": time.process_time() - cpu_started,
+        "simulation_seconds_per_cpu_second": float(
+            data.time / (time.process_time() - cpu_started)
+        ),
+        "simulation_seconds_per_wall_second": float(
+            data.time / (time.monotonic() - started)
+        ),
+        "peak_process_rss_mb": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        / 1024,
+        "peak_contact_count": peak_contacts,
+        "solver_arena_bytes": int(model.narena),
+        "solver_warnings": {
+            mujoco.mjtWarning(i).name: int(w.number)
+            for i, w in enumerate(data.warning)
+            if w.number
+        },
         "forward_distance_m": forward,
         "reverse_distance_m": reverse,
         "peak_wheel_traction_N": peak_traction,
@@ -543,6 +790,8 @@ def run_scoop(p, config, source, output, scenario="nominal"):
             xyz.tobytes() + radii.tobytes()
         ).hexdigest(),
         "peak_bucket_contact_force_N": peak_bucket_force,
+        "bucket_contact_force_definition": "sum of grain-contact force magnitudes sampled at logging ticks; controller threshold proxy, not vector resultant",
+        "peak_bucket_grain_resultant_force_N": peak_bucket_resultant_N,
         "peak_cylinder_force_N": np.max(abs(np.asarray(force_trace)), axis=0).tolist()
         if force_trace
         else None,
@@ -558,6 +807,14 @@ def run_scoop(p, config, source, output, scenario="nominal"):
         "maximum_mass_residual_kg": residual,
         "final_accounting": reports[-1] if reports else {},
         "material_ids_displaced_over_diameter": int(np.sum(displaced > 2 * radii)),
+        "material_mass_displaced_over_diameter_kg": float(
+            masses[displaced > 2 * radii].sum()
+        ),
+        "pile_deformation_rms_displacement_m": float(np.sqrt(np.mean(displaced**2))),
+        "pile_deformation_max_displacement_m": float(displaced.max()),
+        "observed_penetration_lip_travel_m": float(cut[-1, 0] - cut[0, 0])
+        if cut is not None
+        else None,
         "events": controller.events,
         "stop_reason": stop_reason,
         "checks": checks,
@@ -565,7 +822,6 @@ def run_scoop(p, config, source, output, scenario="nominal"):
         "m2_complete": False,
         "remaining_gate": "repeat run and scenario suite required; GPU coupling and material calibration not established",
     }
-    (output / "report.json").write_text(json.dumps(result, indent=2) + "\n")
     (output / "accounting.json").write_text(json.dumps(reports, indent=2) + "\n")
     np.savez_compressed(
         output / "recording.npz",
@@ -588,7 +844,16 @@ def run_scoop(p, config, source, output, scenario="nominal"):
         actuator_work_J=work_trace,
         chassis_angles_rad=pitch_trace,
         contact_N=contact_trace,
+        bucket_grain_resultant_N_xyz=bucket_resultant_trace,
+        bucket_lip_world_m=lip_trace,
+        ever_bucket_contact=funnel.contacted,
+        ever_mouth_entry=funnel.entered,
+        ever_acquired=funnel.acquired,
+        ever_mouth_exit=funnel.exited,
     )
+    temporary_report = output / "report.json.tmp"
+    temporary_report.write_text(json.dumps(result, indent=2) + "\n")
+    temporary_report.replace(output / "report.json")
     print(
         json.dumps(
             {

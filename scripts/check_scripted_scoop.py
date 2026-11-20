@@ -1,4 +1,4 @@
-"""Run a small deterministic material-scoop experiment; no learning."""
+"""Run a deterministic coarse-material scoop experiment; no learning."""
 
 import argparse
 from pathlib import Path
@@ -14,15 +14,30 @@ if __name__ == "__main__":
     parser.add_argument(
         "--config", type=Path, default=Path("configs/experiments/scripted_scoop.yaml")
     )
-    parser.add_argument("--output", type=Path, default=Path("outputs/wa320/m2/nominal"))
-    parser.add_argument("--scenario", default="nominal")
+    parser.add_argument(
+        "--output", type=Path, help="Default: outputs/wa320/m2/<scenario>"
+    )
+    parser.add_argument(
+        "--scenario", help="Default is the configured research scenario"
+    )
+    parser.add_argument(
+        "--wall-budget-s",
+        type=float,
+        help="Explicit incomplete/fail CPU budget, including compile",
+    )
     args = parser.parse_args()
+    config = yaml.safe_load(args.config.read_text())
+    if args.wall_budget_s is not None:
+        if args.wall_budget_s <= 0:
+            parser.error("--wall-budget-s must be positive")
+        config["wall_budget_s"] = args.wall_budget_s
+    scenario = args.scenario or config.get("default_scenario", "nominal")
     result = run_scoop(
         load_parameters("configs/vehicle/wa320.yaml"),
-        yaml.safe_load(args.config.read_text()),
+        config,
         args.source,
-        args.output,
-        args.scenario,
+        args.output or Path("outputs/wa320/m2") / scenario,
+        scenario,
     )
     if not result["single_run_passed"]:
         raise SystemExit("M2 acceptance failed; see report.json")

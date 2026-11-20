@@ -1,7 +1,10 @@
 # M2 coarse rigid-grain experiment, not calibrated gravel or dry sand.
 # No change to the active rigid-pile default or preserved vehicle assets.
 seed: 42
-max_particles: 1500
+default_scenario: research_underburden
+max_particles: 12000  # Safety guard only. Count is derived from volume/density.
+wall_budget_s: 900.0  # Explicit failed/incomplete report if CPU budget is exhausted.
+granular_memory_mb: 512  # Bounded solver arena; exhaustion is a failed screen.
 radius_m: 0.12  # ESTIMATED coarse numerical element, not natural grain size.
 settle_s: 10.0
 max_duration_s: 70.0
@@ -35,8 +38,19 @@ controller:
   reverse_speed_m_s: 0.25
   stabilize_s: 3.0
 scenarios:
-  nominal: {height_m: 0.7, width_m: 1.2, slope_deg: 32.0, crest_length_m: 0.5}
+  # Research geometry, NOT a claim about a real WA320 site. Depth = crest + 2h/tan(slope).
+  # Packing 0.4 is a coarse release-design trial, not calibrated sand packing.
+  nominal: {height_m: 1.2, width_m: 3.8, depth_m: 5.0, slope_deg: 30.96375653207352, crest_length_m: 1.0, target_bulk_density_kg_m3: 1036.0, target_packing_fraction: 0.4}
+  # Explicit underburden correction, isolated from the unchanged-controller study.
+  research_underburden: {height_m: 1.2, width_m: 3.8, depth_m: 5.0, slope_deg: 30.96375653207352, crest_length_m: 1.0, target_bulk_density_kg_m3: 1036.0, target_packing_fraction: 0.4, attack_lip_height_m: 0.30}
+  small_debug: {height_m: 0.7, width_m: 1.2, slope_deg: 32.0, crest_length_m: 0.5, particle_budget: 1500}
+  debug_1500: {height_m: 1.5, width_m: 4.0, depth_m: 5.0, slope_deg: 59.743562836470744, crest_length_m: 3.25, target_bulk_density_kg_m3: 1036.0, target_packing_fraction: 0.4, particle_budget: 1500}
+  # Larger reservoirs needed to reach ~5k/~10k at the SAME element size/density.
+  medium: {height_m: 2.4, width_m: 6.0, depth_m: 10.0, slope_deg: 30.96375653207352, crest_length_m: 2.0, target_bulk_density_kg_m3: 1036.0, target_packing_fraction: 0.4}
+  large: {height_m: 3.0, width_m: 8.0, depth_m: 12.0, slope_deg: 30.96375653207352, crest_length_m: 2.0, target_bulk_density_kg_m3: 1036.0, target_packing_fraction: 0.4}
+  spill_demonstration: {height_m: 0.7, width_m: 1.2, slope_deg: 32.0, crest_length_m: 0.5, particle_budget: 1500, demonstrate_spillage: true}
   low_shallow: {height_m: 0.5, width_m: 1.0, slope_deg: 28.0, crest_length_m: 0.5, density_kg_m3: 2400.0, attack_angle_deg: -6.0, penetration_depth_m: 1.8}
+  low_shallow_wide: {height_m: 0.5, width_m: 3.8, slope_deg: 28.0, crest_length_m: 0.5, density_kg_m3: 2400.0, attack_angle_deg: -6.0, penetration_depth_m: 1.8}
   tall_deep: {height_m: 0.8, width_m: 1.5, slope_deg: 36.0, crest_length_m: 0.5, density_kg_m3: 2700.0, attack_angle_deg: -4.0, penetration_depth_m: 1.9, attack_lip_height_m: 0.045}
 acceptance:
   mass_relative_tolerance: 1.0e-9

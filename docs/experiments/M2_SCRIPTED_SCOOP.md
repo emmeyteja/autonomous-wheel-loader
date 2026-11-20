@@ -1,106 +1,396 @@
-# M2 deterministic scripted scoop
+# M2 deterministic scripted scoop: reservoir and acquisition study
 
-## Scope and inspection
+## Status and scope
 
-- Vehicle baseline: `WA320_reconstructed_v1`, commit `97ae4e5`. No vehicle geometry, inertia, cylinder dimensions, collision masks or loop topology is changed by this experiment. V0/V1 baselines remain available.
-- `terrain/rigid_pile.py` generates a fixed trapezoidal prism; `rigid_obstacle.py` authors it as a static convex collision mesh. Reuse its dimensions/conventions, but it cannot deform, transfer mass or validate digging.
-- `terrain/column.py` and `terrain/bed.py` already generate deterministic coarse spherical material; `column_probe.py` and `blade_probe.py` advance free-body grains in native MuJoCo. Reuse the staggered-lattice preparation, six-dimensional frictional contacts, seed conventions and diagnostic runtime. The added `ScoopPile` stays inside the existing terrain module; the active terrain default/registry is unchanged.
-- Production gravel/dry-sand files contain deliberately unknown calibration values. Existing `material_column.yaml` contains diagnostic trial values, not validated materials. These must not be silently promoted to calibrated soil.
-- V1 bucket collision geometry has separate side-wall extrusions and segmented floor/back plates. Its mouth is open. The original profile, width, mass and constraints are preserved; manufacturer capacity and real attachment clearances remain uncertain. Coarse spherical grains cannot resolve fine gaps or a true sand boundary layer.
-- `reconstruction_probe.py` already provides native CPU dynamics checks of the Newton-exported floating loader, physical linear cylinder efforts, contact telemetry and rigid-ballast diagnostics. Ballast attachment/release cannot acquire material and is not used here.
-- `newton_ground.py` provides Isaac Lab/Newton MJWarp rigid-body simulation and XML export. The experiment consumes that complete exported model using the existing native MuJoCo diagnostic path. **This is CPU execution, not evidence of Isaac Lab/Newton GPU material coupling.** No second simulator architecture, ROS stack or training system is introduced.
-- Existing V-cycle logs/replay/evaluation assume a single free vehicle root or no grains. Reusing them unchanged would misclassify grain contacts as vehicle collisions. M2 records all free-body states and separates wheel, bucket/material and vehicle self-contact.
-- Missing at inspection: loader/material coupling, scoop sequence, material-ID accounting, acquisition/retention/spillage tests, repeated initial-state evidence and a material-aware replay.
+This is an **uncalibrated coarse-grain CPU experiment**, not calibrated sand,
+validated soil mechanics, real WA320 operating guidance, or Isaac Lab/Newton GPU
+material execution. M2 remains incomplete while any required physical gate fails.
+No PPO, world-model training or production GPU granular backend is enabled.
+Work belongs to [M2 issue #19](https://github.com/emmeyteja/autonomous-wheel-loader/issues/19).
 
-## Material choice and parameters
+The unchanged `WA320_reconstructed_v1` vehicle comes from the passing mechanical
+source at `97ae4e5`. The source parameter digest and compiled 15,175 kg vehicle
+mass are checked. The active terrain default remains rigid. Native MuJoCo 3.12.0
+advances the complete Newton-exported loader and independent free rigid spheres
+in one frictional dynamics solve. Grains are never inserted into the bucket,
+attached, teleported, deleted on contact or assigned as vehicle ballast.
 
-- Approach: every coarse element is an independent dynamic sphere with its own fixed mass, inertia, free joint and frictional contact. Grain/grain, bucket/grain, tire/grain and ground/grain interactions occur in the same rigid-body solve. Pile deformation means grain rearrangement, not deformation of individual spheres.
-- No particle is inserted into the bucket, removed, welded, attached or given a prescribed trajectory. Vehicle payload mass is never assigned. Loader motion comes solely from wheel torque and the existing physical cylinder-force controller.
-- `configs/experiments/scripted_scoop.yaml` owns preparation, material, controller and acceptance settings. Grain radius 0.12 m is an ESTIMATED coarse numerical resolution, not gravel size or sand grain size. Radii vary from 95–100% of nominal with a fixed seed.
-- Nominal solid density 2590 kg/m³ is the existing Aoshima/Servin reference used by the column diagnostic. Density variants are explicit trial values. Grain sliding friction 0.65 is an existing uncalibrated diagnostic trial. Length-valued torsional/rolling friction is scaled from the column radius 0.0125 m to 0.12 m: 0.001 × 9.6 = 0.0096 m and 0.003 × 9.6 = 0.0288 m. This preserves diagnostic coefficient/radius ratios, not real gravel calibration. These are not AGX dimensionless rolling coefficients.
-- Bucket/steel contact separately reuses `blade_force.yaml`'s unmeasured gravel/blade sliding trial 0.3, with radius-scaled torsional/rolling coefficients 0.0096/0.0096 m. Explicit grain/bucket pairs preserve vehicle-only contacts. Copying grain/grain friction to the bucket is not an identified steel contact.
-- Contact time 4 ms, damping ratio 1, impedance 0.95–0.99 and six-dimensional contact are numerical choices. They do not identify Young's modulus, cohesion, grain crushing or real digging resistance. Vehicle reference settings remain unchanged; grain priority selects the trial for ground/other material contacts; explicit pairs select bucket/steel contact.
-- Deterministic trapezoidal release uses configurable height, width, crest length and slope. Gravity settles it without a retaining wall. Preparation slope is not a fixed repose-angle constraint; actual settled shape and motion must be inspected.
-- The existing native runtime uses MuJoCo 3.12.0; v1 control tick 1/240 s, eight physical substeps, implicit-fast integration, CG solver with a 1000-iteration cap. CG is reused from the existing material diagnostics; the vehicle-only Newton diagnostic used its exported default solver. The numerical change is explicit and linkage/stability screens are rerun. No dependency upgrade or experimental MPM coupling is required.
-- Newton supports free joints and sphere collisions, while its MuJoCo converter convex-hulls collision meshes. A hollow bucket must retain separate collision pieces. See [Newton 1.6 solver mappings](https://newton-physics.github.io/newton/1.6.0/solvers/mujoco.html). Particle-based media and volumetric deformable bodies are distinct capabilities; [Isaac Lab deformables](https://isaac-sim.github.io/IsaacLab/v3.0.0/source/concepts/deformables.html) does not by itself establish this experiment's GPU coupling.
+## What the old 102 kg result actually contains
 
-## Controller
+`36418cb` had a **1,500-particle budget**, not 1,500 simulated particles. Its nominal
+pile contains **83 spheres**, initially **1,435.297 kg**; six retained spheres weigh
+**102.309 kg**. `small_debug` preserves that exact geometry, radius distribution,
+seed and controller. The full measured state trajectory and retained mass are
+compared with the old recording separately from the new research-pile repeat.
 
-- Sequence: settle → approach → align cutting-edge pitch → lower → penetrate → curl while advancing → lift/break out → reverse → stabilize.
-- Attack pitch is used only to choose a reachable initial linkage configuration and corresponding cylinder lengths. There is no physical bucket-angle actuator. All attachment feedback is expressed as cylinder lengths/velocity commands through `FirstOrderCylinders` and `joint_efforts`.
-- Configurable approach speed/distance, cutting-edge pitch and lip-height plan, penetration depth/speed, curl-start fraction, curl-cylinder velocity, lift-cylinder velocity, bucket reaction safety threshold and reverse distance/speed. Nominal settings: approach 0.25 m/s for 0.5 m; attack −5°, lip 0.045 m; penetration 1.7 m at 0.4 m/s; curl starts at 90% depth; curl/lift velocity caps 0.035/0.06 m/s; reaction threshold 20 kN; reverse 1.5 m at 0.25 m/s. An outer bounded PI chassis-speed loop commands the existing finite wheel motor proxy under pile resistance; it adds no body force or state correction. The threshold is an estimated early-breakout trigger, not the manufacturer breakout-force specification.
-- Phase transitions use measured chassis displacement, cylinder lengths, contact force and explicit stabilization time. A stalled phase times out; no fake completion through elapsed travel time. Safety stops preserve recorded failures.
+At 240 Hz observation the baseline funnel is:
 
-## Accounting and metrics
+- Initial: 83 particles, 1,435.297 kg.
+- Contacted by bucket: 17 particles, 290.844 kg.
+- Entered the mouth and acquired: six particles, 102.309 kg.
+- Retained at breakout and finally retained: six particles, 102.309 kg.
+- Physically observed mouth spillage: zero.
+- Never acquired, displaced sideways by more than one diameter: 18 particles,
+  307.811 kg. Of these definitions, being outside the source's lateral bounds is
+  a different measure: ten particles, 171.865 kg.
+- Never acquired and still inside the original settled source bounding region:
+  31 particles, 539.098 kg. Remaining material outside that region is still
+  accounted for; it is not spillage.
 
-- Persistent ID and compiled mass for every grain. Initial total is independently checked against density × sphere volume; vehicle mass remains 15175 kg.
-- Bucket payload uses grain centers inside the extruded bucket-profile polygon, with half-plate-thickness measurement clearance, below its measurement mouth plane. The mouth plane is a classifier, not a collision lid. Each included center contributes its whole element mass, even if a surface protrudes across the mouth; no fractional volume is inferred. A whole-radius erosion would incorrectly reject grains resting in finite-penetration wall contact. The classifier is a measurement convention, not evidence of a clean 3.0 m³ cavity. Final payload also must be clear of the floor, contact-connected to the bucket through grains, and moving below 0.05 m/s after stabilization.
-- Remaining pile mass includes **all never-acquired material**, including grains displaced outside the original footprint. The settled source bounding box, expanded by maximum radius, only provides auxiliary `remaining_in_source_zone_mass_kg` and `displaced_unacquired_mass_kg`. Displacement is not bucket spillage. `spilled_mass_kg` / `bucket_exit_mass_kg` count previously acquired IDs currently outside the bucket. Reacquisition is allowed without double counting. Cumulative acquisition means unique IDs ever entering the bucket, not a sum of repeated crossings.
-- Exclusive instantaneous partition: `initial = remaining + bucket + spilled + delivered + boundary_loss + residual`. Delivery is zero in this scoop-only experiment; no dump zone is claimed. Explicit loss category covers invalid/below-floor/out-of-domain positions; nonfinite simulation states fail immediately. Conservation tolerance is relative 1e−9; a small residual alone does not prove acquisition or accurate soil physics.
-- Logged at 20 Hz: full poses, phase, material masses, cylinder force/extension, four wheel slip velocities, wheel traction/normal forces, bucket reaction, chassis pitch/roll/yaw and cumulative mechanical actuator work. Contact, force, slip and closure extrema are sampled screens; finite-state safety is checked each 240 Hz control tick, with eight physical substeps. Work is effort × generalized velocity, including wheel motors, integrated at control ticks. The reported positive-work channel integrates the positive part of total net actuator power; it is not the sum of individual positive actuator work and can hide simultaneous driving/braking losses. Neither channel is fuel or real hydraulic energy consumption.
-- Solid-volume fill factor is `retained_mass / solid_density / nominal_3_m3`. Bulk-equivalent fill remains unknown until bulk density/packing is established; the two must not be confused.
-- Repeat runs require identical prepared and settled states plus bounded final-position and payload differences. Geometry/material/controller variants are scenario sensitivity checks, not controlled controller comparisons. A controller comparison must reuse the same scenario and initial-state hash.
+The six retained masses are 17.1785, 16.3419, 16.4970, 17.6206, 16.5383 and
+18.1324 kg. They are observations, not assigned payload values. A 20 Hz replay
+finds only 16 contacted particles (274.006 kg); the finer live observation catches
+one more brief contact without changing dynamics or the six acquired IDs.
+
+The measured baseline pile envelope is about 1.211 m³. The discretized bucket
+cavity sweep is about 9.35 m³: **sweep/pile ≈ 7.72**. The source does not extend
+past both bucket sides (minimum lateral margin −0.607 m). This is an inadequate
+general reservoir experiment. It does not prove that insufficient material is
+the sole cause of the six-particle result.
+
+## Pile design and physical mass
+
+`configs/experiments/scripted_scoop.yaml` configures width, depth, height, crest
+length, release slope, solid density, target bulk density and target packing.
+These are **research preparation dimensions, not claims about a WA320 site**.
+The release is a trapezoid extruded across its width; its lateral faces are free,
+with no retaining walls. Gravity can spread the released material in all directions.
+Release slope is not an imposed or validated angle of repose.
+
+For height h, crest c, width w and symmetric front/rear release slope θ:
+
+```
+depth d = c + 2h / tan(θ)
+pile preparation volume V = w h (d + c) / 2
+particle mass_i = solid_density × (4π/3) × radius_i³
+target material mass = V × target_bulk_density
+N × mean_actual_particle_mass = actual_compiled_material_mass
+bulk_density = material_mass / measured_bulk_envelope_volume
+packing_fraction = bulk_density / solid_density
+```
+
+Depth, crest, height and slope are geometrically coupled; inconsistent inputs fail
+instead of silently changing the shape. For volume-designed cases the solid
+trial density is 2,590 kg/m³, release packing target 0.4 and release bulk-density
+target 1,036 kg/m³. These are numerical research assumptions, not sand calibration.
+
+Count is derived from target mass and the expected mass of the unchanged uniform
+radius distribution [0.95r, r]. A deterministic selection of non-overlapping lattice
+positions then matches the target mass within half the largest element mass.
+No density inflation, radius shrinkage or truncation to `max_particles` occurs.
+The guard rejects requests beyond the CPU count budget or non-overlapping release
+capacity. `small_debug`, `low_shallow`, its width ablation and `tall_deep` retain
+the original complete-lattice preparation for exact historical comparisons; their
+actual mass and implied density are measured rather than claimed to match a new
+bulk-density target.
+
+Research preparation (both `nominal` and the default `research_underburden`): **3.8 m wide × 5.0 m deep × 1.2 m high**,
+crest 1.0 m, slope 30.9638°, 13.68 m³, **816 elements**, actual mass 14,179.665 kg
+(target 14,172.480 kg). Requested dimensions do not imply exact settled dimensions.
+The authoritative settled initial mass is the sum of actual compiled element
+masses after a valid settled state, not the requested target mass. The default
+`research_underburden` explicitly raises the lip-height plan to 0.30 m, enough
+for a coarse element beneath the cut. `nominal` preserves the old 0.045 m plan
+for the unchanged-controller study. This is a geometric underburden correction,
+not a payload or force-threshold adjustment.
+
+At r = 0.12 m, a 3–4 m × 3–5 m × 1–1.5 m pile naturally needs roughly a thousand
+coarse elements, not tens of thousands. The performance cases therefore enlarge
+the physical reservoir, keeping element size and material/controller settings:
+
+- `debug_1500`: 4 × 5 × 1.5 m, crest 3.25 m, release slope 59.7436°,
+  24.75 m³, approximately 1,500 elements. This steep *release* must settle freely;
+  it is not a claimed stable sand slope.
+- `medium`: 6 × 10 × 2.4 m, crest 2 m, slope 30.9638°, 86.4 m³,
+  approximately 5,000 elements and 89.5 tonnes.
+- `large`: 8 × 12 × 3 m, crest 2 m, slope 30.9638°, 168 m³,
+  approximately 10,000 elements and 174 tonnes.
+
+The `small_debug` safety budget is 1,500 but its historical particle count remains
+83. Performance targets must not be confused with this historical debug state.
+
+The 0.12 m nominal radius means **0.24 m nominal diameter**. These are coarse
+numerical elements, not individual sand grains. The shallow source is fewer than
+two nominal diameters high after settling. No fine-sand fidelity is inferred.
+
+Contact trials remain unchanged: grain sliding friction 0.65; bucket/steel sliding
+friction 0.3; grain torsional/rolling length coefficients 0.0096/0.0288 m; steel
+coefficients 0.0096/0.0096 m; 4 ms contact time, damping ratio 1 and six-dimensional
+contact. The length coefficients retain the earlier radius scaling from the column
+diagnostic; none is identified against real sand or steel tests. The native solve
+uses implicit-fast integration, CG with a 1,000-iteration cap, 240 Hz control and
+eight physical substeps per control tick. These numerical choices are not a material
+calibration or independent validation of digging resistance.
+
+## Measured geometry, capacity and boundaries
+
+`initial_pile_envelope` uses the convex hull of 26 sampled surface directions per
+sphere. Its approximate bulk volume includes interparticle voids and concavities;
+it is not a sum of sphere solid volumes. Effective settled bulk density and
+packing are mass divided by this measured envelope. A budget interruption before
+settling is marked **UNSETTLED** and cannot establish authoritative settled mass.
+
+`bucket_swept_volume_m3` is a 0.10 m voxel union of centroid-classifier cavity
+poses sampled during penetration/curl advance. It measures an approximate cavity
+sweep, **not actual excavated solids**. The report gives sweep/pile and its inverse,
+plus global-envelope lateral clearance, floor-to-edge clearance and distance ahead of the
+last penetration pose. These bounding-envelope margins do not establish local material
+occupancy beneath or around every cutting-edge position; that remains unvalidated. An early force-triggered scoop has a shorter measured sweep
+than the requested full-depth path; do not use its ratio to claim full-depth success.
+
+Nominal bucket capacity is approximately 3.0 m³. Report separately:
+
+```
+solid_material_volume = retained_mass / solid_density
+bulk_equivalent_retained_volume = retained_mass / measured_initial_bulk_density
+bulk_equivalent_fill_factor = bulk_equivalent_retained_volume / 3.0 m³
+```
+
+The bulk-equivalent quantity assumes the initial-pile effective density as a
+reference; it does not measure packing inside the bucket. Baseline effective
+bulk density is about 1,185.23 kg/m³, so 102.309 kg is about 0.0863 m³ or **2.88%**
+bulk-equivalent fill, versus **1.317%** solid-volume/nominal-capacity ratio.
+The unchanged estimated bucket profile extrudes to about **4.30 m³ before plate
+clearance**, unlike the 3.0 m³ nominal specification. This geometry uncertainty is
+reported, not corrected to force a payload or declared a validated bucket cavity.
+
+## Contact, acquisition, retention and spillage
+
+All IDs and compiled masses are fixed. `AcquisitionFunnel` observes bucket-local
+centres at 240 Hz, independently of 20 Hz state recording:
+
+1. **Contact:** a grain/bucket pair appears in the solver contact list. This never
+   assigns payload. Contact can be missed between observation ticks.
+2. **Mouth entry:** the measured centre segment crosses the finite open mouth
+   plane inward, within the lip/back-top segment and bucket lateral aperture.
+3. **Acquired:** a mouth-entry ID subsequently satisfies the cavity classifier.
+4. **Retained after breakout:** classified inside on the first reverse observation.
+5. **Physical spillage during extraction:** a previously acquired centre crosses
+   the finite mouth outward during reverse, optional tip/hold or stabilization.
+6. **Final payload:** centres still inside after the measured sequence. Support,
+   height and final-speed screens are reported separately.
+
+The classifier uses the original extruded profile with half-plate-thickness
+measurement clearance. Whole-element mass is counted for an included centre;
+partial protrusion is possible. The mouth plane is a measurement surface, not a
+collision lid. Unverified inside appearances and wall-only classifier exits are
+exposed, not used to satisfy physical-spillage acceptance. Entry/exit event times,
+IDs, phases and masses are recorded. Acquisition and spill counts are unique IDs;
+repeated events are also counted separately. Contact > acquired > retained is
+possible, not an inequality forcibly imposed on results.
+
+The exclusive instantaneous mass partition remains:
+
+```
+initial = never_acquired_remaining + bucket + acquired_currently_outside
+          + delivered + boundary_loss + residual
+```
+
+The older `spilled_mass_kg`/`bucket_exit_mass_kg` channels mean acquired IDs
+currently outside the *centroid classifier*. Physical mouth spillage has its own
+funnel field and acceptance gate. Displaced never-acquired material is never
+labelled spillage. Delivery remains zero in this scoop-only experiment.
+
+## Controller and force interpretation
+
+The controller uses bounded drive and physical cylinder efforts only:
+settle → approach → align → lower → penetrate → curl/advance → lift/breakout →
+reverse → stabilize. Penetration target is 1.7 m, attack −5°, curl starts at 90%
+of target depth, and the existing reaction-force trigger remains 20 kN.
+
+The original trigger uses **sum of grain-contact force magnitudes at logging
+ticks**, not the net vector resultant. New runs additionally record the signed
+world XYZ grain-reaction resultant. A force trigger can end penetration and then
+end curl/advance one control tick later; this behavior is measured before any
+attempt to change controller policy or increase its threshold. Cylinder force,
+stroke, pin closure, wheel slip, traction, stability, contact overlap and solver
+warnings remain acceptance screens. Actuator work is mechanical effort × joint
+velocity, not fuel or engine energy.
+
+`spill_demonstration` reuses the exact small-debug acquisition, lifts, reverses,
+then follows the existing reachable dump linkage plan through physical cylinders
+and holds it. No grain state or payload mass is commanded. If all material exits,
+the physical-spillage gate may pass while the final-positive-retention screen
+fails; that is reported rather than hidden.
+
+## Shallow-case investigation
+
+Keep `low_shallow` and its positive-retention acceptance test. It is a physically
+failed scoop at the present coarse resolution, not a successful zero-payload test.
+The historical recording completes its motion and has a reachable attack plan,
+yet both the plate-clearance classifier and an independent zero-clearance polygon
+check find **zero inside centres throughout**. Thus the plate-clearance exclusion
+alone does not explain the zero payload. The low source has only 36 elements,
+577.466 kg and about 0.427 m settled height; contact and displacement occur without
+observed mouth entry. `low_shallow_wide` changes only source width to investigate
+lateral supply, retaining low-case density, attack, depth, seed, radius and controller.
+This does not identify fine-grain resolution, cutting-edge geometry or friction
+independently. A failed physical explanation is not replaced by tuning to a payload.
 
 ## Reproduce
 
+Install the existing `material-audit`, `geometry-audit` and `dev` extras. The
+optional material diagnostics now also require SciPy for convex-envelope volume.
+Create the passing v1 mechanical source first; do not substitute a fixed-base or
+pre-correction model.
+
 ```bash
+PYTHONPATH=src .venv/bin/python scripts/run_scripted_scoop_suite.py \
+  --source outputs/wa320/mechanical_correction/release_nominal/effective_model.xml \
+  --output outputs/wa320/m2/reservoir_suite \
+  --research-wall-s 900 --benchmark-wall-s 120
+
 PYTHONPATH=src .venv/bin/python scripts/check_scripted_scoop.py \
   --source outputs/wa320/mechanical_correction/release_nominal/effective_model.xml \
-  --scenario nominal --output outputs/wa320/m2/accounted_suite/nominal
+  --scenario research_underburden --output outputs/wa320/m2/reservoir_suite/research_underburden
+
+PYTHONPATH=src .venv/bin/python scripts/evaluate_scripted_scoop.py \
+  outputs/wa320/m2/reservoir_suite
+PYTHONPATH=src .venv/bin/python scripts/diagnose_scripted_scoop.py \
+  outputs/wa320/m2/reservoir_suite/low_shallow
+PYTHONPATH=src .venv/bin/python scripts/render_scripted_scoop.py \
+  outputs/wa320/m2/reservoir_suite/spill_demonstration
 ```
 
-- Generate the source using the documented v1 Newton V-cycle first. Do not substitute a fixed-base or pre-correction model. Outputs remain ignored; public configuration and code provide reproduction.
-- Run the same command for `low_shallow`, `tall_deep`, and a second nominal run in `nominal_repeat`; keep them under the same suite folder. Then run `scripts/evaluate_scripted_scoop.py outputs/wa320/m2/accounted_suite` and `scripts/render_scripted_scoop.py outputs/wa320/m2/accounted_suite/nominal`. The suite currently exits unsuccessfully for the documented physical acceptance failures. Install existing `material-audit`, `geometry-audit` and `dev` extras for CPU checks, plots and replay.
-- Numerical results are reported below. A script exits unsuccessfully if any single-run physical acceptance fails. Scenario/repeat evidence is required separately; a successful single run does not set `m2_complete=true`.
+Each failing physical run exits nonzero but retains its report/recording. The suite
+continues across failures and compares small/medium/large under identical vehicle,
+controller, seed, radius, solid-density and contact settings. Historical packing
+and geometry differ and are reported explicitly. `--reuse-existing` is optional;
+the evaluator still checks each report against the requested physical scenario.
 
-## Acceptance status and quantitative results
+CPU wall budgets include preparation/compilation and stop with an explicit
+incomplete-scoop reason. An external per-process timeout handles an individual
+solver step or compilation that cannot return within the budget. Preparation and
+runtime checkpoints survive such a timeout. The 512 MiB solver arena is bounded;
+process peak RSS, contacts, warnings and simulated-seconds/wall-second are measured.
+A short startup/settling benchmark does **not** provide final payload, stability
+through excavation, or a completed pile-size sensitivity comparison.
 
-- **M2 is not complete.** Nominal/tall cases demonstrate real acquisition and retention; shallow-pile acquisition fails, and the accepted runs demonstrate no nonzero bucket spillage. Neither displaced material nor an invalid earlier trial is used to satisfy the spillage gate.
-- `m2_cpu_reference_passed=false`; `isaaclab_newton_gpu_material_execution_verified=false`; material calibration is false. Active terrain selection still defaults to the rigid pile. No PPO or world-model work is authorized by these results.
-- Authoritative local evidence is `outputs/wa320/m2/accounted_suite/`; earlier development folders are not acceptance evidence.
+## Artifacts and acceptance
 
-### nominal
+All local experiment evidence stays under ignored `outputs/`. Each report contains
+requested dimensions, count/radius/masses, measured envelope/density/packing,
+sweep and boundary ratios, contact/acquisition/spill funnel, force/slip/stroke
+metrics, conservation and explicit failed checks. `comparison.csv` compares the
+measured cases; incomplete rows are labelled. `suite.json` preserves missing cases,
+configuration mismatches, incomplete runs and failed shallow/spillage gates.
 
-- Preparation height/width/slope: 0.70 m / 1.20 m / 32°; density 2590 kg/m³; 83 elements; attack -5°; depth target 1.70 m.
-- Actual settled height/width: 0.613/1.846 m; grain speed RMS 0.000373 m/s. Discrete layer spacing means requested height is not attained exactly; nominal/tall preparations resolve almost the same height. Actual repose slopes are not identified at this resolution.
-- Initial mass 1435.297 kg = remaining 1332.988 + bucket 102.309 + bucket spillage 0.000 + delivered 0.000 + boundary loss 0.000 kg, within floating-point residual. Displaced never-acquired material: 793.890 kg, included in remaining mass.
-- Retained payload 102.309 kg; solid-volume fill factor 1.317%; cycle 33.308 s; forward/reverse travel 2.589/1.664 m. Travel overshoot is physical; the requested reverse distance is not imposed as a pose.
-- Sampled peak wheel traction 20.356 kN; maximum slip velocity 0.0149 m/s. Steering/lift/bucket cylinder force peaks 20.771/82.186/34.128 kN; extension ranges and all five physical slider checks are in the report/recording.
-- Net/positive mechanical actuator work 28.253/38.020 kJ; maximum chassis pitch/roll 0.00330°. This is not real fuel consumption or validated suspension behavior.
-- Maximum cylinder/Z-bar pin gaps 0.0221/0.0717 mm against 1 mm screens; no slider overrun, bucket/floor overlap, vehicle self-penetration or solver warning. Single-run acceptance: **PASS**.
+Recordings contain all free-body poses and fixed material IDs, lip positions,
+accounting and actuator/contact traces. Replays never advance physics and assert
+that highlighted payload matches the recorded mass. Videos are **recorded CPU
+replay**, not live simulation or evidence of physical material calibration.
 
-### low_shallow
+## Measured interpretation before controller changes
 
-- Preparation height/width/slope: 0.50 m / 1.00 m / 28°; density 2400 kg/m³; 36 elements; attack -6°; depth target 1.80 m.
-- Actual settled height/width: 0.427/1.123 m; grain speed RMS 0.000179 m/s. Discrete layer spacing means requested height is not attained exactly; nominal/tall preparations resolve almost the same height. Actual repose slopes are not identified at this resolution.
-- Initial mass 577.466 kg = remaining 577.466 + bucket 0.000 + bucket spillage 0.000 + delivered 0.000 + boundary loss 0.000 kg, within floating-point residual. Displaced never-acquired material: 561.156 kg, included in remaining mass.
-- Retained payload 0.000 kg; solid-volume fill factor 0.000%; cycle 33.029 s; forward/reverse travel 2.637/1.727 m. Travel overshoot is physical; the requested reverse distance is not imposed as a pose.
-- Sampled peak wheel traction 10.098 kN; maximum slip velocity 0.0200 m/s. Steering/lift/bucket cylinder force peaks 9.138/82.186/27.235 kN; extension ranges and all five physical slider checks are in the report/recording.
-- Net/positive mechanical actuator work 22.371/31.719 kJ; maximum chassis pitch/roll 0.00183°. This is not real fuel consumption or validated suspension behavior.
-- Maximum cylinder/Z-bar pin gaps 0.0331/0.0598 mm against 1 mm screens; no slider overrun, bucket/floor overlap, vehicle self-penetration or solver warning. Single-run acceptance: **FAIL — no material acquired/retained**.
+The original result is an **entry limitation**, not loss after acquisition: all
+six mouth-entry IDs remain retained, with zero physical exits. The 83-element
+source is too narrow and too small relative to the measured cavity sweep. Neither
+the 3.0 m³ nominal capacity nor contact count predicts payload. Source geometry,
+late curl (90% penetration), coarse resolution and blunt contact geometry remain
+coupled; this study does not uniquely isolate wall/lip geometry or friction.
+Inspection confirms separate side-wall meshes and floor/back plates, with no
+full-width convex bucket hull closing the mouth.
 
-### tall_deep
+Widening only the configured low source from 1.0 to 3.8 m changes 36 elements
+(577.466 kg) to 153 elements (2,466.278 kg), and changes retention from zero to
+seven particles (113.681 kg). It retains the low-case density, seed, radius,
+controller, attack and depth. Its generated arrangement necessarily changes with
+geometry; it is not an identical-particle-layout experiment. All single-run
+physical checks pass for `low_shallow_wide`. The original failed case remains in
+the suite and its acquisition gate remains active. This is the measured shallow
+correction, without declaring the old zero-payload run a pass.
 
-- Preparation height/width/slope: 0.80 m / 1.50 m / 36°; density 2700 kg/m³; 111 elements; attack -4°; depth target 1.90 m.
-- Actual settled height/width: 0.618/2.077 m; grain speed RMS 0.000428 m/s. Discrete layer spacing means requested height is not attained exactly; nominal/tall preparations resolve almost the same height. Actual repose slopes are not identified at this resolution.
-- Initial mass 2019.370 kg = remaining 1889.433 + bucket 129.937 + bucket spillage 0.000 + delivered 0.000 + boundary loss 0.000 kg, within floating-point residual. Displaced never-acquired material: 1417.203 kg, included in remaining mass.
-- Retained payload 129.937 kg; solid-volume fill factor 1.604%; cycle 34.392 s; forward/reverse travel 2.920/1.658 m. Travel overshoot is physical; the requested reverse distance is not imposed as a pose.
-- Sampled peak wheel traction 10.573 kN; maximum slip velocity 0.0149 m/s. Steering/lift/bucket cylinder force peaks 9.474/82.186/42.657 kN; extension ranges and all five physical slider checks are in the report/recording.
-- Net/positive mechanical actuator work 34.801/44.703 kJ; maximum chassis pitch/roll 0.00261°. This is not real fuel consumption or validated suspension behavior.
-- Maximum cylinder/Z-bar pin gaps 0.0309/0.0844 mm against 1 mm screens; no slider overrun, bucket/floor overlap, vehicle self-penetration or solver warning. Single-run acceptance: **PASS**.
+In the 816-element old-height research case, the unchanged 20 kN contact-magnitude
+trigger sees 30.240 kN and ends penetration at 0.466 m chassis travel. It ends
+curl/advance one control tick later, using the same sampled reaction, before any
+mouth entry. With the default 0.30 m height plan, the edge is
+0.277 m above the initial material envelope floor, minimum lateral margin 1.182 m, and material ahead of the final edge
+3.803 m. The settled envelope is approximately 5.511 m wide × 4.287 m deep ×
+0.987 m high, 12.261 m³, effective density 1,156.44 kg/m³ and packing 0.4465.
+Sweep/pile is 0.5423 (inverse 1.844). Despite the larger global reservoir and floor clearance, a 21.426 kN reaction again triggers early breakout at 0.915 m chassis travel;
+no grain enters. These short sweeps do not establish full-depth excavation.
 
-### Repeatability and accounting
+The next controller investigation is the force-triggered transition and only
+one tick of curl/advance, with the current 20 Hz reaction observation. Increasing
+the force threshold or tuning toward a desired payload is not justified by these
+results. The current study preserves that failure and does not claim successful
+large-reservoir scooping.
 
-- Nominal versus `nominal_repeat`: identical prepared/settled hashes; maximum difference over **all recorded generalized positions** 0.0; payload difference 0 kg. Screens: 1e−7 for generalized positions and 1e−7 kg for payload. This is same-runtime determinism, not cross-device or CPU/GPU parity.
-- Maximum absolute mass residual over all cases: 2.27e-13 kg. Relative tolerance 1e−9 of initial mass. The exclusive fixed-ID partition conserves mass by construction; independent compiled sphere-volume/density and unchanged vehicle-mass checks catch different errors. A near-zero residual does not validate the physical material law or centroid classification accuracy.
-- Pile deformation, bucket/material contact, prescribed sequence, cylinder/Z-bar/stroke screens and stability pass in all cases. Low/shallow still pushes material without acquisition. Both successful cases start empty, finish with payload above the floor, and retain physically contact-supported material after reverse.
-- Nonzero spillage acceptance **fails**: maximum measured bucket exit is 0 kg in this suite. The accounting unit test exercises acquire → spill → reacquire → delivery/loss, but this does not substitute for a valid physical spillage run.
+The explicit tip-out run acquires six particles/102.309 kg, retains them through
+lift and reverse, then records all six outward mouth crossings at about 38.800 s.
+It is deliberate complete release, not spontaneous withdrawal spillage or a
+partial-spill retention result. Mass remains accounted for; no grain is deleted.
+The physical-spillage gate passes, while final-positive-retention/support checks
+fail because the bucket ends empty.
 
-## Artifacts and limitations
+<!-- measured-results -->
+## Recorded results
 
-- Each case: `model.xml`, `report.json`, `accounting.json`, `recording.npz` (full positions, IDs, masses, force/stroke/work/contact/slip traces). Authoritative mass accounting uses full-precision records; PLY exports are visualization files.
-- Nominal replay/plots: `scripted_scoop_replay.mp4`, `bucket_payload.png`, `payload_vs_time.png`, `metrics.png`, `pile_before_after.png`, `initial_pile.ply`, `final_ground_material.ply`, `final_bucket_payload.ply`. Green grains represent the same payload classifier used by accounting; replay asserts highlighted mass matches the recorded bucket mass at every frame. Initial/final scatter plots include retained material; PLY ground/payload exports separate it explicitly.
-- Replay uses recorded states only. Existing original tire and off-road surface appearance is reused without changing physics. The floor is rigid/flat with an off-road texture; the pile is dynamic. Appearance does not prove real-world force accuracy.
-- Early 331-element trials were too slow for rapid CPU checks. Unscaled length-valued rolling friction caused excessive spreading. A CG/200 trial exceeded the 1 mm pin-gap screen; it is excluded. The final radius-scaled trial, distinct steel contact and CG/1000 profile are explicit assumptions, not calibration against real loading data.
-- Low shallow piles and earlier higher attack-angle trials produced no load. Contact traces indicate material pushed ahead/aside. The blunt 60 mm collision plate, minimum cutting clearance, contact law and coarse resolution are candidate contributors; this is an inference, not a uniquely identified cause. No vehicle geometry or state was changed to force a fill.
-- Next work: isolate cutting-edge/contact-clearance behavior and shallow-pile entry; obtain a valid nonzero spillage case; then establish Isaac Lab/Newton GPU coupling/parity before making a production task claim. Preserve and rerun the identical-state baseline. Do not start PPO.
+Values below come from the recorded reference runs, not a target payload. All
+mass columns are kg. Complete motion can still fail acquisition/retention gates.
+A blank final payload for an interrupted test is unknown, not zero.
+
+| Case | N | Settled initial mass | Contacted | Acquired | Physically spilled | Final retained | Sweep/pile |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `small_debug` | 83 | 1435.297 | 290.844 | 102.309 | 0.000 | 102.309 | 7.721 |
+| `nominal` | 816 | 14179.665 | 192.499 | 0.000 | 0.000 | 0.000 | 0.413 |
+| `research_underburden` | 816 | 14179.665 | 158.164 | 0.000 | 0.000 | 0.000 | 0.542 |
+| `low_shallow` | 36 | 577.466 | 111.619 | 0.000 | 0.000 | 0.000 | 21.774 |
+| `low_shallow_wide` | 153 | 2466.278 | 464.635 | 113.681 | 0.000 | 113.681 | 4.883 |
+| `tall_deep` | 111 | 2019.370 | 325.555 | 129.937 | 0.000 | 129.937 | 6.524 |
+| `spill_demonstration` | 83 | 1435.297 | 290.844 | 102.309 | 102.309 | 0.000 | 7.721 |
+
+Bucket reaction below is the existing sampled sum-of-contact-magnitudes proxy,
+not the signed vector resultant. Cylinder values are steer/lift/bucket channels.
+Displaced mass includes acquired material; it measures material movement rather
+than only rearrangement of the remaining pile. Full traces are in the recordings.
+
+| Case | Peak bucket reaction (kN) | Peak slip velocity (m/s) | Cylinder peaks (kN: steer/lift/bucket) | Mass moved > one diameter (kg) |
+|---|---:|---:|---:|---:|
+| `small_debug` | 12.39 | 0.01487 | 20.77/82.19/34.13 | 1435.297 |
+| `nominal` | 30.24 | 0.01177 | 7.19/82.19/33.89 | 16.770 |
+| `research_underburden` | 21.43 | 0.01155 | 8.80/82.19/38.54 | 32.999 |
+| `low_shallow` | 7.00 | 0.01995 | 9.14/82.19/27.23 | 577.466 |
+| `low_shallow_wide` | 18.57 | 0.01429 | 9.14/82.19/40.17 | 1950.935 |
+| `tall_deep` | 16.33 | 0.01493 | 9.47/82.19/42.66 | 2019.370 |
+| `spill_demonstration` | 12.39 | 0.02192 | 20.77/146.77/242.54 | 1435.297 |
+
+### CPU feasibility limits
+
+These are shared-workstation measurements, not isolated hardware benchmarks.
+An underburden diagnostic overlapped some startup benchmarks. Configured wall
+budgets include compilation. RSS is the worker's measured peak resident memory;
+512 MiB is its configured solver arena, not total process memory.
+
+| Case | N | Prepared mass (kg) | Simulated time (s) | Total wall time (s) | Peak RSS (MiB) | Outcome |
+|---|---:|---:|---:|---:|---:|---|
+| `debug_1500` | 1473 | 25637.350 | 4.0125 | 120.14 | 183.98 | Incomplete; CPU wall budget |
+| `medium` | 5151 | 89506.514 | 0.6750 | 120.43 | 440.60 | Incomplete; CPU wall budget |
+| `large` | 10010 | 174047.680 | Not established | 240 s watchdog | Not captured | Compilation did not return; process stopped |
+
+The ~1.5k and ~5k runs stop before the 10 s settling period completes. No solver
+warnings were recorded in their short observed intervals; that does **not** prove
+excavation stability. The 10k request retains its complete prepared count and
+174-tonne mass target, but compilation did not return before the external watchdog.
+No final settled mass, payload, contact/acquisition outcome, full-cycle stability
+or authoritative peak RSS is claimed for that case. The current CPU path is
+impractical at this scale under these budgets. No GPU workaround was introduced.
+The requested completed small/medium/large payload sensitivity is therefore
+**not established**; incomplete values must not be interpreted as failed zero-load
+scoops. `comparison.csv` explicitly labels partial and missing-final-report rows.
+
+Original-control research repeat maximum generalized-position error: 0.0 (mixed SI joint coordinates).
+Default underburden repeat maximum generalized-position error: 0.0.
+
+`baseline_comparison.json` confirms the original 36418cb nominal and `small_debug`
+have identical prepared/settled hashes, sample times and recorded generalized
+positions, with zero payload difference. `spillage_prefix_comparison.json` confirms
+the tip-out case shares the identical recorded acquisition/lift/reverse prefix
+through 30.254 s before deliberately changing orientation.
+
+M2 remains incomplete: the original shallow case and the larger research scoops
+fail acquisition, the deliberate full release ends empty, and the large CPU
+sensitivity cases are incomplete. Geometric adequacy, mass closure or a playable
+replay is not material-model validation. The next controlled investigation should
+address force-triggered curl/breakout behavior and distinguish trajectory/contact
+geometry from particle-resolution effects; no learned controller is started.

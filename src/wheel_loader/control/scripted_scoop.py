@@ -100,6 +100,15 @@ class ScriptedScoop:
         )
         self.transport = cylinder_geometry(p, [0, *p["maneuver"]["settle"]])[0]
         self.carry = cylinder_geometry(p, [0, *p["maneuver"]["curl_lift"]])[0]
+        self.phases = PHASES
+        if cfg.get("demonstrate_spillage", False):
+            self.phases = PHASES[:-1] + ("spill_tip", "spill_hold", "stabilize")
+        # Physical linkage targets, followed through bounded cylinder efforts.
+        self.spill = (
+            cylinder_geometry(p, [0, *p["maneuver"]["dump"]])[0]
+            if cfg.get("demonstrate_spillage", False)
+            else self.carry.copy()
+        )
         self.index, self.entered, self.origin = 0, 0.0, 0.0
         if (
             not 0 < cfg.get("curl_start_fraction", 0.8) < 1
@@ -116,7 +125,7 @@ class ScriptedScoop:
 
     @property
     def phase(self):
-        return PHASES[self.index]
+        return self.phases[self.index]
 
     def command(self, t, x, lengths, bucket_force_N):
         lengths = np.asarray(lengths, dtype=float)
@@ -174,7 +183,15 @@ class ScriptedScoop:
         elif self.phase == "reverse":
             speed = -cfg["reverse_speed_m_s"]
             reached = self.origin - x >= cfg["reverse_distance_m"]
+        elif self.phase == "spill_tip":
+            target = self.spill.copy()
+            reached = np.max(abs(lengths[1:] - target[1:])) < 0.01 and age > 2
+        elif self.phase == "spill_hold":
+            target = self.spill.copy()
+            reached = age >= cfg.get("spill_hold_s", 4.0)
         else:
+            if cfg.get("demonstrate_spillage", False):
+                target = self.spill.copy()
             reached = age >= cfg["stabilize_s"]
         vmax = np.array([self.p["actuators"][n]["vmax"] for n in NAMES])
         physical_velocity = np.clip(2 * (target - lengths), -vmax, vmax)
@@ -205,11 +222,20 @@ class ScriptedScoop:
             self.failed, self.done = True, True
         if reached and not self.done:
             self.events.append(
-                {"phase": self.phase, "finished_s": float(t), "x_m": float(x)}
+                {
+                    "phase": self.phase,
+                    "finished_s": float(t),
+                    "x_m": float(x),
+                    "bucket_reaction_N": float(bucket_force_N),
+                    "trigger": "reaction_force"
+                    if self.phase in ("penetrate", "curl_advance")
+                    and bucket_force_N >= cfg["breakout_threshold_N"]
+                    else "target_reached",
+                }
             )
             if self.phase == "lower":
                 self.entry_x = x
-            if self.index == len(PHASES) - 1:
+            if self.index == len(self.phases) - 1:
                 self.done = True
             else:
                 self.index += 1

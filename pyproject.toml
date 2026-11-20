@@ -15,7 +15,7 @@ model-audit = ["xacro==2.1.1"]
 sim = ["isaaclab==3.0.0"]
 dev = ["pytest>=8,<10"]
 geometry-audit = ["matplotlib>=3.8,<4", "Pillow>=10,<13"]
-material-audit = ["mujoco==3.12.0", "Pillow>=10,<13"]
+material-audit = ["mujoco==3.12.0", "Pillow>=10,<13", "scipy>=1.11,<2"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit", "tests/test_wa320_mass_budget.py", "tests/test_wa320_static_load.py", "tests/test_wa320_actuators.py", "tests/test_wa320_reconstruction.py", "tests/test_wa320_mechanical_structure.py"]

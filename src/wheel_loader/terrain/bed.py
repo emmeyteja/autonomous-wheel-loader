@@ -88,6 +88,56 @@ class ScoopPile:
     radius_m: float = 0.10
     seed: int = 42
     max_particles: int = 2000
+    depth_m: float | None = None
+    target_bulk_density_kg_m3: float | None = None
+    particle_density_kg_m3: float = 2590.0
+    target_packing_fraction: float | None = None
+
+    @property
+    def depth(self):
+        return self.crest_length_m + 2 * self.height_m / np.tan(
+            np.deg2rad(self.slope_deg)
+        )
+
+    @property
+    def volume_m3(self):
+        """Analytic trapezoidal release volume, before gravity settling."""
+        return self.width_m * self.height_m * (self.depth + self.crest_length_m) / 2
+
+    def material_design(self):
+        """Mass is volume times bulk density; max_particles is only a guard."""
+        if self.target_bulk_density_kg_m3 is None:
+            if self.target_packing_fraction is not None:
+                raise ValueError(
+                    "Provide both target bulk density and packing fraction"
+                )
+            return None  # Exact historical small-debug lattice, not a mass target.
+        rho, bulk, packing = (
+            self.particle_density_kg_m3,
+            self.target_bulk_density_kg_m3,
+            self.target_packing_fraction,
+        )
+        if not all(np.isfinite(v) and v > 0 for v in (rho, bulk)) or not (
+            packing is not None and np.isfinite(packing) and 0 < packing < 0.74
+        ):
+            raise ValueError("Invalid solid/bulk density or target packing fraction")
+        if not np.isclose(bulk, rho * packing, rtol=1e-9):
+            raise ValueError(
+                "Bulk density must equal solid density times packing fraction"
+            )
+        # Uniform radius distribution on [0.95r, r], retained from the diagnostic.
+        mean_solid_volume = (
+            4 / 3 * np.pi * self.radius_m**3 * (1 - 0.95**4) / (4 * 0.05)
+        )
+        mass = self.volume_m3 * bulk
+        return {
+            "requested_volume_m3": self.volume_m3,
+            "target_bulk_density_kg_m3": bulk,
+            "target_packing_fraction": packing,
+            "target_material_mass_kg": mass,
+            "expected_particle_mass_kg": rho * mean_solid_volume,
+            "estimated_particle_count": round(mass / (rho * mean_solid_volume)),
+        }
 
     def generate(self):
         if (
@@ -114,6 +164,19 @@ class ScoopPile:
             raise ValueError("Invalid seed or particle budget")
         slope = np.tan(np.deg2rad(self.slope_deg))
         length = self.crest_length_m + 2 * self.height_m / slope
+        if self.depth_m is not None and (
+            not np.isfinite(self.depth_m)
+            or not np.isclose(self.depth_m, length, rtol=1e-6, atol=1e-6)
+        ):
+            raise ValueError(
+                "Depth, height, crest and slope describe inconsistent trapezoid geometry"
+            )
+        design = self.material_design()
+        if design and design["estimated_particle_count"] > self.max_particles:
+            raise ValueError(
+                f"Requested volume/density requires approximately {design['estimated_particle_count']} "
+                f"particles; CPU particle budget is {self.max_particles}; no mass discarded"
+            )
         spacing = 2.04 * self.radius_m
         if (
             np.prod(
@@ -146,11 +209,31 @@ class ScoopPile:
                         and abs(yy) + self.radius_m <= self.width_m / 2
                     ):
                         points.append([xx, yy, z])
-                        if len(points) > self.max_particles:
+                        if design is None and len(points) > self.max_particles:
                             raise ValueError("Pile exceeds budget; no grains discarded")
         if not points:
             raise ValueError("Empty coarse pile")
         xyz = np.asarray(points) + rng.uniform(
             -0.002 * self.radius_m, 0.002 * self.radius_m, (len(points), 3)
         )
-        return xyz, rng.uniform(0.95 * self.radius_m, self.radius_m, len(points))
+        radii = rng.uniform(0.95 * self.radius_m, self.radius_m, len(points))
+        if design:
+            # Select a deterministic, non-overlapping release with the requested
+            # mass. Never shrink radii, inflate density, or truncate to the cap.
+            order = rng.permutation(len(points))
+            mass = 4 / 3 * np.pi * radii[order] ** 3 * self.particle_density_kg_m3
+            cumulative = np.r_[0.0, np.cumsum(mass)]
+            target = design["target_material_mass_kg"]
+            if cumulative[-1] < target:
+                raise ValueError(
+                    "Requested packing exceeds non-overlapping release capacity; "
+                    "enlarge the geometry or explicitly change the packing experiment"
+                )
+            count = int(np.argmin(abs(cumulative - target)))
+            if count < 1 or count > self.max_particles:
+                raise ValueError(
+                    "Physical target exceeds particle budget; no mass discarded"
+                )
+            chosen = np.sort(order[:count])
+            xyz, radii = xyz[chosen], radii[chosen]
+        return xyz, radii
