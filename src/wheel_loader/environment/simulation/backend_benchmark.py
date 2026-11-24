@@ -282,7 +282,9 @@ def native_contacts(model, data):
     return contacts
 
 
-def run_replay(bundle, output, backend, parameters, max_ticks=None):
+def run_replay(
+    bundle, output, backend, parameters, max_ticks=None, *, audit=False, feedback=None
+):
     import mujoco
 
     startup = time.perf_counter()
@@ -298,6 +300,14 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
         parameters,
         1 / (manifest["control_dt_s"] * manifest["record_every_ticks"]),
     )
+    mechanism = None
+    overflow_history = []
+    warning_counts = np.zeros(len(data.warning), dtype=int)
+    if audit:
+        from .mechanism_investigation import MechanismAudit
+
+        mechanism = MechanismAudit(model)
+        mechanism.sample(data, np.zeros(model.nu))
     gpu = None
     graph = None
     if backend == "mjwarp":
@@ -307,6 +317,10 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
         wp.init()
         gpu_model = mw.put_model(model)
         gpu = mw.put_data(model, data, nconmax=4096, njmax=16384)
+        if audit:
+            from .gpu_capacity_audit import accumulate_overflow
+
+            cumulative_overflow = wp.zeros(1, dtype=int)
         # Warm kernels on separate scratch data; the benchmark state is never advanced here.
         scratch = mw.put_data(model, data, nconmax=4096, njmax=16384)
         mw.step(gpu_model, scratch)
@@ -316,6 +330,12 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
         with wp.ScopedCapture() as capture:
             for _ in range(manifest["substeps"]):
                 mw.step(gpu_model, gpu)
+                if audit:
+                    wp.launch(
+                        accumulate_overflow,
+                        dim=1,
+                        inputs=[gpu.overflow, cumulative_overflow],
+                    )
         graph = capture.graph
         if not np.array_equal(before, gpu.qpos.numpy()):
             raise RuntimeError("Graph preparation changed the benchmark initial state")
@@ -332,6 +352,8 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
     )
     for tick in range(count):
         effort = tape["effort"][tick]
+        if feedback is not None:
+            effort = feedback(tick, data)
         if gpu is None:
             data.ctrl[:] = effort
         else:
@@ -342,6 +364,8 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
         if gpu is None:
             for _ in range(manifest["substeps"]):
                 mujoco.mj_step(model, data)
+                if audit:
+                    warning_counts = np.maximum(warning_counts, data.warning.number)
         else:
             wp.capture_launch(graph)
             wp.synchronize()
@@ -353,6 +377,14 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
                 mw.forward(gpu_model, gpu)
                 wp.synchronize()
                 mw.get_data_into(data, model, gpu)
+                if audit:
+                    # Include the observation forward pass as well as every stepped substep.
+                    wp.launch(
+                        accumulate_overflow,
+                        dim=1,
+                        inputs=[gpu.overflow, cumulative_overflow],
+                    )
+                    overflow_history.append(int(cumulative_overflow.numpy()[0]))
             if not np.isfinite(data.qpos).all() or not np.isfinite(data.qvel).all():
                 stop_reason = "nonfinite_state"
                 break
@@ -363,11 +395,16 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
                 native_contacts(model, data),
             )
             times.append((tick + 1) * manifest["control_dt_s"])
+            if mechanism is not None:
+                mechanism.sample(data, effort)
             warning_max = max(warning_max, int(data.warning.number.sum()))
         if tick % 240 == 0:
             print(f"{backend}: {tick}/{count} ticks", flush=True)
     elapsed = time.perf_counter() - start
     duration = (tick + 1) * manifest["control_dt_s"]
+    if mechanism is not None:
+        Path(output).mkdir(parents=True, exist_ok=True)
+        mechanism.save(Path(output) / "mechanism.npz", overflow_history)
     return rec.save(
         output,
         times,
@@ -401,7 +438,18 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
             )
             if gpu is not None
             else None,
-            "capacity_check_scope": "GPU final step only; not a transient-overflow audit",
+            "capacity_check_scope": "every GPU physics substep and observation forward pass"
+            if audit
+            else "GPU final step only; not a transient-overflow audit",
+            "gpu_all_step_overflow_union": int(cumulative_overflow.numpy()[0])
+            if audit and gpu is not None
+            else None,
+            "native_warning_counts_all_steps": warning_counts.tolist()
+            if audit and gpu is None
+            else None,
+            "experiment_control": "common bounded feedback"
+            if feedback is not None
+            else "identical physical effort tape",
             "implementation": "native MuJoCo"
             if gpu is None
             else "direct MuJoCo-Warp; Newton USD import/coupling NOT tested",
