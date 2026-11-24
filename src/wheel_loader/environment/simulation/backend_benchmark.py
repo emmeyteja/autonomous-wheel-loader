@@ -393,7 +393,7 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
                 "integrator": int(model.opt.integrator),
                 "tolerance": float(model.opt.tolerance),
             },
-            "gpu_effective_tolerance": float(gpu_model.opt.tolerance)
+            "gpu_effective_tolerance": float(gpu_model.opt.tolerance.numpy().item())
             if gpu is not None
             else None,
             "gpu_final_overflow_bitmask": int(

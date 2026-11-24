@@ -76,6 +76,9 @@ Primary references: [Newton 1.6 solver mappings](https://newton-physics.github.i
 ## Measured result and decision
 
 **Sim-to-sim only. No backend has been validated against real WA320 digging.**
+Follow-up [mechanics diagnostics](MECHANICS_BACKEND_DIAGNOSTICS.md) demonstrate
+strong open-loop sensitivity before attack. The retained-payload values below
+cannot rank digging fidelity; short unloaded solver parity is assessed separately.
 The preserved 83-grain debug scoop ran for 33.3083 s with the same 7994 physical
 nine-channel effort commands. Each backend was repeated once. Native replay
 reproduced the captured controller run's recorded qpos exactly. No independent
