@@ -28,6 +28,12 @@ def run_physx(bundle, usd, output, parameters, max_ticks=None):
     output.mkdir(parents=True, exist_ok=True)
     m, tape, manifest = load_bundle(bundle)
     validate_parameters(parameters, manifest)
+    if np.any(tape["initial_qvel"]):
+        raise ValueError(
+            "PhysX adapter currently requires the common zero-velocity release"
+        )
+    if not np.all(m.actuator_gear[:, 0] == 1) or np.any(m.actuator_gear[:, 1:]):
+        raise ValueError("PhysX effort mapping requires direct unit actuator gearing")
     initial = mujoco.MjData(m)
     initial.qpos[:] = tape["initial_qpos"]
     initial.qvel[:] = tape["initial_qvel"]

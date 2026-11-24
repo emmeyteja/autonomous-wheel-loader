@@ -44,6 +44,9 @@ def evaluate(root):
     fig, axes = plt.subplots(3, 2, figsize=(13, 11), sharex=True)
     for name, n in states.items():
         r = reports[name]
+        r["acquisition_funnel"]["observation"] = (
+            "20 Hz centre-segment aperture crossings/contact samples; unique-ID masses; breakout is first reverse observation"
+        )
         repeated = dict(np.load(root / (name + "_repeat") / "states.npz"))
         rr = json.loads((root / (name + "_repeat") / "report.json").read_text())
         if not rr["completed"] or rr["bundle_sha256"] != manifest["sha256"]:
@@ -67,6 +70,10 @@ def evaluate(root):
             )
             for k, j in enumerate(n["joint_names"])
         }
+        own_settled = n["body_positions"][np.searchsorted(n["time_s"], 10), grains]
+        metrics["pile_rms_displacement_after_settling_m"] = float(
+            np.sqrt(np.mean(np.sum((n["final_pile"] - own_settled) ** 2, axis=1)))
+        )
         metrics["joint_state_ranges"] = {
             str(j): {
                 "min": float(n["joint_pos"][:, k].min()),
@@ -75,6 +82,14 @@ def evaluate(root):
             }
             for k, j in enumerate(n["joint_names"])
         }
+        limited = model.jnt_limited[np.flatnonzero(model.jnt_type != 0)].astype(bool)
+        ranges = model.jnt_range[np.flatnonzero(model.jnt_type != 0)]
+        excess = np.maximum(
+            ranges[None, :, 0] - n["joint_pos"], n["joint_pos"] - ranges[None, :, 1]
+        )
+        metrics["max_joint_limit_excess_m_or_rad"] = float(
+            np.maximum(excess[:, limited], 0).max()
+        )
         forces = r.get("contact_forces_available", True)
         if not forces:
             r["peak_bucket_reaction_N"] = None

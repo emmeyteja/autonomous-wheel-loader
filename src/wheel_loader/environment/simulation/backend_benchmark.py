@@ -163,6 +163,9 @@ class Recorder:
             radii,
             [self.source_lo, self.source_hi],
         )
+        funnel["observation"] = (
+            "20 Hz centre-segment aperture crossings/contact samples; unique-ID masses; breakout is first reverse observation"
+        )
         profile = np.asarray(self.parameters["bucket"]["profile"])
         edge = np.array([profile[0, 0], 0, profile[0, 1]])
         lip = (
@@ -177,7 +180,9 @@ class Recorder:
             "completed": bool(extra.pop("completed", True)),
             "retained_material_kg": inside_mass,
             "acquisition_funnel": funnel,
-            "peak_bucket_reaction_N": max(self.reactions),
+            "peak_bucket_reaction_N": max(self.reactions)
+            if extra.get("contact_forces_available", True)
+            else None,
             "max_pin_gap_m": max(self.gaps),
             "maximum_sampled_solver_iterations": max(self.solver_iterations)
             if self.solver_iterations
@@ -205,8 +210,12 @@ class Recorder:
             boom_trajectory=positions[:, self.boom],
             lip_trajectory=lip,
             articulation_rad=np.asarray(self.joints)[:, articulation],
-            bucket_reaction_N=self.reactions,
-            wheel_ground_reaction_N=self.wheel_reactions,
+            bucket_reaction_N=self.reactions
+            if extra.get("contact_forces_available", True)
+            else np.full(len(times), np.nan),
+            wheel_ground_reaction_N=self.wheel_reactions
+            if extra.get("contact_forces_available", True)
+            else np.full((len(times), 4, 3), np.nan),
             grain_body_ids=self.grains,
             grain_masses_kg=self.masses,
             initial_pile=self.initial_grains,
