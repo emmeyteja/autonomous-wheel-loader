@@ -1,0 +1,183 @@
+# Physical provenance only; not selected by the existing M2 simulator.
+schema_version: 1
+material_id: aoshima_reference_gravel
+description: Aoshima field-gravel reference and explicitly labelled model candidates;
+  fines and some field moisture, not a certified dry sample.
+bulk:
+  bulk_density:
+    value: 1727.0
+    unit: kg/m^3
+    status: measured
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 4.2, p.126
+    calibration_dataset: null
+    notes: Reported measured field bulk density; original calibration data are not
+      supplied here.
+  particle_density:
+    value: 2590.0
+    unit: kg/m^3
+    status: reported
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 5.3, p.131
+    calibration_dataset: null
+    notes: Assigned DEM solid density. Candidate physical density, not an independent
+      reported particle-density measurement.
+  packing_fraction:
+    value: 0.6667953667953668
+    unit: '1'
+    status: derived
+    source: https://doi.org/10.1007/s11044-024-10005-5; sections 4.2 and 5.3
+    calibration_dataset: null
+    notes: Ratio of reported bulk density to assigned DEM solid density. Conditional
+      estimate, not measured packing.
+  internal_friction_angle:
+    value: 0.5585053606381855
+    unit: rad
+    status: reported
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 5.4, p.133
+    calibration_dataset: null
+    notes: Bulk model assignment of 32 degrees; do not identify it with microscopic
+      contact friction.
+  cohesion:
+    value: 0.0
+    unit: Pa
+    status: assumed
+    source: https://doi.org/10.3390/automation5030016; section 5.1, p.266
+    calibration_dataset: null
+    notes: Idealized non-cohesive dry-gravel model assumption, not a field cohesion
+      measurement.
+  dilatancy_angle:
+    value: 0.13962634015954636
+    unit: rad
+    status: reported
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 5.4, p.133
+    calibration_dataset: null
+    notes: Bulk model assignment of 8 degrees; not an independent shear-test dataset.
+  bulk_strength:
+    value: null
+    unit: Pa
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  shear_strength:
+    value: null
+    unit: Pa
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  young_modulus:
+    value: 4600000.0
+    unit: Pa
+    status: reported
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 5.4, p.133
+    calibration_dataset: null
+    notes: Bulk G-model assignment of 4.6 MPa; not DEM contact stiffness in N/m.
+particle:
+  d10:
+    value: null
+    unit: m
+    status: unknown
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 4.2, p.126
+    calibration_dataset: null
+    notes: Physical grains described as roughly 30-40 mm plus fines. No percentile
+      or weighting basis supplied; D50 solver label is unrelated.
+  d50:
+    value: null
+    unit: m
+    status: unknown
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 4.2, p.126
+    calibration_dataset: null
+    notes: Physical grains described as roughly 30-40 mm plus fines. No percentile
+      or weighting basis supplied; D50 solver label is unrelated.
+  d90:
+    value: null
+    unit: m
+    status: unknown
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 4.2, p.126
+    calibration_dataset: null
+    notes: Physical grains described as roughly 30-40 mm plus fines. No percentile
+      or weighting basis supplied; D50 solver label is unrelated.
+  psd_basis:
+    value: null
+    unit: category
+    status: unknown
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 4.2, p.126
+    calibration_dataset: null
+    notes: Physical grains described as roughly 30-40 mm plus fines. No percentile
+      or weighting basis supplied; D50 solver label is unrelated.
+  shape:
+    value: crushed sedimentary gravel
+    unit: category
+    status: reported
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 4.2, p.126
+    calibration_dataset: null
+    notes: Field description only; angularity/sphericity distributions are not reported.
+  particle_particle_friction:
+    value: null
+    unit: '1'
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  particle_bucket_friction:
+    value: null
+    unit: '1'
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  rolling_resistance:
+    value: null
+    unit: m
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unknown physical equivalent resistance length = resisting rolling torque
+      / normal force, under declared particle geometry, preload and speed. Not an
+      AGX or MuJoCo coefficient assignment. Fit backend laws separately.
+  restitution:
+    value: null
+    unit: '1'
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  contact_stiffness:
+    value: null
+    unit: N/m
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unknown effective linearized contact property; requires contact law, load/rate
+      range and calibration apparatus. Backend solver softness is separate.
+  contact_damping:
+    value: null
+    unit: N*s/m
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unknown effective linearized contact property; requires contact law, load/rate
+      range and calibration apparatus. Backend solver softness is separate.
+environment:
+  moisture_content:
+    value: null
+    unit: '1'
+    status: unknown
+    source: https://doi.org/10.1007/s11044-024-10005-5; section 4.2, p.126
+    calibration_dataset: null
+    notes: Some field moisture is reported, with no quantitative fraction. A dry model
+      assumption cannot replace this measurement. Schema uses water/total wet mass.
+      Moisture convention is water mass divided by total wet mass.
+  temperature:
+    value: null
+    unit: K
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.

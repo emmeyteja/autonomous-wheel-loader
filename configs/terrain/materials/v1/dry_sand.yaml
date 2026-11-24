@@ -1,0 +1,186 @@
+# Physical provenance only; not selected by the existing M2 simulator.
+schema_version: 1
+material_id: dry_sand
+description: Dry non-cohesive sand candidate; sample-specific physical measurements
+  and contact-law calibration are unavailable.
+bulk:
+  bulk_density:
+    value: null
+    unit: kg/m^3
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  particle_density:
+    value: null
+    unit: kg/m^3
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  packing_fraction:
+    value: null
+    unit: '1'
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  internal_friction_angle:
+    value: null
+    unit: rad
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  cohesion:
+    value: null
+    unit: Pa
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  dilatancy_angle:
+    value: null
+    unit: rad
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  bulk_strength:
+    value: null
+    unit: Pa
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  shear_strength:
+    value: null
+    unit: Pa
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  young_modulus:
+    value: null
+    unit: Pa
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+particle:
+  d10:
+    value: null
+    unit: m
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  d50:
+    value: null
+    unit: m
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  d90:
+    value: null
+    unit: m
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  psd_basis:
+    value: null
+    unit: category
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  shape:
+    value: null
+    unit: category
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  particle_particle_friction:
+    value: null
+    unit: '1'
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  particle_bucket_friction:
+    value: null
+    unit: '1'
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  rolling_resistance:
+    value: null
+    unit: m
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unknown physical equivalent resistance length = resisting rolling torque
+      / normal force, under declared particle geometry, preload and speed. Not an
+      AGX or MuJoCo coefficient assignment. Fit backend laws separately.
+  restitution:
+    value: null
+    unit: '1'
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
+  contact_stiffness:
+    value: null
+    unit: N/m
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unknown effective linearized contact property; requires contact law, load/rate
+      range and calibration apparatus. Backend solver softness is separate.
+  contact_damping:
+    value: null
+    unit: N*s/m
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unknown effective linearized contact property; requires contact law, load/rate
+      range and calibration apparatus. Backend solver softness is separate.
+environment:
+  moisture_content:
+    value: null
+    unit: '1'
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting. Moisture convention is water mass divided by
+      total wet mass.
+  temperature:
+    value: null
+    unit: K
+    status: unknown
+    source: 'unknown: sample-specific data required'
+    calibration_dataset: null
+    notes: Unmeasured/unreported for this sample. Not a numerical DEM resolution or
+      an executable contact setting.
