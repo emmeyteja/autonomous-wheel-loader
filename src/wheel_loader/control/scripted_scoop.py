@@ -122,12 +122,16 @@ class ScriptedScoop:
         self.drive_integral = 0.0
         self.done, self.failed, self.events = False, False, []
         self.entry_x = None
+        self.advance_blocked = False
+        self.load_response = cfg.get("load_response", "legacy")
+        if self.load_response not in ("legacy", "stop_and_curl"):
+            raise ValueError("Unknown scoop load response")
 
     @property
     def phase(self):
         return self.phases[self.index]
 
-    def command(self, t, x, lengths, bucket_force_N):
+    def command(self, t, x, lengths, bucket_force_N, force_time_s=None):
         lengths = np.asarray(lengths, dtype=float)
         if (
             lengths.shape != (3,)
@@ -136,6 +140,10 @@ class ScriptedScoop:
             or t < self.last_time
         ):
             raise ValueError("Invalid scoop observation or nonmonotonic time")
+        if force_time_s is not None and (
+            not np.isfinite(force_time_s) or force_time_s > t + 1e-8
+        ):
+            raise ValueError("Invalid reaction observation timestamp")
         dt = t - self.last_time if np.isfinite(self.last_time) else 0.0
         if self.last_x is not None and dt > 0:
             measured_speed = (x - self.last_x) / dt
@@ -166,6 +174,16 @@ class ScriptedScoop:
             reached = np.max(abs(lengths[1:] - self.attack[1:])) < 0.008 and age > 0.5
         elif self.phase in ("penetrate", "curl_advance"):
             speed = cfg["penetration_speed_m_s"]
+            if self.load_response == "stop_and_curl":
+                blocked = (
+                    bucket_force_N >= cfg["breakout_threshold_N"]
+                    or x - self.entry_x >= cfg["penetration_depth_m"]
+                )
+                if blocked and not self.advance_blocked:
+                    self.advance_blocked = True
+                    self.drive_integral = 0.0
+                if self.advance_blocked:
+                    speed = 0.0  # Finite wheel braking; never a chassis state write.
             if self.phase == "penetrate":
                 reached = (
                     x - self.origin
@@ -175,7 +193,9 @@ class ScriptedScoop:
             else:
                 target[1] = self.attack[1]
                 reached = (
-                    x - self.entry_x >= cfg["penetration_depth_m"]
+                    abs(lengths[2] - self.carry[2]) < 0.006
+                    if self.load_response == "stop_and_curl"
+                    else x - self.entry_x >= cfg["penetration_depth_m"]
                     or bucket_force_N >= cfg["breakout_threshold_N"]
                 )
         elif self.phase == "lift_breakout":
@@ -227,7 +247,15 @@ class ScriptedScoop:
                     "finished_s": float(t),
                     "x_m": float(x),
                     "bucket_reaction_N": float(bucket_force_N),
-                    "trigger": "reaction_force"
+                    "reaction_sample_time_s": force_time_s,
+                    "reaction_age_s": max(0.0, t - force_time_s)
+                    if force_time_s is not None
+                    else None,
+                    "advance_blocked": self.advance_blocked,
+                    "trigger": "measured_curl_target"
+                    if self.phase == "curl_advance"
+                    and self.load_response == "stop_and_curl"
+                    else "reaction_force"
                     if self.phase in ("penetrate", "curl_advance")
                     and bucket_force_N >= cfg["breakout_threshold_N"]
                     else "target_reached",

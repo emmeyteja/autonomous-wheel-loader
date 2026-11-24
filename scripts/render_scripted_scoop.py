@@ -265,6 +265,8 @@ def artifacts(folder):
                     if report["single_run_passed"]
                     else "ACCEPTANCE INCOMPLETE: see report.json"
                 )
+                if not report.get("m2_complete", False):
+                    status += " | M2 INCOMPLETE"
                 if suite is not None and not suite["m2_cpu_reference_passed"]:
                     status = (
                         "Single-run checks pass"

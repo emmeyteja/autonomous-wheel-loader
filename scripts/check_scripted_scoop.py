@@ -25,12 +25,18 @@ if __name__ == "__main__":
         type=float,
         help="Explicit incomplete/fail CPU budget, including compile",
     )
+    parser.add_argument("--load-response", choices=("legacy", "stop_and_curl"))
+    parser.add_argument("--reaction-feedback-hz", type=float)
     args = parser.parse_args()
     config = yaml.safe_load(args.config.read_text())
     if args.wall_budget_s is not None:
         if args.wall_budget_s <= 0:
             parser.error("--wall-budget-s must be positive")
         config["wall_budget_s"] = args.wall_budget_s
+    if args.load_response is not None:
+        config["controller"]["load_response"] = args.load_response
+    if args.reaction_feedback_hz is not None:
+        config["reaction_feedback_hz"] = args.reaction_feedback_hz
     scenario = args.scenario or config.get("default_scenario", "nominal")
     result = run_scoop(
         load_parameters("configs/vehicle/wa320.yaml"),

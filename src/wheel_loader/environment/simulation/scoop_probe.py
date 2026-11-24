@@ -257,6 +257,12 @@ def run_scoop(p, config, source, output, scenario=None):
     sample_steps = round(1 / (config["sample_hz"] * dt))
     if not np.isclose(sample_steps * dt * config["sample_hz"], 1):
         raise ValueError("Sample period must divide control ticks")
+    reaction_hz = config.get("reaction_feedback_hz", config["sample_hz"])
+    if not np.isfinite(reaction_hz) or not 0 < reaction_hz <= 240:
+        raise ValueError("Invalid reaction feedback rate")
+    reaction_steps = round(1 / (reaction_hz * dt))
+    if not np.isclose(reaction_steps * dt * reaction_hz, 1):
+        raise ValueError("Reaction feedback period must divide control ticks")
     records, reports, phases = [], [], []
     (
         times,
@@ -274,6 +280,8 @@ def run_scoop(p, config, source, output, scenario=None):
     max_bucket_ground_overlap = 0.0
     peak_traction, peak_bucket_force, work, positive_work = 0.0, 0.0, 0.0, 0.0
     bucket_force = 0.0
+    reaction_time = 0.0
+    reaction_trace = []
     bucket_touched = set()
     initial = None
     settled_hash = None
@@ -302,7 +310,10 @@ def run_scoop(p, config, source, output, scenario=None):
         if phase != last_phase:
             print(f"{scenario}: {phase} at {t:.2f}s", flush=True)
             last_phase = phase
-        u = controller.command(t, float(data.xpos[rear, 0]), lengths, bucket_force)
+        reaction_trace.append([t, reaction_time, bucket_force])
+        u = controller.command(
+            t, float(data.xpos[rear, 0]), lengths, bucket_force, reaction_time
+        )
         effort, act = joint_efforts(p, actuator, u, actual, velocity, names, dt)
         data.ctrl[:] = effort[actuator_indices]
         for _ in range(8):
@@ -332,6 +343,15 @@ def run_scoop(p, config, source, output, scenario=None):
         bucket_contacts = np.any(contact_bodies == bucket, axis=1)
         contact_grains = grain_index_by_body[contact_bodies[bucket_contacts].ravel()]
         contacting[contact_grains[contact_grains >= 0]] = True
+        if step % reaction_steps == 0:
+            reaction_time = float(data.time)
+            bucket_force = 0.0
+            for ci in np.flatnonzero(bucket_contacts):
+                if not np.any(grain_index_by_body[contact_bodies[ci]] >= 0):
+                    continue
+                reaction = np.zeros(6)
+                mujoco.mj_contactForce(model, data, int(ci), reaction)
+                bucket_force += float(np.linalg.norm(reaction[:3]))
         funnel.sample(local, in_bucket, contacting, phase, float(data.time))
         accounting.ever_acquired |= in_bucket
         peak_contacts = max(peak_contacts, data.ncon)
@@ -367,6 +387,7 @@ def run_scoop(p, config, source, output, scenario=None):
         record = accounting.sample(in_bucket, at_source, lost)
         if initial_bucket_mass is None and t >= config["settle_s"]:
             initial_bucket_mass = record["bucket_mass_kg"]
+        feedback_force = bucket_force
         bucket_force = 0.0
         bucket_resultant = np.zeros(3)
         traction = np.zeros(4)
@@ -501,6 +522,8 @@ def run_scoop(p, config, source, output, scenario=None):
         pitch_trace.append([pitch, roll, yaw])
         contact_trace.append([bucket_force, *traction, *normals])
         bucket_resultant_trace.append(bucket_resultant)
+        if reaction_steps != sample_steps:
+            bucket_force = feedback_force
         if abs(pitch) > np.deg2rad(25) or abs(roll) > np.deg2rad(25):
             stop_reason = "vehicle_tilt_safety_stop"
             break
@@ -655,6 +678,7 @@ def run_scoop(p, config, source, output, scenario=None):
                 {
                     "vehicle": p,
                     "controller": controller_cfg,
+                    "reaction_feedback_hz": float(reaction_hz),
                     "material": material,
                     "bucket_contact": wall,
                     "radius_m": config["radius_m"],
@@ -688,6 +712,10 @@ def run_scoop(p, config, source, output, scenario=None):
         "material_parameters": material,
         "bucket_contact_parameters": wall,
         "controller": controller_cfg,
+        "reaction_feedback_hz": float(reaction_hz),
+        "reaction_feedback_max_age_s": float(
+            np.max(np.asarray(reaction_trace)[:, 0] - np.asarray(reaction_trace)[:, 1])
+        ),
         "pile_preparation": vars(pile),
         "pile_material_design": pile.material_design(),
         "requested_pile_volume_m3": float(pile.volume_m3),
@@ -844,6 +872,12 @@ def run_scoop(p, config, source, output, scenario=None):
         actuator_work_J=work_trace,
         chassis_angles_rad=pitch_trace,
         contact_N=contact_trace,
+        reaction_feedback_columns=[
+            "command_time_s",
+            "sample_time_s",
+            "magnitude_sum_N",
+        ],
+        reaction_feedback=np.asarray(reaction_trace),
         bucket_grain_resultant_N_xyz=bucket_resultant_trace,
         bucket_lip_world_m=lip_trace,
         ever_bucket_contact=funnel.contacted,

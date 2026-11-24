@@ -187,3 +187,53 @@ def test_research_attack_provides_one_coarse_diameter_below_planned_edge():
     attack_lengths(
         p, cfg["controller"]["attack_angle_deg"], case["attack_lip_height_m"]
     )
+
+
+def test_load_response_requires_measured_curl_before_lift_and_latches_braking():
+    p = load_parameters(P / "configs/vehicle/wa320.yaml")
+    cfg = yaml.safe_load((P / "configs/experiments/scripted_scoop.yaml").read_text())
+    cfg["controller"]["load_response"] = "stop_and_curl"
+    c = ScriptedScoop(p, cfg["controller"], 10)
+    c.index = c.phases.index("penetrate")
+    c.entry_x = c.origin = 0.0
+    c.entered = 10.0
+    c.command(10, 0.1, c.attack, 21000, 10)
+    assert c.phase == "curl_advance" and c.advance_blocked
+    command = c.command(10.01, 0.1, c.attack, 21000, 10.01)
+    assert c.phase == "curl_advance"  # same force cannot skip measured curl
+    assert command[0] == 0 and command[3] > 0
+    command = c.command(10.02, 0.1, c.attack, 0, 10.02)
+    assert command[0] == 0  # force relief does not restart penetration
+    curled = c.attack.copy()
+    curled[2] = c.carry[2]
+    c.command(12, 0.1, curled, 21000, 12)
+    assert c.phase == "lift_breakout"
+    assert c.events[-1]["trigger"] == "measured_curl_target"
+
+
+def test_full_depth_stops_advance_but_does_not_skip_measured_curl():
+    p = load_parameters(P / "configs/vehicle/wa320.yaml")
+    cfg = yaml.safe_load((P / "configs/experiments/scripted_scoop.yaml").read_text())
+    cfg["controller"]["load_response"] = "stop_and_curl"
+    c = ScriptedScoop(p, cfg["controller"], 10)
+    c.index = c.phases.index("curl_advance")
+    c.entry_x = c.origin = 0.0
+    c.entered = 10.0
+    u = c.command(10, 2.0, c.attack, 0, 10)
+    assert c.phase == "curl_advance" and c.advance_blocked and u[0] == 0
+    with pytest.raises(ValueError, match="timestamp"):
+        c.command(11, 2.0, c.attack, 0, 12)
+    c.command(10.5, 2.0, c.attack, 0, 10.5)  # Invalid input did not advance state.
+
+
+def test_stalled_measured_curl_fails_instead_of_claiming_breakout():
+    p = load_parameters(P / "configs/vehicle/wa320.yaml")
+    cfg = yaml.safe_load((P / "configs/experiments/scripted_scoop.yaml").read_text())
+    cfg["controller"]["load_response"] = "stop_and_curl"
+    c = ScriptedScoop(p, cfg["controller"], 10)
+    c.index = c.phases.index("curl_advance")
+    c.entry_x = c.origin = 0.0
+    c.entered = 10.0
+    c.command(36, 0, c.attack, 21000, 36)
+    assert c.done and c.failed and c.phase == "curl_advance"
+    assert not c.events  # Timeout cannot masquerade as measured curl completion.

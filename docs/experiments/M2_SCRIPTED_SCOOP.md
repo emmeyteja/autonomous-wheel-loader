@@ -394,3 +394,122 @@ sensitivity cases are incomplete. Geometric adequacy, mass closure or a playable
 replay is not material-model validation. The next controlled investigation should
 address force-triggered curl/breakout behavior and distinguish trajectory/contact
 geometry from particle-resolution effects; no learned controller is started.
+
+## Force-transition controller investigation
+
+The reservoir study identifies a specific controller defect: the same sampled
+20 kN reaction ends `penetrate`, then ends `curl_advance` one 1/240 s tick later.
+The latter transition does not require measured curl-cylinder movement. Reaction
+feedback was also tied to the 20 Hz recording schedule.
+
+Two opt-in changes isolate these effects without changing vehicle geometry,
+material, force threshold, seed, attack pose, penetration target or actuator limits:
+
+- `--reaction-feedback-hz 240` observes the previous physical step's bucket/grain
+  force-magnitude sum at each control tick, independently of 20 Hz recording.
+  It preserves the existing proxy, rather than silently substituting a resultant.
+  `recording.npz` includes command time, reaction sample time and reaction value
+  at 240 Hz; transition events include sample age. This is simulator contact
+  feedback, not a calibrated load sensor.
+- `--load-response stop_and_curl` latches a zero forward-speed request when the
+  existing force threshold or maximum depth is reached. The finite wheel servo
+  brakes the vehicle; the PI integrator resets on that latch. The bucket then
+  curls through the original bounded cylinder controller until the measured curl
+  length is within 6 mm of the existing carry target before lift/breakout.
+  Force relief does not restart advance. No minimum timed fill or state override
+  is used. The existing 25 s phase timeout and mechanical screens still apply.
+
+The 20 kN value is now a drive-stop/curl transition in the opt-in policy, not a
+hard upper bound on total contact force or a manufacturer load limit. Curl can
+change pile reaction while chassis advance is stopped. Cylinder efforts remain
+bounded by the unchanged physical actuator limits. This is a controller semantics
+change, not evidence of identified hydraulic or material behavior.
+
+Legacy response and recording-rate feedback remain the defaults so historical
+runs can be reproduced. No controller variant is promoted to a validated M2 task.
+The new comparison uses the same 816-element `research_underburden` preparation
+as the failed legacy baseline. First test fresh feedback with legacy transitions;
+then use the same feedback with measured-curl transitions. Check prepared and
+settled-state hashes before attributing differences to controller behavior.
+
+```bash
+PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 .venv/bin/python \
+  scripts/check_scripted_scoop.py \
+  --source outputs/wa320/mechanical_correction/release_nominal/effective_model.xml \
+  --scenario research_underburden --reaction-feedback-hz 240 --load-response legacy \
+  --wall-budget-s 1200 --output outputs/wa320/m2/curl_transition/fresh_only
+
+PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 .venv/bin/python \
+  scripts/check_scripted_scoop.py \
+  --source outputs/wa320/mechanical_correction/release_nominal/effective_model.xml \
+  --scenario research_underburden --reaction-feedback-hz 240 \
+  --load-response stop_and_curl --wall-budget-s 1200 \
+  --output outputs/wa320/m2/curl_transition/stop_and_curl
+
+PYTHONPATH=src .venv/bin/python scripts/evaluate_scoop_controller_comparison.py \
+  outputs/wa320/m2/curl_transition
+```
+
+Repeat the candidate into `stop_and_curl_repeat` using the identical command.
+The evaluator checks identical vehicle/material/geometry/other controller values,
+prepared/settled hashes, completed motion sequences and a required candidate repeat
+trajectory. Failed acquisition is still reported separately. Its
+`comparison_valid` flag means a controlled comparison, not a successful scoop.
+The generated `controller_comparison.png` compares payload, measured curl stroke
+lift extension and the control reaction proxy (legacy uses its 20 Hz log). M2 acceptance remains separate.
+
+### Observed controller comparison
+
+- The old 20 Hz legacy run spends 0.00417 s in curl/advance and retains 0 kg.
+  It contacts nine elements / 158.164 kg.
+- Fresh 240 Hz feedback with legacy transitions still spends 0.00417 s in
+  curl/advance and retains 0 kg; four elements / 69.319 kg contact the bucket.
+  Thus updating force more often does not fix the transition logic.
+- Fresh feedback with `stop_and_curl` spends **3.90417 s** in curl/advance. The
+  recorded curl-cylinder extension increases approximately **0.1286 m**, then
+  the phase ends on the measured curl target. It contacts three elements /
+  51.074 kg but still has zero mouth entries and zero acquired/retained mass.
+  Cycle time is 33.208 s, including settling.
+- Both new trials start with exactly the same prepared and settled hashes as
+  the old research baseline. All 816 compiled grain masses are unchanged.
+  The legacy small-debug compatibility run also preserves all recorded joint
+  positions, times and 102.309 kg payload exactly.
+- First force-trigger observation is 22.208 kN at 17.2917 s. Only one 240 Hz
+  observation exceeds 20 kN in the stop-and-curl run; the legacy-transition
+  fresh-feedback run has two. These are sampled observations, not continuous
+  impulse durations or validated soil-force measurements. The ordinary 20 Hz
+  contact plot misses this peak, so the comparison also plots control-rate data.
+- The stop-and-curl trial passes the recorded mechanical/finite-state/contact
+  overlap/stability screens, with cylinder and Z-bar pin gaps below 0.05 mm.
+  Maximum mass residual and boundary loss are both 0 kg. All five failed
+  single-run checks concern entry, positive payload or its support/retention.
+  Mass closure with an empty bucket is not successful scooping.
+- Independent zero-clearance centroid replay also sees no inside grains.
+  Therefore half-plate measurement clearance alone does not explain this zero.
+
+Legacy still curls toward its carry target during the subsequent lift phase;
+the defect concerns skipping the intended pre-lift curl phase, not absence of
+all curl motion. The opt-in variant changes curl/lift coordination and braking.
+
+The one-tick curl defect is removed in the opt-in controller, but acquisition is
+still unresolved. A short reaction transient now stops advance before entry,
+and subsequent curl occurs without material entering the mouth. This observation
+does not uniquely separate coarse-contact response, local material coverage,
+cutting-edge geometry or the intended force-stop trajectory. Next isolate these
+at the cutting edge before changing force thresholds, filtering or contact laws.
+Do not increase the threshold merely to obtain more payload. Keep this variant
+experimental; all previous shallow/spillage/large-CPU failures remain reported.
+
+The completed candidate repeat has identical sample times and **zero maximum
+recorded generalized-position difference**, including all grain poses. Prepared
+and settled hashes match the old baseline and both fresh-feedback trials. The
+comparison configuration/initial-state/repeat checks all pass; acquisition
+acceptance still fails. An earlier interrupted repeat produced no final report
+and is excluded from these checks.
+
+Validation: 148 core tests and 11 USD integration tests pass; all 85 active-v1
+asset manifest hashes remain unchanged. No vehicle asset, material calibration,
+force limit, or training path is changed by this investigation. The existing
+v0/v1 and reservoir-study outputs remain preserved. Local replay and comparison
+evidence: `outputs/wa320/m2/curl_transition/stop_and_curl/scripted_scoop_replay.mp4`
+and `outputs/wa320/m2/curl_transition/controller_comparison.{json,png}`.
