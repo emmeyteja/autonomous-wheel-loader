@@ -18,3 +18,7 @@ Table 3 uses characteristic element/grid sizes of 50, 100, 200 and 400 mm. D50 c
 For the paper's gravel loading tests, §6.6 reports approximately 10% overall mean sim-to-real error with 3% standard deviation. §6.5 reports mean loaded-mass errors of 15% (D) and 12% (G), and work errors of 17% and 21%. §6.3 uses dynamic-time-warping trajectory error; scalar signals use mean absolute error. These metrics are not interchangeable, and an overall average is not a bound on every signal or cycle.
 
 The study is specific to homogeneous gravel and simplified driveline/hydraulics. Tire/ground assumptions, breakout transients and shared engine power remain limitations. Neither paper supplies a complete redistributable WA320 CAD model or all the pivot, inertia and actuator data needed here. Our YAML labels those missing values as estimates. Validate independent held-out motion/contact/material tests before drawing sim-to-real conclusions.
+
+- [Verified reproduction audit](../research/aoshima_reproduction.md): page-specific
+  physical/numerical parameter distinctions, full D/G resolution table and current
+  repository reuse limits. This supersedes inferred particle-size interpretations.
