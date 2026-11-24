@@ -293,7 +293,15 @@ def native_contacts(model, data, *, validate_rows=False):
 
 
 def run_replay(
-    bundle, output, backend, parameters, max_ticks=None, *, audit=False, feedback=None
+    bundle,
+    output,
+    backend,
+    parameters,
+    max_ticks=None,
+    *,
+    audit=False,
+    feedback=None,
+    direct_contact_forces=False,
 ):
     import mujoco
 
@@ -319,6 +327,7 @@ def run_replay(
         mechanism = MechanismAudit(model)
         mechanism.sample(data, np.zeros(model.nu))
     gpu = None
+    device_contacts = None
     graph = None
     if backend == "mjwarp":
         import mujoco_warp as mw
@@ -327,6 +336,10 @@ def run_replay(
         wp.init()
         gpu_model = mw.put_model(model)
         gpu = mw.put_data(model, data, nconmax=4096, njmax=16384)
+        if direct_contact_forces:
+            from .device_contacts import DeviceContacts
+
+            device_contacts = DeviceContacts(model, gpu_model, gpu)
         if audit:
             from .gpu_capacity_audit import accumulate_overflow
 
@@ -398,16 +411,37 @@ def run_replay(
             if not np.isfinite(data.qpos).all() or not np.isfinite(data.qvel).all():
                 stop_reason = "nonfinite_state"
                 break
+            contacts = (
+                device_contacts.sample()
+                if device_contacts is not None
+                else native_contacts(
+                    model, data, validate_rows=audit and gpu is not None
+                )
+            )
+            if direct_contact_forces and gpu is None:
+                contacts = [
+                    row
+                    for row, c in zip(contacts, data.contact[: data.ncon])
+                    if c.efc_address >= 0
+                ]
+            if hasattr(feedback, "contacts"):
+                feedback.contacts = contacts
             rec.sample(
                 (tick + 1) * manifest["control_dt_s"],
-                str(tape["phase"][tick]),
+                feedback.phase
+                if hasattr(feedback, "phase")
+                else str(tape["phase"][tick]),
                 data,
-                native_contacts(model, data, validate_rows=audit and gpu is not None),
+                contacts,
             )
             times.append((tick + 1) * manifest["control_dt_s"])
             if mechanism is not None:
                 mechanism.sample(data, effort)
             warning_max = max(warning_max, int(data.warning.number.sum()))
+        if getattr(feedback, "done", False):
+            if feedback.controller.failed:
+                stop_reason = "controller_failure:" + str(feedback.controller.reason)
+            break
         if tick % 240 == 0:
             print(f"{backend}: {tick}/{count} ticks", flush=True)
     elapsed = time.perf_counter() - start
@@ -415,6 +449,18 @@ def run_replay(
     if mechanism is not None:
         Path(output).mkdir(parents=True, exist_ok=True)
         mechanism.save(Path(output) / "mechanism.npz", overflow_history)
+    if device_contacts is not None:
+        Path(output).mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(
+            Path(output) / "device_contact_audit.npz",
+            values=np.asarray(device_contacts.rows),
+            columns=[
+                "candidate_contacts",
+                "active_contacts",
+                "inactive_contacts",
+                "max_abs_force_or_torque",
+            ],
+        )
     return rec.save(
         output,
         times,
@@ -428,7 +474,17 @@ def run_replay(
             "physics_step_real_time_factor": duration / physics_s,
         },
         {
-            "completed": stop_reason is None and count == manifest["control_steps"],
+            "completed": stop_reason is None
+            and (
+                tick + 1 == manifest["control_steps"]
+                or getattr(feedback, "done", False)
+            ),
+            "requested_horizon_completed": tick + 1 == manifest["control_steps"],
+            "contact_force_extraction": "direct device API / active contacts only"
+            if device_contacts is not None
+            else "native active contacts"
+            if direct_contact_forces
+            else "legacy host contact export",
             "stop_reason": stop_reason,
             "solver_warning_count": warning_max,
             "parameter_sha256": manifest["parameter_sha256"],
