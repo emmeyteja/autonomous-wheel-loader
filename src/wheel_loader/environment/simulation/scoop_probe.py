@@ -224,6 +224,10 @@ def run_scoop(p, config, source, output, scenario=None):
         data.qpos[qa[names.index(n)]] = value
     mujoco.mj_forward(model, data)
     actuator = FirstOrderCylinders(p, [0, *initial_angles])
+    capture_commands = config.get("capture_commands", False)
+    if capture_commands:
+        initial_qpos, initial_qvel = data.qpos.copy(), data.qvel.copy()
+        command_tape, command_phases = [], []
     masses = model.body_mass[grain_bodies].copy()
     expected_masses = 4 / 3 * np.pi * radii**3 * material["particle_density_kg_m3"]
     if not np.allclose(masses, expected_masses, rtol=1e-12, atol=1e-12):
@@ -293,6 +297,8 @@ def run_scoop(p, config, source, output, scenario=None):
     next_progress = 0.0
     folder_model = output / "model.xml"
     mujoco.mj_saveLastXML(str(folder_model), model)
+    if capture_commands:
+        mujoco.mj_saveModel(model, str(output / "compiled_model.mjb"), None)
     source_bounds = [xyz.min(axis=0) - radii.max(), xyz.max(axis=0) + radii.max()]
     stop_reason = None
     bucket_poses = []
@@ -316,6 +322,9 @@ def run_scoop(p, config, source, output, scenario=None):
         )
         effort, act = joint_efforts(p, actuator, u, actual, velocity, names, dt)
         data.ctrl[:] = effort[actuator_indices]
+        if capture_commands:
+            command_tape.append(data.ctrl.copy())
+            command_phases.append(phase)
         for _ in range(8):
             mujoco.mj_step(model, data)
         power = float(effort @ data.qvel[va])
@@ -851,6 +860,16 @@ def run_scoop(p, config, source, output, scenario=None):
         "remaining_gate": "repeat run and scenario suite required; GPU coupling and material calibration not established",
     }
     (output / "accounting.json").write_text(json.dumps(reports, indent=2) + "\n")
+    if capture_commands:
+        np.savez_compressed(
+            output / "command_tape.npz",
+            initial_qpos=initial_qpos,
+            initial_qvel=initial_qvel,
+            effort=command_tape,
+            phase=command_phases,
+            control_dt_s=dt,
+            substeps=8,
+        )
     np.savez_compressed(
         output / "recording.npz",
         time_s=times,
