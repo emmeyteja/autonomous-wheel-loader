@@ -20,6 +20,7 @@ from wheel_loader.environment.simulation.surface_visual import (
     surface_xml,
 )
 from wheel_loader.environment.simulation.tire_visual import replay_xml_with_tires
+from wheel_loader.environment.simulation.vehicle_visual import apply_loader_palette
 from wheel_loader.evaluation.material_accounting import bucket_payload_mask
 from wheel_loader.vehicle.parameters import load_parameters
 
@@ -138,7 +139,6 @@ def artifacts(folder):
     data = mujoco.MjData(model)
     model.vis.global_.offwidth = 1600
     model.vis.global_.offheight = 900
-    grain_bodies = set(d["grain_body_ids"].tolist())
     for g in range(model.ngeom):
         b = int(model.geom_bodyid[g])
         name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, b) or ""
@@ -150,17 +150,7 @@ def artifacts(folder):
                 25,
             ]  # Render extent only; physics plane is infinite.
             continue
-        model.geom_rgba[g] = (
-            [0.65, 0.49, 0.28, 1]
-            if b in grain_bodies
-            else [0.25, 0.27, 0.28, 1]
-            if b == 0
-            else [0.07, 0.08, 0.09, 1]
-            if name.endswith("_wheel")
-            else [0.6, 0.65, 0.67, 1]
-            if name.endswith("_rod") or "hinge_housing" in name
-            else [0.95, 0.62, 0.05, 1]
-        )
+    apply_loader_palette(model)
     model.vis.headlight.ambient[:] = [0.65] * 3
     model.vis.headlight.diffuse[:] = [0.7] * 3
     camera = mujoco.MjvCamera()

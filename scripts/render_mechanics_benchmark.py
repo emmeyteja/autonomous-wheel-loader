@@ -15,6 +15,7 @@ from wheel_loader.environment.simulation.surface_visual import (
     surface_xml,
 )
 from wheel_loader.environment.simulation.tire_visual import replay_xml_with_tires
+from wheel_loader.environment.simulation.vehicle_visual import apply_loader_palette
 
 
 def render(root):
@@ -61,19 +62,7 @@ def render(root):
                 apply_surface_texture(model, "asphalt")
                 model.vis.global_.offwidth, model.vis.global_.offheight = 800, 450
                 model.vis.headlight.ambient[:] = [0.65, 0.65, 0.65]
-                for g in range(model.ngeom):
-                    name = (
-                        mujoco.mj_id2name(
-                            model, mujoco.mjtObj.mjOBJ_BODY, int(model.geom_bodyid[g])
-                        )
-                        or ""
-                    )
-                    if "wheel" not in name and model.geom_bodyid[g]:
-                        model.geom_rgba[g] = (
-                            [0.4, 0.43, 0.46, 1]
-                            if "rod" in name or "bucket" in name
-                            else [0.95, 0.6, 0.08, 1]
-                        )
+                apply_loader_palette(model)
                 renderer = mujoco.Renderer(model, height=450, width=800)
                 for engine in ["native", "mjwarp"]:
                     states = dict(np.load(folder / engine / "states.npz"))

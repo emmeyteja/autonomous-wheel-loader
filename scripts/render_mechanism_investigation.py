@@ -15,6 +15,7 @@ from wheel_loader.environment.simulation.surface_visual import (
     surface_xml,
 )
 from wheel_loader.environment.simulation.tire_visual import replay_xml_with_tires
+from wheel_loader.environment.simulation.vehicle_visual import apply_loader_palette
 
 
 def render(root):
@@ -23,6 +24,7 @@ def render(root):
         surface_xml(replay_xml_with_tires(folder / "bundle/model.xml"), "asphalt")
     )
     apply_surface_texture(model, "asphalt")
+    apply_loader_palette(model)
     # Replay-only appearance: the physical plane is infinite; render a broad patch
     # so the original 5 m display extent does not make grains appear suspended.
     for g in range(model.ngeom):
@@ -33,6 +35,13 @@ def render(root):
     renderer = mujoco.Renderer(model, height=500, width=800)
     data = mujoco.MjData(model)
     states = [dict(np.load(folder / f"{e}_1/states.npz")) for e in ["native", "mjwarp"]]
+    spatial = [
+        dict(np.load(root / "spatial" / e / "spatial_trace.npz"))
+        for e in ["native", "mjwarp"]
+    ]
+    for state, trace in zip(states, spatial):
+        if not np.array_equal(state["time_s"], trace["time_s"]):
+            raise ValueError("Spatial audit time does not match replay")
     camera = mujoco.MjvCamera()
     camera.distance = 12
     camera.azimuth = 100
@@ -44,7 +53,7 @@ def render(root):
             "_rear_frame"
         )
     )
-    output = root / "full_newton_cpu_gpu_replay_v2.mp4"
+    output = root / "failed_scoop_spatial_audit_yellow.mp4"
     proc = subprocess.Popen(
         [
             "ffmpeg",
@@ -56,7 +65,7 @@ def render(root):
             "-pixel_format",
             "rgb24",
             "-video_size",
-            "1600x680",
+            "1600x740",
             "-framerate",
             "20",
             "-i",
@@ -73,17 +82,17 @@ def render(root):
     font = ImageFont.truetype("DejaVuSans.ttf", 21)
     try:
         for t in np.arange(0, states[0]["time_s"][-1], 0.05):
-            frame = Image.new("RGB", (1600, 680), (20, 24, 30))
+            frame = Image.new("RGB", (1600, 740), (20, 24, 30))
             draw = ImageDraw.Draw(frame)
             draw.text(
                 (15, 8),
-                "Full effort-tape replay | MuJoCo Newton solver CPU/GPU | recorded states, 1x",
+                "Recorded FAILED scoop | MuJoCo Newton CPU/GPU | original motion, 1x",
                 font=font,
                 fill="white",
             )
             draw.text(
                 (15, 37),
-                "Same model, initial state and efforts | sim-to-sim only; M2 acceptance incomplete",
+                "Curl above pile; bucket intersects floor | motion controller has not been corrected",
                 font=font,
                 fill="white",
             )
@@ -106,7 +115,7 @@ def render(root):
                 )
                 xy = s["body_positions"][i, rear, :2]
                 draw.text(
-                    (k * 800 + 15, 645),
+                    (k * 800 + 15, 675),
                     f"Rear XY=({xy[0]:.3f}, {xy[1]:.3f}) m | tracking camera",
                     font=font,
                     fill="white",
@@ -114,10 +123,24 @@ def render(root):
                 col = list(s["accounting_columns"]).index("bucket_mass_kg")
                 draw.text(
                     (k * 800 + 15, 615),
-                    f"Bucket Z={s['bucket_trajectory'][i, 2]:.3f} m | in-bucket={s['accounting'][i, col]:.1f} kg",
+                    f"Lip Z={s['lip_trajectory'][i, 2]:.3f} m | pile top={spatial[k]['pile_top_m'][i]:.3f} m",
                     font=font,
                     fill="white",
                 )
+                clearance = spatial[k]["bucket_ground_clearance_m"][i]
+                draw.text(
+                    (k * 800 + 15, 645),
+                    f"Floor clearance={clearance * 1000:+.1f} mm | in-bucket={s['accounting'][i, col]:.1f} kg",
+                    font=font,
+                    fill="tomato" if clearance < 0 else "white",
+                )
+                gap = spatial[k]["lip_minus_particle_surface_m"][i]
+                text = (
+                    f"Lip above local particle surface: {gap:+.3f} m"
+                    if np.isfinite(gap)
+                    else "No particle column below sampled cutting edge"
+                )
+                draw.text((k * 800 + 15, 705), text, font=font, fill="white")
             proc.stdin.write(np.asarray(frame).tobytes())
     finally:
         renderer.close()
