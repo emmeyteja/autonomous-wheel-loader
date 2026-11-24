@@ -46,10 +46,11 @@ def validate_parameters(parameters, manifest):
 class Recorder:
     """Shared 20 Hz ground-truth measurements. Unsupported forces are None, never zero."""
 
-    def __init__(self, model, initial, parameters):
+    def __init__(self, model, initial, parameters, sampling_hz=20):
         import mujoco
 
         self.model, self.parameters = model, parameters
+        self.sampling_hz = sampling_hz
         names = [
             mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, b) or ""
             for b in range(model.nbody)
@@ -58,14 +59,20 @@ class Recorder:
         self.boom = next(i for i, n in enumerate(names) if n.endswith("_boom"))
         self.rear = next(i for i, n in enumerate(names) if n.endswith("_rear_frame"))
         self.grains = np.array(
-            [i for i, n in enumerate(names) if n.startswith("grain_")]
+            [i for i, n in enumerate(names) if n.startswith("grain_")], dtype=int
         )
         self.masses = model.body_mass[self.grains]
         self.initial_grains = initial.xpos[self.grains].copy()
-        self.source_lo = self.initial_grains.min(axis=0) - 0.12
-        self.source_hi = self.initial_grains.max(axis=0) + 0.12
+        self.source_lo = (
+            self.initial_grains.min(axis=0) - 0.12 if len(self.grains) else np.zeros(3)
+        )
+        self.source_hi = (
+            self.initial_grains.max(axis=0) + 0.12 if len(self.grains) else np.zeros(3)
+        )
         self.account = MaterialAccounting(self.masses)
-        self.funnel = AcquisitionFunnel(self.masses, parameters)
+        self.funnel = (
+            AcquisitionFunnel(self.masses, parameters) if len(self.grains) else None
+        )
         self.rows = []
         self.qpos = []
         self.body_positions = []
@@ -76,6 +83,10 @@ class Recorder:
         self.reactions = []
         self.wheel_reactions = []
         self.joints = []
+        self.joint_velocities = []
+        self.contact_counts = []
+        self.actuator_forces = []
+        self.constraint_forces = []
         self.joint_ids = np.array(
             [
                 j
@@ -116,7 +127,8 @@ class Recorder:
                 for k, w in enumerate(self.wheels):
                     if w in (a, b):
                         wheel[k] += (1 if b == w else -1) * force
-        self.funnel.sample(local, inside, contacting, phase, t)
+        if self.funnel is not None:
+            self.funnel.sample(local, inside, contacting, phase, t)
         xyz = pos[self.grains]
         source = ((xyz >= self.source_lo) & (xyz <= self.source_hi)).all(axis=1)
         lost = (np.linalg.norm(xyz[:, :2], axis=1) > 50) | (xyz[:, 2] < -1)
@@ -125,6 +137,22 @@ class Recorder:
         self.phases.append(phase)
         self.qpos.append(data.qpos.copy())
         self.joints.append(data.qpos[self.addresses].copy())
+        self.joint_velocities.append(
+            data.qvel[m.jnt_dofadr[self.joint_ids]].copy()
+            if hasattr(data, "qvel")
+            else np.full(len(self.joint_ids), np.nan)
+        )
+        self.actuator_forces.append(
+            data.actuator_force.copy()
+            if hasattr(data, "actuator_force")
+            else np.full(m.nu, np.nan)
+        )
+        self.constraint_forces.append(
+            data.qfrc_constraint.copy()
+            if hasattr(data, "qfrc_constraint")
+            else np.full(m.nv, np.nan)
+        )
+        self.contact_counts.append(len(contacts))
         self.body_positions.append(pos.copy())
         self.body_rotations.append(rot.copy())
         self.reactions.append(reaction)
@@ -155,17 +183,22 @@ class Recorder:
                 for b in self.grains
             ]
         )
-        funnel = self.funnel.report(
-            inside,
-            source,
-            self.initial_grains,
-            final,
-            radii,
-            [self.source_lo, self.source_hi],
+        funnel = (
+            self.funnel.report(
+                inside,
+                source,
+                self.initial_grains,
+                final,
+                radii,
+                [self.source_lo, self.source_hi],
+            )
+            if self.funnel is not None
+            else None
         )
-        funnel["observation"] = (
-            "20 Hz centre-segment aperture crossings/contact samples; unique-ID masses; breakout is first reverse observation"
-        )
+        if funnel is not None:
+            funnel["observation"] = (
+                f"{self.sampling_hz:g} Hz centre-segment aperture crossings/contact samples; unique-ID masses; breakout is first reverse observation"
+            )
         profile = np.asarray(self.parameters["bucket"]["profile"])
         edge = np.array([profile[0, 0], 0, profile[0, 1]])
         lip = (
@@ -176,7 +209,8 @@ class Recorder:
         result = {
             "backend": backend,
             "comparison": "sim-to-sim, not real WA320 accuracy validation",
-            "sampling_hz": 20,
+            "sampling_hz": self.sampling_hz,
+            "material_present": bool(len(self.grains)),
             "completed": bool(extra.pop("completed", True)),
             "retained_material_kg": inside_mass,
             "acquisition_funnel": funnel,
@@ -192,7 +226,9 @@ class Recorder:
             ),
             "pile_rms_displacement_m": float(
                 np.sqrt(np.mean(np.sum((final - self.initial_grains) ** 2, axis=1)))
-            ),
+            )
+            if len(self.grains)
+            else None,
             "force_semantics": "sampled sum of bucket/grain force magnitudes; wheel reactions are signed world XYZ",
             "penetration_definition": "computed from lip trajectory by evaluation script against common initial sphere envelope",
             **timing,
@@ -205,6 +241,12 @@ class Recorder:
             body_positions=positions,
             body_rotations=rot,
             joint_pos=self.joints,
+            joint_velocity=self.joint_velocities,
+            actuator_force=self.actuator_forces,
+            generalized_constraint_force=self.constraint_forces,
+            contact_count=self.contact_counts,
+            solver_iterations=self.solver_iterations,
+            connect_gap_m=self.gaps,
             joint_names=self.joint_names,
             bucket_trajectory=positions[:, self.bucket],
             boom_trajectory=positions[:, self.boom],
@@ -250,7 +292,12 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
     data.qpos[:] = tape["initial_qpos"]
     data.qvel[:] = tape["initial_qvel"]
     mujoco.mj_forward(model, data)
-    rec = Recorder(model, data, parameters)
+    rec = Recorder(
+        model,
+        data,
+        parameters,
+        1 / (manifest["control_dt_s"] * manifest["record_every_ticks"]),
+    )
     gpu = None
     graph = None
     if backend == "mjwarp":
@@ -344,7 +391,17 @@ def run_replay(bundle, output, backend, parameters, max_ticks=None):
                 "solver": int(model.opt.solver),
                 "iterations": int(model.opt.iterations),
                 "integrator": int(model.opt.integrator),
+                "tolerance": float(model.opt.tolerance),
             },
+            "gpu_effective_tolerance": float(gpu_model.opt.tolerance)
+            if gpu is not None
+            else None,
+            "gpu_final_overflow_bitmask": int(
+                np.bitwise_or.reduce(gpu.overflow.numpy())
+            )
+            if gpu is not None
+            else None,
+            "capacity_check_scope": "GPU final step only; not a transient-overflow audit",
             "implementation": "native MuJoCo"
             if gpu is None
             else "direct MuJoCo-Warp; Newton USD import/coupling NOT tested",

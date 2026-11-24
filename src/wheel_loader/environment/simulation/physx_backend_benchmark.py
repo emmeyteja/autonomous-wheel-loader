@@ -34,11 +34,20 @@ def run_physx(bundle, usd, output, parameters, max_ticks=None):
         )
     if not np.all(m.actuator_gear[:, 0] == 1) or np.any(m.actuator_gear[:, 1:]):
         raise ValueError("PhysX effort mapping requires direct unit actuator gearing")
+    if manifest.get("diagnostic", {}).get("case") == "fixed_no_contact":
+        raise ValueError(
+            "PhysX fixed diagnostic mount is not implemented; use unloaded_ground"
+        )
     initial = mujoco.MjData(m)
     initial.qpos[:] = tape["initial_qpos"]
     initial.qvel[:] = tape["initial_qvel"]
     mujoco.mj_forward(m, initial)
-    rec = Recorder(m, initial, parameters)
+    rec = Recorder(
+        m,
+        initial,
+        parameters,
+        1 / (manifest["control_dt_s"] * manifest["record_every_ticks"]),
+    )
     cfg = sim_utils.SimulationCfg(
         dt=m.opt.timestep,
         device="cpu",
@@ -280,8 +289,10 @@ def run_physx(bundle, usd, output, parameters, max_ticks=None):
         from isaaclab_physx.physics import PhysxManager
 
         view = PhysxManager.get_physics_sim_view()
-        grains = view.create_rigid_body_view("/World/Grains/*")
-        grain_paths = list(grains.prim_paths)
+        grains = (
+            view.create_rigid_body_view("/World/Grains/*") if len(rec.grains) else None
+        )
+        grain_paths = list(grains.prim_paths) if grains is not None else []
         import warp as wp
 
         grain_pose = np.array(
@@ -295,12 +306,14 @@ def run_physx(bundle, usd, output, parameters, max_ticks=None):
             dtype=np.float32,
         )
         grain_ids = wp.array(np.arange(len(grain_paths)), dtype=wp.uint32, device="cpu")
-        grains.set_transforms(
-            wp.array(grain_pose, dtype=wp.float32, device="cpu"), grain_ids
-        )
-        grains.set_velocities(
-            wp.zeros((len(grain_paths), 6), dtype=wp.float32, device="cpu"), grain_ids
-        )
+        if grains is not None:
+            grains.set_transforms(
+                wp.array(grain_pose, dtype=wp.float32, device="cpu"), grain_ids
+            )
+            grains.set_velocities(
+                wp.zeros((len(grain_paths), 6), dtype=wp.float32, device="cpu"),
+                grain_ids,
+            )
         sim.forward()
         robot.update(m.opt.timestep)
 
@@ -321,7 +334,11 @@ def run_physx(bundle, usd, output, parameters, max_ticks=None):
                     adr = int(m.jnt_qposadr[int(m.body_jntadr[b])])
                     full[adr : adr + 3] = pose[:3]
                     full[adr + 3 : adr + 7] = pose[[6, 3, 4, 5]]
-            poses = grains.get_transforms().numpy()
+            poses = (
+                grains.get_transforms().numpy()
+                if grains is not None
+                else np.empty((0, 7))
+            )
             for k, path in enumerate(grain_paths):
                 b = actor_to_body[path]
                 pos[b] = poses[k, :3]
@@ -333,9 +350,13 @@ def run_physx(bundle, usd, output, parameters, max_ticks=None):
                 full[adr : adr + 3] = poses[k, :3]
                 full[adr + 3 : adr + 7] = poses[k, [6, 3, 4, 5]]
             actual = robot.data.joint_pos.torch[0].cpu().numpy()
+            actual_velocity = robot.data.joint_vel.torch[0].cpu().numpy()
+            velocity = np.full(m.nv, np.nan)
             for k, name in enumerate(robot.joint_names):
-                full[rec.addresses[rec.joint_names.index(name)]] = actual[k]
-            return SimpleNamespace(xpos=pos, xmat=rot, qpos=full)
+                index = rec.joint_names.index(name)
+                full[rec.addresses[index]] = actual[k]
+                velocity[m.jnt_dofadr[rec.joint_ids[index]]] = actual_velocity[k]
+            return SimpleNamespace(xpos=pos, xmat=rot, qpos=full, qvel=velocity)
 
         state = read_state()
         initial_error = float(np.max(np.linalg.norm(state.xpos - initial.xpos, axis=1)))
