@@ -1,0 +1,37 @@
+# Shared controller parameters, identical on CPU/GPU; uncalibrated diagnostic.
+settle_s: 10.0
+transport_height_m: 0.20
+attack_height_m: 0.085  # 40 mm clearance + 30 mm plate half-thickness + 15 mm margin.
+attack_pitch_rad: -0.05
+curl_pitch_rad: 0.20  # Reachable curl at low boom; keep validated joint limits.
+carry_pitch_rad: 0.30
+curl_height_m: 0.25
+carry_height_m: 0.90
+minimum_clearance_m: 0.04
+braking_horizon_s: 0.4
+ground_overlap_tolerance_m: 0.001
+height_tolerance_m: 0.025
+pitch_tolerance_rad: 0.05
+approach_speed_m_s: 0.25
+penetration_speed_m_s: 0.12
+curl_advance_speed_m_s: 0.06
+curl_entry_depth_m: 0.40  # Enter beyond the first coarse particle row before curling.
+penetration_depth_m: 0.95
+standoff_m: 0.15
+minimum_payload_kg: 1.0
+breakout_clearance_m: 0.15
+reverse_speed_m_s: 0.20
+reverse_distance_m: 1.0
+retain_s: 2.0
+phase_timeout_s: 25.0
+height_gain_per_s: 1.5
+pitch_gain_per_s: 1.5
+max_lip_speed_m_s: 0.12
+max_pitch_speed_rad_s: 0.20
+unloaded: false
+breakout_threshold_N: 25000.0  # Shared diagnostic advance/braking threshold, not a calibrated rating.
+drive_speed_gain: 2.0  # Existing M2 chassis-speed feedback gains.
+drive_integral_gain: 0.8
+minimum_stall_entry_m: 0.30
+stall_speed_m_s: 0.015
+stall_duration_s: 1.0
