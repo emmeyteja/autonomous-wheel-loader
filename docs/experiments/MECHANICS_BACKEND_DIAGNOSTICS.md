@@ -84,6 +84,8 @@ PYTHONPATH=src .venv/bin/python scripts/render_mechanics_benchmark.py
 
 ## Recommendation and acceptance
 
+- Follow-up [constraint-consistent investigation](MECHANISM_SENSITIVITY_INVESTIGATION.md) checks the original invalid isolated-slider velocity, repeats corrected tangent perturbations and audits full-duration Newton CPU/GPU replay. Use that investigation for the updated reliability decision.
+
 - Keep native MuJoCo and the original open-loop replay as diagnostic references. The short Newton results support further solver investigation, not a primary RL backend decision.
 - Next implement a **separately labelled common bounded feedback/intent-command benchmark**, using the same controller law, gains and limits across engines; record the resulting physical efforts. Keep the strict identical-effort experiment alongside it. Do not tune controllers independently to obtain a desired payload.
 - Establish repeated unloaded trajectory/contact behavior before fitting bulk density, repose, flow or digging forces. Material calibration against gravel and dry sand remains pending.

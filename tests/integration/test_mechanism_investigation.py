@@ -46,3 +46,19 @@ def test_gpu_capacity_union_retains_a_cleared_transient_flag():
     current.zero_()
     wp.launch(accumulate_overflow, dim=1, inputs=[current, cumulative], device="cpu")
     assert int(cumulative.numpy()[0]) == 4
+
+
+def test_audited_contact_export_rejects_out_of_bounds_force_addresses():
+    import mujoco
+
+    from wheel_loader.environment.simulation.backend_benchmark import native_contacts
+
+    model = mujoco.MjModel.from_xml_string("""<mujoco><worldbody>
+    <geom type="plane" size="1 1 .1"/><body pos="0 0 .05"><freejoint/>
+    <geom size=".1"/></body></worldbody></mujoco>""")
+    data = mujoco.MjData(model)
+    mujoco.mj_forward(model, data)
+    assert data.ncon > 0
+    data.contact[0].efc_address = data.nefc + 100
+    rows = native_contacts(model, data, validate_rows=True)
+    assert np.isnan(rows[0][2]).all()

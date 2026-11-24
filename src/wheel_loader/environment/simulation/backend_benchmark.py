@@ -216,6 +216,7 @@ class Recorder:
             "acquisition_funnel": funnel,
             "peak_bucket_reaction_N": max(self.reactions)
             if extra.get("contact_forces_available", True)
+            and np.isfinite(self.reactions).all()
             else None,
             "max_pin_gap_m": max(self.gaps),
             "maximum_sampled_solver_iterations": max(self.solver_iterations)
@@ -270,12 +271,21 @@ class Recorder:
         return result
 
 
-def native_contacts(model, data):
+def native_contacts(model, data, *, validate_rows=False):
     import mujoco
 
     contacts = []
     for ci, c in enumerate(data.contact[: data.ncon]):
         a, b = model.geom_bodyid[c.geom]
+        ndim = (
+            max(1, 2 * (int(c.dim) - 1))
+            if model.opt.cone == mujoco.mjtCone.mjCONE_PYRAMIDAL
+            else int(c.dim)
+        )
+        if validate_rows and c.efc_address >= 0 and c.efc_address + ndim > data.nefc:
+            # Known inactive-contact host-export defect: never read beyond efc_force.
+            contacts.append((int(a), int(b), np.full(3, np.nan)))
+            continue
         force = np.zeros(6)
         mujoco.mj_contactForce(model, data, ci, force)
         contacts.append((int(a), int(b), c.frame.reshape(3, 3).T @ force[:3]))
@@ -392,7 +402,7 @@ def run_replay(
                 (tick + 1) * manifest["control_dt_s"],
                 str(tape["phase"][tick]),
                 data,
-                native_contacts(model, data),
+                native_contacts(model, data, validate_rows=audit and gpu is not None),
             )
             times.append((tick + 1) * manifest["control_dt_s"])
             if mechanism is not None:

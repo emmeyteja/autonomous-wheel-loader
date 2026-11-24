@@ -13,6 +13,19 @@ from wheel_loader.environment.simulation.backend_benchmark import load_bundle
 SCRIPT = Path(__file__).with_name("investigate_mechanism_sensitivity.py")
 
 
+def runtime_warnings(lines):
+    return [
+        line
+        for line in lines
+        if not line.lstrip().startswith('"')
+        and re.search(
+            r"\bwarning\b|\boverflow\b|iterations limit reached|non.?finite",
+            line,
+            re.IGNORECASE,
+        )
+    ]
+
+
 def invoke(arguments, output=None):
     env = {**os.environ, "PYTHONPATH": "src"}
     command = [sys.executable, str(SCRIPT), *map(str, arguments)]
@@ -25,13 +38,7 @@ def invoke(arguments, output=None):
                 command, env=env, stdout=log, stderr=subprocess.STDOUT, check=True
             )
         lines = (output / "run.log").read_text().splitlines()
-        warnings = [
-            line
-            for line in lines
-            if re.search(
-                r"\bwarning\b|overflow|solver iterations limit|non.?finite", line, re.IGNORECASE
-            )
-        ]
+        warnings = runtime_warnings(lines)
         (output / "runtime_warning_lines.json").write_text(
             json.dumps(warnings, indent=2) + "\n"
         )
@@ -133,6 +140,10 @@ if __name__ == "__main__":
                     folder = root / (name + "_" + suffix) / mode
                     bundle = prepare(folder, case, mode, solver, passive=passive)
                     run(bundle, "native", folder / "native_1")
+        for mode in ["baseline", "consistent"]:
+            folder = root / "floating_no_contact" / mode
+            bundle = prepare(folder, "floating_no_contact", mode)
+            run(bundle, "native", folder / "native_1")
     if a.phase in ["full-newton", "all"]:
         folder = root / "full_newton"
         bundle = prepare(

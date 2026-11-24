@@ -114,3 +114,14 @@ class MechanicsBenchmarkTests(unittest.TestCase):
         np.testing.assert_array_equal(model.geom_size, self.model.geom_size)
         self.assertEqual(model.opt.solver, mujoco.mjtSolver.mjSOL_NEWTON)
         self.assertEqual(manifest["diagnostic"]["particle_count"], 1)
+
+    def test_contact_ablation_preserves_floating_root(self):
+        import mujoco
+
+        from wheel_loader.environment.simulation.backend_benchmark import load_bundle
+
+        output = Path(self.temp.name) / "floating_no_contact"
+        self.prepare(self.parent, output, "floating_no_contact", 0.05)
+        model, _, _ = load_bundle(output)
+        self.assertTrue(any(model.jnt_type == mujoco.mjtJoint.mjJNT_FREE))
+        self.assertTrue(model.opt.disableflags & mujoco.mjtDisableBit.mjDSBL_CONTACT)

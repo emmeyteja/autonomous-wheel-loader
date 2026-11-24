@@ -158,7 +158,12 @@ if __name__ == "__main__":
     )
     prep.add_argument(
         "--case",
-        choices=["fixed_no_contact", "unloaded_ground", "pile_reference"],
+        choices=[
+            "fixed_no_contact",
+            "floating_no_contact",
+            "unloaded_ground",
+            "pile_reference",
+        ],
         required=True,
     )
     prep.add_argument("--seconds", type=float, default=10)

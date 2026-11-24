@@ -37,6 +37,7 @@ def prepare(
         spec.delete(
             spec.joints[0]
         )  # Mount the rear chassis; all 19 mechanism joints remain.
+    if case in {"fixed_no_contact", "floating_no_contact"}:
         spec.option.disableflags |= mujoco.mjtDisableBit.mjDSBL_CONTACT
     compiled = spec.compile()
     model = (
@@ -187,7 +188,12 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
         "--case",
-        choices=["fixed_no_contact", "unloaded_ground", "pile_reference"],
+        choices=[
+            "fixed_no_contact",
+            "floating_no_contact",
+            "unloaded_ground",
+            "pile_reference",
+        ],
         required=True,
     )
     parser.add_argument("--seconds", type=float, default=3.0)
