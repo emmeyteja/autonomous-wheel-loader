@@ -33,7 +33,7 @@ journal pages; PDF page numbers are given where useful. No PDFs are redistribute
 | Dry-gravel WM settings | Density 1727 kg/m³; friction angle 32°; cohesion 0 kPa; dilatancy 8° | WM §5.1, p.266 / PDF 8 |
 | WM numerical grid/time | 0.1 × 0.1 m terrain cells; 0.01 s timestep; AGX multiscale terrain | WM §5.1, p.266 |
 | WM seed piles | Two each triangular, conical, wedged; slopes 20° and 30°, Perlin perturbations | WM §6.2, p.267; Fig.8, p.268 |
-| WM dimension labels | Fig.8: triangular span 30 m and transverse extent 5 m; conical radial label 5 m; wedge angle 45°. These do not specify all 3D heights/volumes | WM Fig.8, p.268 / PDF 10 |
+| WM dimension labels | Fig.8: triangular span 30 m and transverse extent 5 m; conical radial label 5 m; wedged-seed plan-view annotation 45°. These do not specify all 3D heights/volumes | WM Fig.8, p.268 / PDF 10 |
 | WM performance observation window | 3.6 × 3.6 m, 36 × 36 cells | WM §6.3, p.268 |
 | WM next-pile observation window | 5.2 × 5.2 m, 52 × 52 cells; displacement 1 m toward approach side | WM §6.3, p.268 |
 
@@ -85,7 +85,9 @@ AGX's implementation is not provided by these papers as portable project code.
 - GAP Table 1 (§4.3, p.127): 100 Hz field measurements; cylinder-pressure-derived
   forces, wheel-derived speed, linkage measurements, rear-wall laser distance and
   pre-loading surface scans. Some forces/extensions are published in normalized
-  arbitrary units; raw SI signals/calibration constants must be obtained.
+  arbitrary units; raw SI signals/calibration constants must be obtained. The data
+  availability statement (p.146 / PDF 26) offers normalized time series on request;
+  it does not establish that SI field data are available to this repository.
 - GAP Table 2 (p.128): FB35 = 3.46 t / 209 kJ; HD27 = 2.70 t / 127 kJ;
   RD21 = 2.10 t / 112 kJ. RD21 starts with tip 0.25 m above ground.
 - GAP §§6.1–6.3 (pp.134–135): identify target-speed commands/calibration using
