@@ -21,6 +21,8 @@ def evaluate(root):
             f"row_{count}_curl_040",
             f"row_{count}_curl_095",
         ):
+            if not (baseline / name / "report.json").exists():
+                continue
             state = np.load(baseline / name / "states.npz")
             report = json.loads((baseline / name / "report.json").read_text())
             repeat = {}

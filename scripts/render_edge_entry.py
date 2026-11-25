@@ -12,7 +12,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 
-def render(root, output):
+def render(root, output, cases=None):
     output.parent.mkdir(parents=True, exist_ok=True)
     font = ImageFont.truetype("DejaVuSans.ttf", 22)
     small = ImageFont.truetype("DejaVuSans.ttf", 19)
@@ -42,8 +42,12 @@ def render(root, output):
         stdin=subprocess.PIPE,
     )
     try:
-        for name in ["row_3_straight", "row_3_curl_040", "row_3_curl_095"]:
-            folder = root / name
+        folders = cases or [
+            root / name
+            for name in ["row_3_straight", "row_3_curl_040", "row_3_curl_095"]
+        ]
+        for folder in folders:
+            name = folder.name
             report = json.loads((folder / "report.json").read_text())
             state = np.load(folder / "states.npz")
             model = mujoco.MjModel.from_binary_path(str(folder / "compiled_model.mjb"))
@@ -71,16 +75,16 @@ def render(root, output):
                     frame = Image.new("RGB", (1400, 800), (20, 24, 30))
                     frame.paste(Image.fromarray(renderer.render()), (0, 95))
                     draw = ImageDraw.Draw(frame)
-                    draw.rectangle((690, 560, 995, 737), fill=(25, 30, 38))
+                    draw.rectangle((690, 525, 995, 737), fill=(25, 30, 38))
                     draw.text(
-                        (705, 570), "Contact normal: world X/Z", font=small, fill="cyan"
+                        (705, 535), "Normal: X right / Z up", font=small, fill="cyan"
                     )
                     if len(near):
                         c = near[len(near) // 2]
-                        base = np.array([750.0, 670.0])
+                        base = np.array([830.0, 660.0])
                         direction = np.array([c[5], -c[7]])
                         direction /= max(np.linalg.norm(direction), 1e-12)
-                        tip = base + 125 * direction
+                        tip = base + 60 * direction
                         side = np.array([-direction[1], direction[0]])
                         draw.line([tuple(base), tuple(tip)], fill="cyan", width=5)
                         draw.polygon(
@@ -92,14 +96,8 @@ def render(root, output):
                             fill="cyan",
                         )
                         draw.text(
-                            (705, 603),
+                            (705, 568),
                             f"Elevation: {np.rad2deg(np.arcsin(np.clip(c[7], -1, 1))):+.2f} deg",
-                            font=small,
-                            fill="white",
-                        )
-                        draw.text(
-                            (705, 707),
-                            "X right / Z up (inset)",
                             font=small,
                             fill="white",
                         )
@@ -112,21 +110,21 @@ def render(root, output):
                         )
                     draw.text(
                         (18, 12),
-                        f"ISOLATED CONTACT REPLAY | {name} | zero material acquisition",
+                        f"CONTACT REPLAY | {report.get('edge_variant', 'blunt')} | h={report.get('attack_height_m', 0.085):.3f} m | {'BACKSTOP' if report.get('backstop') else 'FREE'} | {name}",
                         font=font,
                         fill="orange",
                     )
                     draw.text(
                         (18, 48),
-                        "Finite-force test carriage; vehicle/linkage omitted. Unchanged bucket/material. Not an M2 scoop.",
+                        "Finite-force carriage; vehicle omitted. Material unchanged. Taper variants are hypothetical. Not an M2 scoop.",
                         font=small,
                         fill="white",
                     )
                     lines = [
                         f"Time: {t:.2f} s",
-                        "3 free particles",
+                        f"{report['particle_count']} free particles",
                         f"Radius: {report['particle_radius_m']:.4f} m",
-                        f"Inside: {int(state['inside'][i].sum())} / 3",
+                        f"Inside: {int(state['inside'][i].sum())} / {report['particle_count']}",
                         "Bucket ground gap:",
                         f" {1000 * state['bucket_ground_clearance_m'][i]:.1f} mm",
                         "Particle force X:",
@@ -135,10 +133,28 @@ def render(root, output):
                         f" {state['force_z_N'][i]:+.1f} N",
                         "Cyan inset: normal",
                         "Transparent: bucket",
-                        "No attached material",
+                        f"Mouth entries: {report['mouth_entry_events']}",
+                        "Tracking gate: "
+                        + (
+                            "PASS"
+                            if max(report["maximum_carriage_tracking_error_m_m_rad"])
+                            < 0.01
+                            else "FAIL"
+                        ),
+                        "40 mm gap gate: "
+                        + (
+                            "PASS"
+                            if report["minimum_bucket_floor_clearance_m"] >= 0.04
+                            else "FAIL"
+                        ),
                     ]
                     for j, line in enumerate(lines):
-                        draw.text((1020, 120 + j * 39), line, font=font, fill="white")
+                        draw.text(
+                            (1020, 120 + j * 39),
+                            line,
+                            font=font,
+                            fill="tomato" if "FAIL" in line else "white",
+                        )
                     draw.text(
                         (18, 758),
                         "Recorded qpos replay | provisional coarse-sphere/contact diagnostic; not real-machine force validation",
@@ -156,7 +172,8 @@ def render(root, output):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--root", type=Path, required=True)
+    p.add_argument("--root", type=Path, default=Path("."))
+    p.add_argument("--case", type=Path, action="append")
     p.add_argument("--output", type=Path, required=True)
     a = p.parse_args()
-    render(a.root, a.output)
+    render(a.root, a.output, a.case)

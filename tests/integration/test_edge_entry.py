@@ -75,3 +75,72 @@ def test_blunt_entry_push_is_physical_bounded_and_repeatable(tmp_path):
 def test_rejects_unsupported_fixture_sizes(count):
     with pytest.raises(ValueError):
         build_fixture(BUNDLE, count)
+
+
+@pytest.mark.parametrize("variant,tip", [("taper_5mm", 0.005), ("taper_15mm", 0.015)])
+def test_taper_changes_only_first_collider_and_preserves_bottom_and_inertia(
+    variant, tip
+):
+    original, _ = build_fixture(BUNDLE, 1)
+    model, _ = build_fixture(BUNDLE, 1, variant)
+    changed = next(
+        g
+        for g in range(model.ngeom)
+        if mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, g).endswith("box_12_4")
+    )
+    for field in [
+        "friction",
+        "solref",
+        "solimp",
+        "margin",
+        "gap",
+        "condim",
+        "contype",
+        "conaffinity",
+    ]:
+        np.testing.assert_array_equal(
+            getattr(model, "geom_" + field), getattr(original, "geom_" + field)
+        )
+    for field in ["size", "pos", "quat", "type"]:
+        a, b = getattr(model, "geom_" + field), getattr(original, "geom_" + field)
+        np.testing.assert_array_equal(
+            np.delete(a, changed, axis=0), np.delete(b, changed, axis=0)
+        )
+    for field in ["mass", "inertia", "ipos", "iquat"]:
+        np.testing.assert_array_equal(
+            getattr(model, "body_" + field), getattr(original, "body_" + field)
+        )
+    mesh = model.geom_dataid[changed]
+    vertices = model.mesh_vert[
+        model.mesh_vertadr[mesh] : model.mesh_vertadr[mesh] + model.mesh_vertnum[mesh]
+    ]
+    new_rotation, old_rotation = np.zeros(9), np.zeros(9)
+    mujoco.mju_quat2Mat(new_rotation, model.geom_quat[changed])
+    mujoco.mju_quat2Mat(old_rotation, original.geom_quat[changed])
+    local = (
+        vertices @ new_rotation.reshape(3, 3).T
+        + model.geom_pos[changed]
+        - original.geom_pos[changed]
+    ) @ old_rotation.reshape(3, 3)
+    hx, hy, hz = original.geom_size[changed]
+    np.testing.assert_allclose(local.min(0), [-hx, -hy, -hz], atol=2e-6)
+    np.testing.assert_allclose(local.max(0), [hx, hy, hz], atol=2e-6)
+    front = local[abs(local[:, 0] + hx) < 2e-6]
+    np.testing.assert_allclose(front[:, 2].max() - front[:, 2].min(), tip, atol=2e-6)
+    assert np.any(
+        (abs(local[:, 0] - (-hx + 0.15)) < 2e-6) & (abs(local[:, 2] + hz) < 2e-6)
+    )
+    with pytest.raises(ValueError, match="variant"):
+        build_fixture(BUNDLE, 1, "unknown")
+
+
+def test_backstop_fixture_keeps_bucket_clear_of_wall_and_reports_stall(tmp_path):
+    r = run_case(BUNDLE, tmp_path / "stop", variant="taper_5mm", backstop=True)
+    s = np.load(tmp_path / "stop/states.npz")
+    assert r["backstop"] and r["minimum_bucket_backstop_gap_m"] > 0.15
+    assert r["maximum_carriage_advance_m"] == 0.70
+    assert r["sampled_forces_finite"] and not any(r["solver_warnings"])
+    assert r["maximum_accounting_error_kg"] < 1e-9
+    assert r["mouth_entry_events"] == 0
+    assert abs(s["carriage_effort"]).max() <= 3e5
+    assert max(r["maximum_carriage_tracking_error_m_m_rad"]) > 0.01

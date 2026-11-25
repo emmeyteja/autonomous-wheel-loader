@@ -15,9 +15,13 @@ from wheel_loader.evaluation.material_accounting import (
 )
 from wheel_loader.vehicle.parameters import load_parameters
 
+EDGE_VARIANTS = {"blunt": None, "taper_5mm": 0.005, "taper_15mm": 0.015}
 
-def build_fixture(bundle, count):
+
+def build_fixture(bundle, count, variant="blunt", backstop=False):
     """Reuse bucket, floor and first particle; omit the vehicle/linkage deliberately."""
+    if variant not in EDGE_VARIANTS:
+        raise ValueError("Unknown cutting-edge variant")
     if count not in (1, 3):
         raise ValueError("Only one particle or a transverse row of three")
     source = mujoco.MjModel.from_binary_path(str(bundle / "compiled_model.mjb"))
@@ -32,6 +36,14 @@ def build_fixture(bundle, count):
     world = ET.SubElement(root, "worldbody")
     floor = copy.deepcopy(xml.find("worldbody/geom"))
     world.append(floor)
+    if backstop:
+        stop = copy.deepcopy(floor)
+        stop.set("name", "diagnostic_backstop")
+        stop.set("type", "box")
+        stop.set("size", ".05 2 .3")
+        stop.set("pos", ".95 0 .3")
+        stop.set("rgba", ".6 .3 .2 1")
+        world.append(stop)
     original = next(
         b for b in xml.iter("body") if b.get("name", "").endswith("_bucket")
     )
@@ -45,6 +57,28 @@ def build_fixture(bundle, count):
         ET.SubElement(bucket, "joint", name=name, type=kind, axis=axis)
     for geom in original.findall("geom"):
         bucket.append(copy.deepcopy(geom))
+    changed_name = None
+    if variant != "blunt":
+        # Collision-only sensitivity: preserve lower face, original rear 60 mm
+        # thickness, bucket mass/inertia and body targets; taper the first 150 mm.
+        geom = bucket.find("geom")
+        changed_name = geom.get("name")
+        old = mujoco.mj_name2id(source, mujoco.mjtObj.mjOBJ_GEOM, changed_name)
+        hx, hy, hz = source.geom_size[old]
+        tip = EDGE_VARIANTS[variant]
+        cross = [(-hx, hz), (hx, hz), (hx, -hz), (-hx + 0.15, -hz), (-hx, hz - tip)]
+        vertices = [[x, y, z] for y in (-hy, hy) for x, z in cross]
+        ET.SubElement(
+            root.find("asset"),
+            "mesh",
+            name="diagnostic_taper",
+            vertex=" ".join(format(v, ".17g") for vertex in vertices for v in vertex),
+        )
+        geom.set("type", "mesh")
+        geom.set("mesh", "diagnostic_taper")
+        geom.attrib.pop("size", None)
+        geom.set("pos", " ".join(format(v, ".17g") for v in source.geom_pos[old]))
+        geom.set("quat", " ".join(format(v, ".17g") for v in source.geom_quat[old]))
     grain = next(b for b in xml.iter("body") if b.get("name", "") == "grain_0")
     radius = source.geom_size[
         mujoco.mj_name2id(source, mujoco.mjtObj.mjOBJ_GEOM, "grain_geom_0"), 0
@@ -79,8 +113,18 @@ def build_fixture(bundle, count):
     for g in range(model.ngeom):
         name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, g)
         name = "grain_geom_0" if name.startswith("grain_geom_") else name
+        if name == "diagnostic_backstop":
+            continue
         old = mujoco.mj_name2id(source, mujoco.mjtObj.mjOBJ_GEOM, name)
         for field in fields:
+            if name == changed_name and field in (
+                "size",
+                "pos",
+                "quat",
+                "rbound",
+                "aabb",
+            ):
+                continue  # Keep the new mesh's compiled centering and bounds.
             getattr(model, "geom_" + field)[g] = getattr(source, "geom_" + field)[old]
     copied_bodies = [("test_bucket", original.get("name"))] + [
         (f"grain_{i}", "grain_0") for i in range(count)
@@ -110,7 +154,9 @@ def carriage_pose(t, curl_at, parameters):
     )
     edge_angle = np.arctan2(edge[1], edge[0])
     start_angle = -0.05 - edge_angle
-    advance = 0.12 * np.clip(t - 1.0, 0, 14.0)
+    advance = min(
+        0.12 * np.clip(t - 1.0, 0, 14.0), parameters.get("fixture_max_advance", 1.68)
+    )
     # Curl trigger is carriage travel relative to initial particle front (0.5-r).
     onset = 1.0 + (0.5 - parameters["fixture_radius"] + curl_at) / 0.12
     curl = 0 if curl_at < 0 else np.clip((t - onset) * 0.20, 0, 0.25)
@@ -121,16 +167,27 @@ def carriage_pose(t, curl_at, parameters):
             [[np.cos(a), 0, -np.sin(a)], [0, 1, 0], [np.sin(a), 0, np.cos(a)]]
         )
 
-    pos = np.array([advance, 0, 0.085]) - rotation(start_angle) @ lip
+    pos = (
+        np.array([advance, 0, parameters.get("fixture_attack_height", 0.085)])
+        - rotation(start_angle) @ lip
+    )
     quat = np.array([np.cos(angle / 2), 0, -np.sin(angle / 2), 0])
     return pos, quat
 
 
-def run_case(bundle, output, count=1, curl_at=-1.0):
+def run_case(
+    bundle,
+    output,
+    count=1,
+    curl_at=-1.0,
+    variant="blunt",
+    attack_height=0.085,
+    backstop=False,
+):
     if output.exists() and any(output.iterdir()):
         raise ValueError("Use an empty output directory")
     output.mkdir(parents=True, exist_ok=True)
-    model, xml = build_fixture(bundle, count)
+    model, xml = build_fixture(bundle, count, variant, backstop)
     data = mujoco.MjData(model)
     parameters = load_parameters("configs/vehicle/wa320.yaml")
     grains = np.array(
@@ -141,12 +198,17 @@ def run_case(bundle, output, count=1, curl_at=-1.0):
     )
     bucket = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "test_bucket")
     parameters["fixture_radius"] = float(model.geom_size[-1, 0])
+    parameters["fixture_attack_height"] = attack_height
+    parameters["fixture_max_advance"] = 0.70 if backstop else 1.68
+    if backstop and curl_at >= 0:
+        raise ValueError("Backstop diagnostic is straight-entry only")
     dt = model.opt.timestep
     n = round(16 / dt)
     records, contacts, accounting = [], [], []
     ledger = MaterialAccounting(model.body_mass[grains])
     funnel = AcquisitionFunnel(model.body_mass[grains], parameters)
     floor_clearance = []
+    stop_clearance = []
     first_normal = None
     first_geom = None
     first_contact = None
@@ -202,6 +264,13 @@ def run_case(bundle, output, count=1, curl_at=-1.0):
             for g in np.flatnonzero(model.geom_bodyid == bucket)
         )
         floor_clearance.append(low)
+        if backstop:
+            stop_clearance.append(
+                min(
+                    mujoco.mj_geomDistance(model, data, 1, int(g), 10.0, None)
+                    for g in np.flatnonzero(model.geom_bodyid == bucket)
+                )
+            )
         contacting = np.zeros(count, bool)
         upward = horizontal = 0.0
         for ci, contact in enumerate(data.contact[: data.ncon]):
@@ -254,6 +323,7 @@ def run_case(bundle, output, count=1, curl_at=-1.0):
         bucket_pos=pos,
         bucket_quat=quat,
         bucket_ground_clearance_m=floor_clearance,
+        bucket_backstop_clearance_m=stop_clearance,
         xyz=xyz,
         inside=inside,
         force_z_N=fz,
@@ -270,6 +340,18 @@ def run_case(bundle, output, count=1, curl_at=-1.0):
         .max(0)
         .tolist(),
         "peak_carriage_effort_N_N_Nm": abs(np.array(efforts)).max(0).tolist(),
+        "minimum_bucket_backstop_gap_m": float(min(stop_clearance))
+        if backstop
+        else None,
+        "backstop": backstop,
+        "maximum_carriage_advance_m": parameters["fixture_max_advance"],
+        "edge_variant": variant,
+        "edge_provenance": "Unchanged baseline"
+        if variant == "blunt"
+        else "Hypothetical collision-only taper; not measured WA320 geometry",
+        "tip_thickness_m": 0.06 if variant == "blunt" else EDGE_VARIANTS[variant],
+        "bevel_length_m": 0 if variant == "blunt" else 0.15,
+        "attack_height_m": attack_height,
         "duration_s": n * dt,
         "timestep_s": dt,
         "observation_hz": 1 / (8 * dt),
